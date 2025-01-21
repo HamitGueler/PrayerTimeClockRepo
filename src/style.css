@@ -1,0 +1,39 @@
+QWidget{
+    background-color: #191b1c;
+}
+
+QLabel{
+    color: white;
+}
+
+#next_prayers_box{
+    border: 2px solid #37a7ed;
+}
+
+QPushButton{
+    color: white;
+    border: 1px solid #79b2d6;
+    background-color: #37a7ed;
+}
+
+QPushButton:hover{
+    color: white;
+    border: 1px solid #256a96;
+    background-color: #256a96;
+}
+
+QPushButton:pressed{
+    color: white;
+    border: 1px solid #0e4a6f;
+    background-color: #0e4a6f;
+}
+
+QPushButton:disabled{
+    color: rgb(160, 156, 156);
+    border: 1px solid #6f7071;
+    background-color: #6f7071;
+}
+
+QGroupBox{
+    background-color: #191b1c;
+}
