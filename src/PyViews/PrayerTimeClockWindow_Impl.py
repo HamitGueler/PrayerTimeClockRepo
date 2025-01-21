@@ -40,7 +40,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.setWindowTitle("Clock")
 
         pygame.mixer.init()
-        pygame.mixer.music.load("/Users/hamitgueler/Desktop/Projekte/PrayerTimeClock/PrayerTimeClock/src/AudioFiles/call_to_prayer.mp3")
+        pygame.mixer.music.load("~/src/AudioFiles/adhan.mp3")
 
         self.scraper = WebScraperClass()
         self.prayer_times = {}
@@ -164,6 +164,10 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         
     def call_to_prayer(self):
         self.toggle_timer.start(1000)
+        if self.current_prayer_index == 0:
+            pygame.mixer.music.load("~/src/AudioFiles/fajr_adhan.mp3")
+        else:
+            pygame.mixer.music.load("~/src/AudioFiles/adhan.mp3")
         pygame.mixer.music.play()
     
     def __style_current_prayer(self):
