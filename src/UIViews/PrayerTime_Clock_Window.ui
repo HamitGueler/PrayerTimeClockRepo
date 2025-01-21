@@ -38,7 +38,7 @@
      <rect>
       <x>10</x>
       <y>240</y>
-      <width>651</width>
+      <width>631</width>
       <height>51</height>
      </rect>
     </property>
@@ -164,9 +164,9 @@
     <property name="geometry">
      <rect>
       <x>330</x>
-      <y>240</y>
+      <y>260</y>
       <width>81</width>
-      <height>91</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="font">
@@ -181,7 +181,7 @@
    <widget class="QPushButton" name="refresh_button">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>220</x>
       <y>240</y>
       <width>101</width>
       <height>41</height>
@@ -860,14 +860,12 @@
      </property>
     </widget>
    </widget>
-   <zorder>led_sign</zorder>
    <zorder>current_time</zorder>
    <zorder>current_location</zorder>
    <zorder>rest_time</zorder>
    <zorder>last_updated_descrition</zorder>
    <zorder>last_updated_date</zorder>
    <zorder>last_updated_time</zorder>
-   <zorder>refresh_button</zorder>
    <zorder>fajr_box</zorder>
    <zorder>next_day_prayers_box</zorder>
    <zorder>zohr_box</zorder>
@@ -877,6 +875,8 @@
    <zorder>isha_box</zorder>
    <zorder>current_date</zorder>
    <zorder>rest_time_description</zorder>
+   <zorder>refresh_button</zorder>
+   <zorder>led_sign</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

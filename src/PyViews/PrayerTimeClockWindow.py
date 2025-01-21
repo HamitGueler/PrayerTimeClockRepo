@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'PrayerTime_Clock_WindowFLYgCH.ui'
+## Form generated from reading UI file 'PrayerTime_Clock_WindowyuNUhs.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.5.3
 ##
@@ -35,7 +35,7 @@ class Ui_MainWindow(object):
         self.current_time.setFont(font)
         self.current_date = QLabel(self.centralwidget)
         self.current_date.setObjectName(u"current_date")
-        self.current_date.setGeometry(QRect(10, 240, 651, 51))
+        self.current_date.setGeometry(QRect(10, 240, 631, 51))
         font1 = QFont()
         font1.setPointSize(30)
         self.current_date.setFont(font1)
@@ -72,13 +72,13 @@ class Ui_MainWindow(object):
         self.last_updated_time.setFont(font3)
         self.led_sign = QLabel(self.centralwidget)
         self.led_sign.setObjectName(u"led_sign")
-        self.led_sign.setGeometry(QRect(330, 240, 81, 91))
+        self.led_sign.setGeometry(QRect(330, 260, 81, 51))
         font5 = QFont()
         font5.setPointSize(180)
         self.led_sign.setFont(font5)
         self.refresh_button = QPushButton(self.centralwidget)
         self.refresh_button.setObjectName(u"refresh_button")
-        self.refresh_button.setGeometry(QRect(230, 240, 101, 41))
+        self.refresh_button.setGeometry(QRect(220, 240, 101, 41))
         font6 = QFont()
         font6.setBold(True)
         self.refresh_button.setFont(font6)
@@ -241,14 +241,12 @@ class Ui_MainWindow(object):
         self.current_day_isha_time.setGeometry(QRect(0, 40, 181, 41))
         self.current_day_isha_time.setFont(font8)
         MainWindow.setCentralWidget(self.centralwidget)
-        self.led_sign.raise_()
         self.current_time.raise_()
         self.current_location.raise_()
         self.rest_time.raise_()
         self.last_updated_descrition.raise_()
         self.last_updated_date.raise_()
         self.last_updated_time.raise_()
-        self.refresh_button.raise_()
         self.fajr_box.raise_()
         self.next_day_prayers_box.raise_()
         self.zohr_box.raise_()
@@ -258,6 +256,8 @@ class Ui_MainWindow(object):
         self.isha_box.raise_()
         self.current_date.raise_()
         self.rest_time_description.raise_()
+        self.refresh_button.raise_()
+        self.led_sign.raise_()
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
         self.menubar.setGeometry(QRect(0, 0, 1024, 37))
