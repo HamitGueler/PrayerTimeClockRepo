@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'PrayerTime_Clock_WindowyuNUhs.ui'
+## Form generated from reading UI file 'PrayerTime_Clock_WindowvdAAhn.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.5.3
 ##
@@ -72,7 +72,7 @@ class Ui_MainWindow(object):
         self.last_updated_time.setFont(font3)
         self.led_sign = QLabel(self.centralwidget)
         self.led_sign.setObjectName(u"led_sign")
-        self.led_sign.setGeometry(QRect(330, 260, 81, 51))
+        self.led_sign.setGeometry(QRect(430, 200, 81, 91))
         font5 = QFont()
         font5.setPointSize(180)
         self.led_sign.setFont(font5)
