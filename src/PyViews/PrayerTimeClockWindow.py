@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'PrayerTime_Clock_WindowRSakgi.ui'
+## Form generated from reading UI file 'PrayerTime_Clock_WindoweDvBPt.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.5.3
 ##
@@ -30,25 +30,25 @@ class Ui_MainWindow(object):
         self.current_time.setObjectName(u"current_time")
         self.current_time.setGeometry(QRect(0, 0, 671, 171))
         font = QFont()
-        font.setPointSize(200)
+        font.setPointSize(150)
         self.current_time.setFont(font)
         self.current_date = QLabel(self.centralwidget)
         self.current_date.setObjectName(u"current_date")
         self.current_date.setGeometry(QRect(0, 240, 651, 51))
         font1 = QFont()
-        font1.setPointSize(50)
+        font1.setPointSize(30)
         self.current_date.setFont(font1)
         self.current_location = QLabel(self.centralwidget)
         self.current_location.setObjectName(u"current_location")
         self.current_location.setGeometry(QRect(10, 170, 281, 71))
         font2 = QFont()
-        font2.setPointSize(70)
+        font2.setPointSize(50)
         self.current_location.setFont(font2)
         self.rest_time_description = QLabel(self.centralwidget)
         self.rest_time_description.setObjectName(u"rest_time_description")
         self.rest_time_description.setGeometry(QRect(10, 290, 661, 41))
         font3 = QFont()
-        font3.setPointSize(25)
+        font3.setPointSize(15)
         self.rest_time_description.setFont(font3)
         self.rest_time = QLabel(self.centralwidget)
         self.rest_time.setObjectName(u"rest_time")
@@ -97,11 +97,11 @@ class Ui_MainWindow(object):
         self.next_day_prayers_box.setGeometry(QRect(0, 390, 671, 111))
         self.next_day_description = QLabel(self.next_day_prayers_box)
         self.next_day_description.setObjectName(u"next_day_description")
-        self.next_day_description.setGeometry(QRect(0, -10, 231, 51))
+        self.next_day_description.setGeometry(QRect(10, 0, 341, 51))
         self.next_day_description.setFont(font4)
         self.next_day_date = QLabel(self.next_day_prayers_box)
         self.next_day_date.setObjectName(u"next_day_date")
-        self.next_day_date.setGeometry(QRect(250, -10, 301, 41))
+        self.next_day_date.setGeometry(QRect(360, 0, 301, 41))
         self.next_day_date.setFont(font4)
         self.next_day_magrb_box = QGroupBox(self.next_day_prayers_box)
         self.next_day_magrb_box.setObjectName(u"next_day_magrb_box")
