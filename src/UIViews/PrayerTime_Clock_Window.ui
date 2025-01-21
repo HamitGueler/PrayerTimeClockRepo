@@ -19,8 +19,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>541</width>
-      <height>161</height>
+      <width>671</width>
+      <height>171</height>
      </rect>
     </property>
     <property name="font">
@@ -35,9 +35,9 @@
    <widget class="QLabel" name="current_date">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>230</y>
-      <width>261</width>
+      <x>0</x>
+      <y>240</y>
+      <width>651</width>
       <height>51</height>
      </rect>
     </property>
@@ -56,7 +56,7 @@
       <x>10</x>
       <y>170</y>
       <width>281</width>
-      <height>61</height>
+      <height>71</height>
      </rect>
     </property>
     <property name="font">
@@ -73,7 +73,7 @@
      <rect>
       <x>10</x>
       <y>290</y>
-      <width>471</width>
+      <width>661</width>
       <height>41</height>
      </rect>
     </property>
@@ -91,7 +91,7 @@
      <rect>
       <x>10</x>
       <y>330</y>
-      <width>221</width>
+      <width>341</width>
       <height>51</height>
      </rect>
     </property>
@@ -110,7 +110,7 @@
       <x>10</x>
       <y>500</y>
       <width>181</width>
-      <height>21</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
@@ -126,7 +126,7 @@
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>520</y>
+      <y>540</y>
       <width>101</width>
       <height>21</height>
      </rect>
@@ -143,8 +143,8 @@
    <widget class="QLabel" name="last_updated_time">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>520</y>
+      <x>10</x>
+      <y>540</y>
       <width>61</width>
       <height>21</height>
      </rect>
@@ -163,8 +163,8 @@
      <rect>
       <x>300</x>
       <y>510</y>
-      <width>41</width>
-      <height>41</height>
+      <width>71</width>
+      <height>51</height>
      </rect>
     </property>
     <property name="font">
@@ -182,7 +182,7 @@
       <x>200</x>
       <y>500</y>
       <width>100</width>
-      <height>41</height>
+      <height>61</height>
      </rect>
     </property>
     <property name="text">
@@ -192,7 +192,7 @@
    <widget class="QGroupBox" name="fajr_box">
     <property name="geometry">
      <rect>
-      <x>860</x>
+      <x>670</x>
       <y>0</y>
       <width>181</width>
       <height>91</height>
@@ -206,7 +206,7 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>181</width>
+       <width>221</width>
        <height>51</height>
       </rect>
      </property>
@@ -223,9 +223,9 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>50</y>
+       <y>40</y>
        <width>181</width>
-       <height>41</height>
+       <height>51</height>
       </rect>
      </property>
      <property name="font">
@@ -243,7 +243,7 @@
      <rect>
       <x>0</x>
       <y>390</y>
-      <width>551</width>
+      <width>671</width>
       <height>111</height>
      </rect>
     </property>
@@ -255,7 +255,7 @@
       <rect>
        <x>0</x>
        <y>-10</y>
-       <width>191</width>
+       <width>231</width>
        <height>51</height>
       </rect>
      </property>
@@ -271,8 +271,8 @@
     <widget class="QLabel" name="next_day_date">
      <property name="geometry">
       <rect>
-       <x>190</x>
-       <y>-5</y>
+       <x>250</x>
+       <y>-10</y>
        <width>301</width>
        <height>41</height>
       </rect>
@@ -286,61 +286,12 @@
       <string>DD.MM:YY</string>
      </property>
     </widget>
-    <widget class="QGroupBox" name="next_day_fajr_box">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>40</y>
-       <width>91</width>
-       <height>71</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string/>
-     </property>
-     <widget class="QLabel" name="next_day_fajr">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>81</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>20</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>FAJR</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="next_day_fajr_time">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>30</y>
-        <width>81</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>20</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>00:00</string>
-      </property>
-     </widget>
-    </widget>
     <widget class="QGroupBox" name="next_day_magrb_box">
      <property name="geometry">
       <rect>
-       <x>370</x>
+       <x>450</x>
        <y>40</y>
-       <width>91</width>
+       <width>111</width>
        <height>71</height>
       </rect>
      </property>
@@ -387,33 +338,15 @@
     <widget class="QGroupBox" name="next_day_isha_box">
      <property name="geometry">
       <rect>
-       <x>460</x>
+       <x>560</x>
        <y>40</y>
-       <width>91</width>
+       <width>111</width>
        <height>71</height>
       </rect>
      </property>
      <property name="title">
       <string/>
      </property>
-     <widget class="QLabel" name="next_day_isha_time">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>30</y>
-        <width>81</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>20</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>00:00</string>
-      </property>
-     </widget>
      <widget class="QLabel" name="next_day_isha">
       <property name="geometry">
        <rect>
@@ -432,20 +365,7 @@
        <string>ISHA</string>
       </property>
      </widget>
-    </widget>
-    <widget class="QGroupBox" name="next_day_asr_box">
-     <property name="geometry">
-      <rect>
-       <x>280</x>
-       <y>40</y>
-       <width>91</width>
-       <height>71</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string/>
-     </property>
-     <widget class="QLabel" name="next_day_asr_time">
+     <widget class="QLabel" name="next_day_isha_time">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -463,6 +383,19 @@
        <string>00:00</string>
       </property>
      </widget>
+    </widget>
+    <widget class="QGroupBox" name="next_day_asr_box">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>40</y>
+       <width>111</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string/>
+     </property>
      <widget class="QLabel" name="next_day_asr">
       <property name="geometry">
        <rect>
@@ -481,13 +414,31 @@
        <string>ASR</string>
       </property>
      </widget>
+     <widget class="QLabel" name="next_day_fajr_time">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>30</y>
+        <width>81</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>20</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>00:00</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QGroupBox" name="next_day_zohr_box">
      <property name="geometry">
       <rect>
-       <x>190</x>
+       <x>230</x>
        <y>40</y>
-       <width>91</width>
+       <width>111</width>
        <height>71</height>
       </rect>
      </property>
@@ -534,9 +485,9 @@
     <widget class="QGroupBox" name="next_day_shroq_box">
      <property name="geometry">
       <rect>
-       <x>100</x>
+       <x>120</x>
        <y>40</y>
-       <width>91</width>
+       <width>111</width>
        <height>71</height>
       </rect>
      </property>
@@ -580,11 +531,60 @@
       </property>
      </widget>
     </widget>
+    <widget class="QGroupBox" name="next_day_fajr_box">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>40</y>
+       <width>121</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string/>
+     </property>
+     <widget class="QLabel" name="next_day_fajr">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>81</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>20</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>FAJR</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="next_day_asr_time">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>30</y>
+        <width>81</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>20</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>00:00</string>
+      </property>
+     </widget>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="zohr_box">
     <property name="geometry">
      <rect>
-      <x>860</x>
+      <x>670</x>
       <y>180</y>
       <width>181</width>
       <height>91</height>
@@ -611,13 +611,13 @@
       <string>DHUHR</string>
      </property>
     </widget>
-    <widget class="QLabel" name="current_day_zohr_time">
+    <widget class="QLabel" name="current_day_asr_time">
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>50</y>
+       <y>40</y>
        <width>181</width>
-       <height>41</height>
+       <height>51</height>
       </rect>
      </property>
      <property name="font">
@@ -633,7 +633,7 @@
    <widget class="QGroupBox" name="shroq_box">
     <property name="geometry">
      <rect>
-      <x>860</x>
+      <x>670</x>
       <y>90</y>
       <width>181</width>
       <height>91</height>
@@ -664,9 +664,9 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>50</y>
+       <y>40</y>
        <width>181</width>
-       <height>41</height>
+       <height>51</height>
       </rect>
      </property>
      <property name="font">
@@ -682,7 +682,7 @@
    <widget class="QGroupBox" name="asr_box">
     <property name="geometry">
      <rect>
-      <x>860</x>
+      <x>670</x>
       <y>270</y>
       <width>181</width>
       <height>91</height>
@@ -709,13 +709,13 @@
       <string>ASR</string>
      </property>
     </widget>
-    <widget class="QLabel" name="current_day_asr_time">
+    <widget class="QLabel" name="current_day_zohr_time">
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>50</y>
+       <y>40</y>
        <width>181</width>
-       <height>41</height>
+       <height>51</height>
       </rect>
      </property>
      <property name="font">
@@ -731,7 +731,7 @@
    <widget class="QGroupBox" name="magrb_box">
     <property name="geometry">
      <rect>
-      <x>860</x>
+      <x>670</x>
       <y>360</y>
       <width>181</width>
       <height>91</height>
@@ -762,9 +762,9 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>50</y>
+       <y>40</y>
        <width>181</width>
-       <height>41</height>
+       <height>51</height>
       </rect>
      </property>
      <property name="font">
@@ -780,7 +780,7 @@
    <widget class="QGroupBox" name="isha_box">
     <property name="geometry">
      <rect>
-      <x>860</x>
+      <x>670</x>
       <y>450</y>
       <width>181</width>
       <height>91</height>
@@ -813,7 +813,7 @@
        <x>0</x>
        <y>40</y>
        <width>181</width>
-       <height>41</height>
+       <height>51</height>
       </rect>
      </property>
      <property name="font">
