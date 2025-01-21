@@ -109,7 +109,7 @@
      <rect>
       <x>230</x>
       <y>160</y>
-      <width>181</width>
+      <width>241</width>
       <height>41</height>
      </rect>
     </property>
@@ -125,9 +125,9 @@
    <widget class="QLabel" name="last_updated_date">
     <property name="geometry">
      <rect>
-      <x>290</x>
+      <x>320</x>
       <y>200</y>
-      <width>101</width>
+      <width>121</width>
       <height>21</height>
      </rect>
     </property>
@@ -145,7 +145,7 @@
      <rect>
       <x>230</x>
       <y>200</y>
-      <width>61</width>
+      <width>71</width>
       <height>21</height>
      </rect>
     </property>
@@ -161,10 +161,10 @@
    <widget class="QLabel" name="led_sign">
     <property name="geometry">
      <rect>
-      <x>480</x>
-      <y>190</y>
-      <width>41</width>
-      <height>61</height>
+      <x>560</x>
+      <y>170</y>
+      <width>101</width>
+      <height>91</height>
      </rect>
     </property>
     <property name="font">
@@ -179,7 +179,7 @@
    <widget class="QPushButton" name="refresh_button">
     <property name="geometry">
      <rect>
-      <x>390</x>
+      <x>450</x>
       <y>190</y>
       <width>91</width>
       <height>41</height>
@@ -205,9 +205,9 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>-10</y>
+       <y>0</y>
        <width>221</width>
-       <height>41</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="font">
@@ -303,7 +303,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>111</width>
+        <width>121</width>
         <height>31</height>
        </rect>
       </property>
@@ -597,7 +597,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>-10</y>
+       <y>0</y>
        <width>181</width>
        <height>41</height>
       </rect>
@@ -646,7 +646,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>-10</y>
+       <y>0</y>
        <width>221</width>
        <height>41</height>
       </rect>
@@ -695,9 +695,9 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>-10</y>
+       <y>0</y>
        <width>181</width>
-       <height>41</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="font">
@@ -744,7 +744,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>-10</y>
+       <y>0</y>
        <width>221</width>
        <height>41</height>
       </rect>
@@ -813,7 +813,7 @@
        <x>0</x>
        <y>30</y>
        <width>181</width>
-       <height>51</height>
+       <height>61</height>
       </rect>
      </property>
      <property name="font">
