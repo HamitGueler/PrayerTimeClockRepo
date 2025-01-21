@@ -35,7 +35,7 @@
    <widget class="QLabel" name="current_date">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>10</x>
       <y>240</y>
       <width>651</width>
       <height>51</height>
@@ -79,7 +79,7 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>15</pointsize>
+      <pointsize>20</pointsize>
      </font>
     </property>
     <property name="text">
@@ -97,7 +97,7 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>30</pointsize>
+      <pointsize>40</pointsize>
      </font>
     </property>
     <property name="text">
@@ -194,7 +194,7 @@
      <rect>
       <x>670</x>
       <y>0</y>
-      <width>181</width>
+      <width>221</width>
       <height>91</height>
      </rect>
     </property>
@@ -230,7 +230,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>55</pointsize>
+       <pointsize>50</pointsize>
       </font>
      </property>
      <property name="text">
@@ -271,7 +271,7 @@
     <widget class="QLabel" name="next_day_date">
      <property name="geometry">
       <rect>
-       <x>360</x>
+       <x>260</x>
        <y>0</y>
        <width>301</width>
        <height>41</height>
@@ -303,7 +303,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>91</width>
+        <width>111</width>
         <height>31</height>
        </rect>
       </property>
@@ -352,7 +352,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>81</width>
+        <width>111</width>
         <height>31</height>
        </rect>
       </property>
@@ -401,7 +401,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>81</width>
+        <width>111</width>
         <height>31</height>
        </rect>
       </property>
@@ -450,7 +450,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>81</width>
+        <width>111</width>
         <height>31</height>
        </rect>
       </property>
@@ -499,7 +499,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>81</width>
+        <width>111</width>
         <height>31</height>
        </rect>
       </property>
@@ -586,7 +586,7 @@
      <rect>
       <x>670</x>
       <y>180</y>
-      <width>181</width>
+      <width>221</width>
       <height>91</height>
      </rect>
     </property>
@@ -622,7 +622,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>55</pointsize>
+       <pointsize>50</pointsize>
       </font>
      </property>
      <property name="text">
@@ -635,7 +635,7 @@
      <rect>
       <x>670</x>
       <y>90</y>
-      <width>181</width>
+      <width>221</width>
       <height>91</height>
      </rect>
     </property>
@@ -647,7 +647,7 @@
       <rect>
        <x>0</x>
        <y>10</y>
-       <width>181</width>
+       <width>221</width>
        <height>41</height>
       </rect>
      </property>
@@ -671,7 +671,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>55</pointsize>
+       <pointsize>50</pointsize>
       </font>
      </property>
      <property name="text">
@@ -684,7 +684,7 @@
      <rect>
       <x>670</x>
       <y>270</y>
-      <width>181</width>
+      <width>221</width>
       <height>91</height>
      </rect>
     </property>
@@ -720,7 +720,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>55</pointsize>
+       <pointsize>50</pointsize>
       </font>
      </property>
      <property name="text">
@@ -733,7 +733,7 @@
      <rect>
       <x>670</x>
       <y>360</y>
-      <width>181</width>
+      <width>221</width>
       <height>91</height>
      </rect>
     </property>
@@ -769,7 +769,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>55</pointsize>
+       <pointsize>50</pointsize>
       </font>
      </property>
      <property name="text">
@@ -782,7 +782,7 @@
      <rect>
       <x>670</x>
       <y>450</y>
-      <width>181</width>
+      <width>221</width>
       <height>91</height>
      </rect>
     </property>
@@ -818,7 +818,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>55</pointsize>
+       <pointsize>50</pointsize>
       </font>
      </property>
      <property name="text">
