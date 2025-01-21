@@ -26,6 +26,7 @@
     <property name="font">
      <font>
       <pointsize>150</pointsize>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -98,6 +99,7 @@
     <property name="font">
      <font>
       <pointsize>40</pointsize>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -109,7 +111,7 @@
      <rect>
       <x>230</x>
       <y>160</y>
-      <width>241</width>
+      <width>321</width>
       <height>41</height>
      </rect>
     </property>
@@ -161,8 +163,8 @@
    <widget class="QLabel" name="led_sign">
     <property name="geometry">
      <rect>
-      <x>560</x>
-      <y>170</y>
+      <x>570</x>
+      <y>190</y>
       <width>101</width>
       <height>91</height>
      </rect>
@@ -179,11 +181,16 @@
    <widget class="QPushButton" name="refresh_button">
     <property name="geometry">
      <rect>
-      <x>450</x>
+      <x>460</x>
       <y>190</y>
-      <width>91</width>
+      <width>101</width>
       <height>41</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="text">
      <string>Aktualisieren</string>
@@ -212,7 +219,8 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>30</pointsize>
+       <pointsize>25</pointsize>
+       <bold>true</bold>
       </font>
      </property>
      <property name="text">
@@ -254,7 +262,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>0</y>
+       <y>-10</y>
        <width>341</width>
        <height>51</height>
       </rect>
@@ -271,7 +279,7 @@
     <widget class="QLabel" name="next_day_date">
      <property name="geometry">
       <rect>
-       <x>260</x>
+       <x>300</x>
        <y>0</y>
        <width>301</width>
        <height>41</height>
@@ -310,6 +318,7 @@
       <property name="font">
        <font>
         <pointsize>20</pointsize>
+        <bold>true</bold>
        </font>
       </property>
       <property name="text">
@@ -328,6 +337,7 @@
       <property name="font">
        <font>
         <pointsize>20</pointsize>
+        <bold>true</bold>
        </font>
       </property>
       <property name="text">
@@ -359,6 +369,7 @@
       <property name="font">
        <font>
         <pointsize>20</pointsize>
+        <bold>true</bold>
        </font>
       </property>
       <property name="text">
@@ -377,6 +388,7 @@
       <property name="font">
        <font>
         <pointsize>20</pointsize>
+        <bold>true</bold>
        </font>
       </property>
       <property name="text">
@@ -408,6 +420,7 @@
       <property name="font">
        <font>
         <pointsize>20</pointsize>
+        <bold>true</bold>
        </font>
       </property>
       <property name="text">
@@ -426,6 +439,7 @@
       <property name="font">
        <font>
         <pointsize>20</pointsize>
+        <bold>true</bold>
        </font>
       </property>
       <property name="text">
@@ -457,6 +471,7 @@
       <property name="font">
        <font>
         <pointsize>20</pointsize>
+        <bold>true</bold>
        </font>
       </property>
       <property name="text">
@@ -475,6 +490,7 @@
       <property name="font">
        <font>
         <pointsize>20</pointsize>
+        <bold>true</bold>
        </font>
       </property>
       <property name="text">
@@ -506,6 +522,7 @@
       <property name="font">
        <font>
         <pointsize>20</pointsize>
+        <bold>true</bold>
        </font>
       </property>
       <property name="text">
@@ -524,6 +541,7 @@
       <property name="font">
        <font>
         <pointsize>20</pointsize>
+        <bold>true</bold>
        </font>
       </property>
       <property name="text">
@@ -555,6 +573,7 @@
       <property name="font">
        <font>
         <pointsize>20</pointsize>
+        <bold>true</bold>
        </font>
       </property>
       <property name="text">
@@ -573,6 +592,7 @@
       <property name="font">
        <font>
         <pointsize>20</pointsize>
+        <bold>true</bold>
        </font>
       </property>
       <property name="text">
@@ -604,7 +624,8 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>35</pointsize>
+       <pointsize>25</pointsize>
+       <bold>true</bold>
       </font>
      </property>
      <property name="text">
@@ -653,7 +674,8 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>30</pointsize>
+       <pointsize>25</pointsize>
+       <bold>true</bold>
       </font>
      </property>
      <property name="text">
@@ -702,7 +724,8 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>30</pointsize>
+       <pointsize>25</pointsize>
+       <bold>true</bold>
       </font>
      </property>
      <property name="text">
@@ -751,7 +774,8 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>30</pointsize>
+       <pointsize>25</pointsize>
+       <bold>true</bold>
       </font>
      </property>
      <property name="text">
@@ -800,7 +824,8 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>30</pointsize>
+       <pointsize>25</pointsize>
+       <bold>true</bold>
       </font>
      </property>
      <property name="text">
