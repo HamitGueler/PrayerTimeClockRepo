@@ -201,7 +201,7 @@
      <rect>
       <x>720</x>
       <y>0</y>
-      <width>221</width>
+      <width>301</width>
       <height>81</height>
      </rect>
     </property>
@@ -221,6 +221,9 @@
       <font>
        <pointsize>25</pointsize>
        <bold>true</bold>
+       <underline>false</underline>
+       <strikeout>false</strikeout>
+       <kerning>true</kerning>
       </font>
      </property>
      <property name="text">
@@ -607,7 +610,7 @@
      <rect>
       <x>720</x>
       <y>160</y>
-      <width>221</width>
+      <width>301</width>
       <height>81</height>
      </rect>
     </property>
@@ -658,7 +661,7 @@
      <rect>
       <x>720</x>
       <y>80</y>
-      <width>221</width>
+      <width>301</width>
       <height>81</height>
      </rect>
     </property>
@@ -709,7 +712,7 @@
      <rect>
       <x>720</x>
       <y>240</y>
-      <width>221</width>
+      <width>301</width>
       <height>81</height>
      </rect>
     </property>
@@ -760,7 +763,7 @@
      <rect>
       <x>720</x>
       <y>320</y>
-      <width>221</width>
+      <width>301</width>
       <height>81</height>
      </rect>
     </property>
@@ -811,7 +814,7 @@
      <rect>
       <x>720</x>
       <y>400</y>
-      <width>221</width>
+      <width>301</width>
       <height>81</height>
      </rect>
     </property>
@@ -859,7 +862,6 @@
    </widget>
    <zorder>led_sign</zorder>
    <zorder>current_time</zorder>
-   <zorder>current_date</zorder>
    <zorder>current_location</zorder>
    <zorder>rest_time</zorder>
    <zorder>last_updated_descrition</zorder>
@@ -873,6 +875,7 @@
    <zorder>asr_box</zorder>
    <zorder>magrb_box</zorder>
    <zorder>isha_box</zorder>
+   <zorder>current_date</zorder>
    <zorder>rest_time_description</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
