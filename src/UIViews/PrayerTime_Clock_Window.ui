@@ -129,7 +129,7 @@
      <rect>
       <x>320</x>
       <y>200</y>
-      <width>121</width>
+      <width>141</width>
       <height>21</height>
      </rect>
     </property>
@@ -165,7 +165,7 @@
      <rect>
       <x>570</x>
       <y>190</y>
-      <width>101</width>
+      <width>81</width>
       <height>91</height>
      </rect>
     </property>
@@ -181,7 +181,7 @@
    <widget class="QPushButton" name="refresh_button">
     <property name="geometry">
      <rect>
-      <x>460</x>
+      <x>470</x>
       <y>190</y>
       <width>101</width>
       <height>41</height>
@@ -238,7 +238,8 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>50</pointsize>
+       <pointsize>35</pointsize>
+       <bold>true</bold>
       </font>
      </property>
      <property name="text">
@@ -251,7 +252,7 @@
      <rect>
       <x>0</x>
       <y>390</y>
-      <width>691</width>
+      <width>711</width>
       <height>111</height>
      </rect>
     </property>
@@ -279,10 +280,10 @@
     <widget class="QLabel" name="next_day_date">
      <property name="geometry">
       <rect>
-       <x>300</x>
+       <x>290</x>
        <y>0</y>
        <width>301</width>
-       <height>41</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="font">
@@ -297,9 +298,9 @@
     <widget class="QGroupBox" name="next_day_magrb_box">
      <property name="geometry">
       <rect>
-       <x>450</x>
+       <x>460</x>
        <y>40</y>
-       <width>121</width>
+       <width>131</width>
        <height>71</height>
       </rect>
      </property>
@@ -311,7 +312,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>121</width>
+        <width>141</width>
         <height>31</height>
        </rect>
       </property>
@@ -348,7 +349,7 @@
     <widget class="QGroupBox" name="next_day_asr_box">
      <property name="geometry">
       <rect>
-       <x>340</x>
+       <x>350</x>
        <y>40</y>
        <width>111</width>
        <height>71</height>
@@ -399,7 +400,7 @@
     <widget class="QGroupBox" name="next_day_zohr_box">
      <property name="geometry">
       <rect>
-       <x>230</x>
+       <x>240</x>
        <y>40</y>
        <width>111</width>
        <height>71</height>
@@ -452,7 +453,7 @@
       <rect>
        <x>120</x>
        <y>40</y>
-       <width>111</width>
+       <width>121</width>
        <height>71</height>
       </rect>
      </property>
@@ -464,7 +465,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>111</width>
+        <width>121</width>
         <height>31</height>
        </rect>
       </property>
@@ -552,7 +553,7 @@
     <widget class="QGroupBox" name="next_day_isha_box">
      <property name="geometry">
       <rect>
-       <x>570</x>
+       <x>590</x>
        <y>40</y>
        <width>121</width>
        <height>71</height>
@@ -643,7 +644,8 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>50</pointsize>
+       <pointsize>35</pointsize>
+       <bold>true</bold>
       </font>
      </property>
      <property name="text">
@@ -693,7 +695,8 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>50</pointsize>
+       <pointsize>35</pointsize>
+       <bold>true</bold>
       </font>
      </property>
      <property name="text">
@@ -743,7 +746,8 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>50</pointsize>
+       <pointsize>35</pointsize>
+       <bold>true</bold>
       </font>
      </property>
      <property name="text">
@@ -793,7 +797,8 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>50</pointsize>
+       <pointsize>35</pointsize>
+       <bold>true</bold>
       </font>
      </property>
      <property name="text">
@@ -843,7 +848,8 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>50</pointsize>
+       <pointsize>35</pointsize>
+       <bold>true</bold>
       </font>
      </property>
      <property name="text">
