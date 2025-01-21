@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'PrayerTime_Clock_WindowdHAvQM.ui'
+## Form generated from reading UI file 'PrayerTime_Clock_WindowZpcGZi.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.5.3
 ##
@@ -72,13 +72,13 @@ class Ui_MainWindow(object):
         self.last_updated_time.setFont(font3)
         self.led_sign = QLabel(self.centralwidget)
         self.led_sign.setObjectName(u"led_sign")
-        self.led_sign.setGeometry(QRect(570, 190, 81, 91))
+        self.led_sign.setGeometry(QRect(330, 240, 81, 91))
         font5 = QFont()
         font5.setPointSize(180)
         self.led_sign.setFont(font5)
         self.refresh_button = QPushButton(self.centralwidget)
         self.refresh_button.setObjectName(u"refresh_button")
-        self.refresh_button.setGeometry(QRect(470, 190, 101, 41))
+        self.refresh_button.setGeometry(QRect(230, 240, 101, 41))
         font6 = QFont()
         font6.setBold(True)
         self.refresh_button.setFont(font6)
@@ -94,7 +94,7 @@ class Ui_MainWindow(object):
         self.current_day_fajr.setFont(font7)
         self.current_day_fajr_time = QLabel(self.fajr_box)
         self.current_day_fajr_time.setObjectName(u"current_day_fajr_time")
-        self.current_day_fajr_time.setGeometry(QRect(0, 30, 181, 51))
+        self.current_day_fajr_time.setGeometry(QRect(0, 30, 181, 31))
         font8 = QFont()
         font8.setPointSize(35)
         font8.setBold(True)
@@ -188,7 +188,7 @@ class Ui_MainWindow(object):
         self.current_day_zohr.setFont(font7)
         self.current_day_asr_time = QLabel(self.zohr_box)
         self.current_day_asr_time.setObjectName(u"current_day_asr_time")
-        self.current_day_asr_time.setGeometry(QRect(0, 30, 181, 51))
+        self.current_day_asr_time.setGeometry(QRect(0, 30, 181, 31))
         self.current_day_asr_time.setFont(font8)
         self.shroq_box = QGroupBox(self.centralwidget)
         self.shroq_box.setObjectName(u"shroq_box")
@@ -199,7 +199,7 @@ class Ui_MainWindow(object):
         self.current_day_shroq.setFont(font7)
         self.current_day_shroq_time = QLabel(self.shroq_box)
         self.current_day_shroq_time.setObjectName(u"current_day_shroq_time")
-        self.current_day_shroq_time.setGeometry(QRect(0, 30, 181, 51))
+        self.current_day_shroq_time.setGeometry(QRect(0, 30, 181, 31))
         self.current_day_shroq_time.setFont(font8)
         self.asr_box = QGroupBox(self.centralwidget)
         self.asr_box.setObjectName(u"asr_box")
@@ -210,7 +210,7 @@ class Ui_MainWindow(object):
         self.current_day_asr.setFont(font7)
         self.current_day_zohr_time = QLabel(self.asr_box)
         self.current_day_zohr_time.setObjectName(u"current_day_zohr_time")
-        self.current_day_zohr_time.setGeometry(QRect(0, 30, 181, 51))
+        self.current_day_zohr_time.setGeometry(QRect(0, 30, 181, 31))
         self.current_day_zohr_time.setFont(font8)
         self.magrb_box = QGroupBox(self.centralwidget)
         self.magrb_box.setObjectName(u"magrb_box")
@@ -221,7 +221,7 @@ class Ui_MainWindow(object):
         self.current_day_magrb.setFont(font7)
         self.current_day_magrb_time = QLabel(self.magrb_box)
         self.current_day_magrb_time.setObjectName(u"current_day_magrb_time")
-        self.current_day_magrb_time.setGeometry(QRect(0, 30, 181, 51))
+        self.current_day_magrb_time.setGeometry(QRect(0, 40, 181, 31))
         self.current_day_magrb_time.setFont(font8)
         self.isha_box = QGroupBox(self.centralwidget)
         self.isha_box.setObjectName(u"isha_box")
@@ -232,7 +232,7 @@ class Ui_MainWindow(object):
         self.current_day_isha.setFont(font7)
         self.current_day_isha_time = QLabel(self.isha_box)
         self.current_day_isha_time.setObjectName(u"current_day_isha_time")
-        self.current_day_isha_time.setGeometry(QRect(0, 30, 181, 61))
+        self.current_day_isha_time.setGeometry(QRect(0, 30, 181, 31))
         self.current_day_isha_time.setFont(font8)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
