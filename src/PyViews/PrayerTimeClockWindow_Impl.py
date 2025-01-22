@@ -37,6 +37,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
 
         super().__init__()
         self.setupUi(self)
+        self.showFullScreen()
         self.setWindowTitle("Clock")
 
         pygame.mixer.init()
@@ -146,7 +147,6 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
 
             if(self.current_prayer_index == 5):
                 if current_datetime >= QDateTime.fromString(self.prayer_times["nextDayPrayers"]["prayers"][self.current_prayer_index], "hh:mm"):
-                    print("hallo")
                     next_prayer_time = self.prayer_times["nextDayPrayers"]["prayers"][0]
                 next_prayer_datetime = QDateTime.fromString(next_prayer_time, "hh:mm")
         
