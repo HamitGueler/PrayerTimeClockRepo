@@ -40,7 +40,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.setWindowTitle("Clock")
 
         pygame.mixer.init()
-        pygame.mixer.music.load("~/src/AudioFiles/adhan.mp3")
+        pygame.mixer.music.load("./src/AudioFiles/adhan.mp3")
 
         self.scraper = WebScraperClass()
         self.prayer_times = {}
@@ -134,18 +134,20 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
     def update_timer(self):
         current_time = QDateTime.currentDateTime().toString("hh:mm:ss")
         next_prayer_time = self.prayer_times["nextDayPrayers"]["prayers"][0]
+        
         for _ in range(len(self.prayer_times)):
             current_datetime = QDateTime.fromString(current_time, "hh:mm:ss")
+            next_prayer_time =  self.prayer_times["Prayers"][self.current_prayer_index]
             next_prayer_datetime = QDateTime.fromString(self.prayer_times["Prayers"][self.current_prayer_index], "hh:mm")
-
+            
             if(self.current_prayer_index < 5):
                 if current_datetime >= next_prayer_datetime:
                     self.current_prayer_index = self.current_prayer_index+1
 
             if(self.current_prayer_index == 5):
-                if current_datetime >= next_prayer_datetime:
+                if current_datetime >= QDateTime.fromString(self.prayer_times["nextDayPrayers"]["prayers"][self.current_prayer_index], "hh:mm"):
+                    print("hallo")
                     next_prayer_time = self.prayer_times["nextDayPrayers"]["prayers"][0]
-                current_datetime = QDateTime.fromString(current_time, "hh:mm:ss")
                 next_prayer_datetime = QDateTime.fromString(next_prayer_time, "hh:mm")
         
         time_difference = current_datetime.secsTo(next_prayer_datetime)
@@ -155,7 +157,6 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         hours = time_difference // 3600
         minutes = (time_difference % 3600) // 60
         seconds = time_difference % 60
-        print(next_prayer_datetime.toString())
         self.__style_current_prayer()
         self.rest_time.setText(f"{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}")
 
@@ -165,9 +166,9 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
     def call_to_prayer(self):
         self.toggle_timer.start(1000)
         if self.current_prayer_index == 0:
-            pygame.mixer.music.load("~/src/AudioFiles/fajr_adhan.mp3")
+            pygame.mixer.music.load("./src/AudioFiles/fajr_adhan.mp3")
         else:
-            pygame.mixer.music.load("~/src/AudioFiles/adhan.mp3")
+            pygame.mixer.music.load("./src/AudioFiles/adhan.mp3")
         pygame.mixer.music.play()
     
     def __style_current_prayer(self):
