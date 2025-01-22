@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'PrayerTime_Clock_WindowUxkMBf.ui'
+## Form generated from reading UI file 'PrayerTime_Clock_WindowJHkCNr.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.5.3
 ##
@@ -134,10 +134,10 @@ class Ui_MainWindow(object):
         self.next_day_asr.setObjectName(u"next_day_asr")
         self.next_day_asr.setGeometry(QRect(0, 0, 111, 31))
         self.next_day_asr.setFont(font9)
-        self.next_day_fajr_time = QLabel(self.next_day_asr_box)
-        self.next_day_fajr_time.setObjectName(u"next_day_fajr_time")
-        self.next_day_fajr_time.setGeometry(QRect(0, 30, 111, 41))
-        self.next_day_fajr_time.setFont(font9)
+        self.next_day_asr_time = QLabel(self.next_day_asr_box)
+        self.next_day_asr_time.setObjectName(u"next_day_asr_time")
+        self.next_day_asr_time.setGeometry(QRect(0, 30, 111, 41))
+        self.next_day_asr_time.setFont(font9)
         self.next_day_zohr_box = QGroupBox(self.next_day_prayers_box)
         self.next_day_zohr_box.setObjectName(u"next_day_zohr_box")
         self.next_day_zohr_box.setGeometry(QRect(240, 40, 111, 71))
@@ -167,10 +167,10 @@ class Ui_MainWindow(object):
         self.next_day_fajr.setObjectName(u"next_day_fajr")
         self.next_day_fajr.setGeometry(QRect(0, 0, 81, 31))
         self.next_day_fajr.setFont(font9)
-        self.next_day_asr_time = QLabel(self.next_day_fajr_box)
-        self.next_day_asr_time.setObjectName(u"next_day_asr_time")
-        self.next_day_asr_time.setGeometry(QRect(0, 30, 121, 41))
-        self.next_day_asr_time.setFont(font9)
+        self.next_day_fajr_time = QLabel(self.next_day_fajr_box)
+        self.next_day_fajr_time.setObjectName(u"next_day_fajr_time")
+        self.next_day_fajr_time.setGeometry(QRect(0, 30, 121, 41))
+        self.next_day_fajr_time.setFont(font9)
         self.next_day_isha_box = QGroupBox(self.next_day_prayers_box)
         self.next_day_isha_box.setObjectName(u"next_day_isha_box")
         self.next_day_isha_box.setGeometry(QRect(590, 40, 121, 71))
@@ -294,7 +294,7 @@ class Ui_MainWindow(object):
         self.next_day_magrb_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
         self.next_day_asr_box.setTitle("")
         self.next_day_asr.setText(QCoreApplication.translate("MainWindow", u"ASR", None))
-        self.next_day_fajr_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
+        self.next_day_asr_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
         self.next_day_zohr_box.setTitle("")
         self.next_day_zohr.setText(QCoreApplication.translate("MainWindow", u"DHUHR", None))
         self.next_day_zohr_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
@@ -303,7 +303,7 @@ class Ui_MainWindow(object):
         self.next_day_shroq_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
         self.next_day_fajr_box.setTitle("")
         self.next_day_fajr.setText(QCoreApplication.translate("MainWindow", u"FAJR", None))
-        self.next_day_asr_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
+        self.next_day_fajr_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
         self.next_day_isha_box.setTitle("")
         self.next_day_isha.setText(QCoreApplication.translate("MainWindow", u"ISHA", None))
         self.next_day_isha_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))

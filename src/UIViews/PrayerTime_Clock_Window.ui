@@ -380,7 +380,7 @@
        <string>ASR</string>
       </property>
      </widget>
-     <widget class="QLabel" name="next_day_fajr_time">
+     <widget class="QLabel" name="next_day_asr_time">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -533,7 +533,7 @@
        <string>FAJR</string>
       </property>
      </widget>
-     <widget class="QLabel" name="next_day_asr_time">
+     <widget class="QLabel" name="next_day_fajr_time">
       <property name="geometry">
        <rect>
         <x>0</x>
