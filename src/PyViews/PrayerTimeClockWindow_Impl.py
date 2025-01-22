@@ -144,6 +144,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             if(self.current_prayer_index < 5):
                 if current_datetime >= next_prayer_datetime:
                     self.current_prayer_index = self.current_prayer_index+1
+                elif current_datetime == QDateTime.fromString("00:00", "hh:mm"):
+                    self.current_prayer_index = 0
 
             if(self.current_prayer_index == 5):
                 if current_datetime >= QDateTime.fromString(self.prayer_times["nextDayPrayers"]["prayers"][self.current_prayer_index], "hh:mm"):
