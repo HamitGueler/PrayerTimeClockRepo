@@ -187,8 +187,8 @@
    <widget class="QLabel" name="led_sign">
     <property name="geometry">
      <rect>
-      <x>450</x>
-      <y>210</y>
+      <x>480</x>
+      <y>200</y>
       <width>81</width>
       <height>91</height>
      </rect>
@@ -229,9 +229,9 @@
    <widget class="QGroupBox" name="fajr_box">
     <property name="geometry">
      <rect>
-      <x>700</x>
+      <x>710</x>
       <y>20</y>
-      <width>301</width>
+      <width>291</width>
       <height>81</height>
      </rect>
     </property>
@@ -280,7 +280,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>45</pointsize>
+       <pointsize>40</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -328,7 +328,7 @@
     <widget class="QLabel" name="next_day_date">
      <property name="geometry">
       <rect>
-       <x>240</x>
+       <x>270</x>
        <y>0</y>
        <width>301</width>
        <height>31</height>
@@ -692,9 +692,9 @@
    <widget class="QGroupBox" name="zohr_box">
     <property name="geometry">
      <rect>
-      <x>700</x>
+      <x>710</x>
       <y>180</y>
-      <width>301</width>
+      <width>291</width>
       <height>81</height>
      </rect>
     </property>
@@ -734,7 +734,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>45</pointsize>
+       <pointsize>40</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -754,9 +754,9 @@
    <widget class="QGroupBox" name="shroq_box">
     <property name="geometry">
      <rect>
-      <x>700</x>
+      <x>710</x>
       <y>100</y>
-      <width>301</width>
+      <width>291</width>
       <height>81</height>
      </rect>
     </property>
@@ -796,7 +796,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>45</pointsize>
+       <pointsize>40</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -813,9 +813,9 @@
    <widget class="QGroupBox" name="asr_box">
     <property name="geometry">
      <rect>
-      <x>700</x>
+      <x>710</x>
       <y>260</y>
-      <width>301</width>
+      <width>291</width>
       <height>81</height>
      </rect>
     </property>
@@ -855,7 +855,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>45</pointsize>
+       <pointsize>40</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -870,9 +870,9 @@
    <widget class="QGroupBox" name="magrb_box">
     <property name="geometry">
      <rect>
-      <x>700</x>
+      <x>710</x>
       <y>340</y>
-      <width>301</width>
+      <width>291</width>
       <height>81</height>
      </rect>
     </property>
@@ -912,7 +912,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>45</pointsize>
+       <pointsize>40</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -927,9 +927,9 @@
    <widget class="QGroupBox" name="isha_box">
     <property name="geometry">
      <rect>
-      <x>700</x>
+      <x>710</x>
       <y>420</y>
-      <width>301</width>
+      <width>291</width>
       <height>81</height>
      </rect>
     </property>
@@ -969,7 +969,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>45</pointsize>
+       <pointsize>40</pointsize>
        <bold>true</bold>
       </font>
      </property>
