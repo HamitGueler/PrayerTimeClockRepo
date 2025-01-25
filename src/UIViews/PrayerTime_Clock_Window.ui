@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
+    <width>1037</width>
     <height>685</height>
    </rect>
   </property>
@@ -29,6 +29,9 @@
       <bold>true</bold>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background: transparent;</string>
+    </property>
     <property name="text">
      <string>00:00</string>
     </property>
@@ -46,6 +49,9 @@
      <font>
       <pointsize>30</pointsize>
      </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: transparent;</string>
     </property>
     <property name="text">
      <string>DD.MM.YY</string>
@@ -65,6 +71,9 @@
       <pointsize>50</pointsize>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background: transparent;</string>
+    </property>
     <property name="text">
      <string>Location</string>
     </property>
@@ -82,6 +91,9 @@
      <font>
       <pointsize>20</pointsize>
      </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: transparent;</string>
     </property>
     <property name="text">
      <string>Verbleibende Zeit bis zum nächsten Gebet</string>
@@ -102,6 +114,9 @@
       <bold>true</bold>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background: transparent;</string>
+    </property>
     <property name="text">
      <string>00:00:00</string>
     </property>
@@ -119,6 +134,9 @@
      <font>
       <pointsize>20</pointsize>
      </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: transparent;</string>
     </property>
     <property name="text">
      <string>Letzte Aktualisierung:</string>
@@ -138,6 +156,9 @@
       <pointsize>20</pointsize>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background: transparent;</string>
+    </property>
     <property name="text">
      <string>DD:MM:YY</string>
     </property>
@@ -156,6 +177,9 @@
       <pointsize>20</pointsize>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background: transparent;</string>
+    </property>
     <property name="text">
      <string>00:00</string>
     </property>
@@ -163,16 +187,19 @@
    <widget class="QLabel" name="led_sign">
     <property name="geometry">
      <rect>
-      <x>460</x>
-      <y>200</y>
+      <x>420</x>
+      <y>180</y>
       <width>81</width>
-      <height>91</height>
+      <height>81</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <pointsize>180</pointsize>
      </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: transparent;</string>
     </property>
     <property name="text">
      <string>:</string>
@@ -191,6 +218,9 @@
      <font>
       <bold>true</bold>
      </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
     </property>
     <property name="text">
      <string>Aktualisieren</string>
@@ -213,18 +243,27 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>221</width>
+       <width>121</width>
        <height>41</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>25</pointsize>
+       <pointsize>35</pointsize>
        <bold>true</bold>
        <underline>false</underline>
        <strikeout>false</strikeout>
        <kerning>true</kerning>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: transparent;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
      </property>
      <property name="text">
       <string>FAJR</string>
@@ -233,17 +272,20 @@
     <widget class="QLabel" name="current_day_fajr_time">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>40</y>
-       <width>301</width>
-       <height>41</height>
+       <x>110</x>
+       <y>30</y>
+       <width>191</width>
+       <height>51</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>35</pointsize>
+       <pointsize>60</pointsize>
        <bold>true</bold>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: transparent;</string>
      </property>
      <property name="text">
       <string>00:00</string>
@@ -276,6 +318,9 @@
        <pointsize>20</pointsize>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true">background: transparent;</string>
+     </property>
      <property name="text">
       <string>Gebetszeiten für den</string>
      </property>
@@ -283,7 +328,7 @@
     <widget class="QLabel" name="next_day_date">
      <property name="geometry">
       <rect>
-       <x>290</x>
+       <x>190</x>
        <y>0</y>
        <width>301</width>
        <height>31</height>
@@ -293,6 +338,9 @@
       <font>
        <pointsize>20</pointsize>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: transparent;</string>
      </property>
      <property name="text">
       <string>DD.MM:YY</string>
@@ -315,15 +363,18 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>141</width>
+        <width>131</width>
         <height>31</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>20</pointsize>
+        <pointsize>25</pointsize>
         <bold>true</bold>
        </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background: transparent;</string>
       </property>
       <property name="text">
        <string>MAGHRIB</string>
@@ -334,15 +385,18 @@
        <rect>
         <x>0</x>
         <y>30</y>
-        <width>131</width>
+        <width>121</width>
         <height>41</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>20</pointsize>
+        <pointsize>35</pointsize>
         <bold>true</bold>
        </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background: transparent;</string>
       </property>
       <property name="text">
        <string>00:00</string>
@@ -372,9 +426,12 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>20</pointsize>
+        <pointsize>25</pointsize>
         <bold>true</bold>
        </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background: transparent;</string>
       </property>
       <property name="text">
        <string>ASR</string>
@@ -391,9 +448,12 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>20</pointsize>
+        <pointsize>35</pointsize>
         <bold>true</bold>
        </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background: transparent;</string>
       </property>
       <property name="text">
        <string>00:00</string>
@@ -423,9 +483,12 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>20</pointsize>
+        <pointsize>25</pointsize>
         <bold>true</bold>
        </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background: transparent;</string>
       </property>
       <property name="text">
        <string>DHUHR</string>
@@ -442,9 +505,12 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>20</pointsize>
+        <pointsize>35</pointsize>
         <bold>true</bold>
        </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background: transparent;</string>
       </property>
       <property name="text">
        <string>00:00</string>
@@ -474,9 +540,12 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>20</pointsize>
+        <pointsize>25</pointsize>
         <bold>true</bold>
        </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background: transparent;</string>
       </property>
       <property name="text">
        <string>SHURUQ</string>
@@ -493,9 +562,12 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>20</pointsize>
+        <pointsize>35</pointsize>
         <bold>true</bold>
        </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background: transparent;</string>
       </property>
       <property name="text">
        <string>00:00</string>
@@ -519,15 +591,18 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>81</width>
+        <width>121</width>
         <height>31</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>20</pointsize>
+        <pointsize>25</pointsize>
         <bold>true</bold>
        </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background: transparent;</string>
       </property>
       <property name="text">
        <string>FAJR</string>
@@ -544,9 +619,12 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>20</pointsize>
+        <pointsize>35</pointsize>
         <bold>true</bold>
        </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background: transparent;</string>
       </property>
       <property name="text">
        <string>00:00</string>
@@ -576,9 +654,12 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>20</pointsize>
+        <pointsize>25</pointsize>
         <bold>true</bold>
        </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background: transparent;</string>
       </property>
       <property name="text">
        <string>ISHA</string>
@@ -595,9 +676,12 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>20</pointsize>
+        <pointsize>35</pointsize>
         <bold>true</bold>
        </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background: transparent;</string>
       </property>
       <property name="text">
        <string>00:00</string>
@@ -628,9 +712,12 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>25</pointsize>
+       <pointsize>35</pointsize>
        <bold>true</bold>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: transparent;</string>
      </property>
      <property name="text">
       <string>DHUHR</string>
@@ -639,22 +726,30 @@
     <widget class="QLabel" name="current_day_zohr_time">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>40</y>
-       <width>301</width>
-       <height>41</height>
+       <x>120</x>
+       <y>30</y>
+       <width>181</width>
+       <height>51</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>35</pointsize>
+       <pointsize>60</pointsize>
        <bold>true</bold>
       </font>
+     </property>
+     <property name="toolTipDuration">
+      <number>-2</number>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: transparent;</string>
      </property>
      <property name="text">
       <string>00:00</string>
      </property>
     </widget>
+    <zorder>current_day_zohr_time</zorder>
+    <zorder>current_day_zohr</zorder>
    </widget>
    <widget class="QGroupBox" name="shroq_box">
     <property name="geometry">
@@ -673,26 +768,7 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>221</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>25</pointsize>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>SHURUQ</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="current_day_shroq_time">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>40</y>
-       <width>301</width>
+       <width>181</width>
        <height>41</height>
       </rect>
      </property>
@@ -702,10 +778,37 @@
        <bold>true</bold>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true">background: transparent;</string>
+     </property>
+     <property name="text">
+      <string>SHURUQ</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="current_day_shroq_time">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>30</y>
+       <width>191</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>60</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: transparent;</string>
+     </property>
      <property name="text">
       <string>00:00</string>
      </property>
     </widget>
+    <zorder>current_day_shroq_time</zorder>
+    <zorder>current_day_shroq</zorder>
    </widget>
    <widget class="QGroupBox" name="asr_box">
     <property name="geometry">
@@ -730,9 +833,12 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>25</pointsize>
+       <pointsize>40</pointsize>
        <bold>true</bold>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: transparent;</string>
      </property>
      <property name="text">
       <string>ASR</string>
@@ -741,17 +847,20 @@
     <widget class="QLabel" name="current_day_asr_time">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>40</y>
-       <width>301</width>
-       <height>41</height>
+       <x>120</x>
+       <y>30</y>
+       <width>181</width>
+       <height>51</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>35</pointsize>
+       <pointsize>60</pointsize>
        <bold>true</bold>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: transparent;</string>
      </property>
      <property name="text">
       <string>00:00</string>
@@ -781,9 +890,12 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>25</pointsize>
+       <pointsize>40</pointsize>
        <bold>true</bold>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: transparent;</string>
      </property>
      <property name="text">
       <string>MAGHRIB</string>
@@ -792,17 +904,20 @@
     <widget class="QLabel" name="current_day_magrb_time">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>40</y>
-       <width>301</width>
-       <height>41</height>
+       <x>120</x>
+       <y>30</y>
+       <width>181</width>
+       <height>51</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>35</pointsize>
+       <pointsize>60</pointsize>
        <bold>true</bold>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: transparent;</string>
      </property>
      <property name="text">
       <string>00:00</string>
@@ -832,9 +947,12 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>25</pointsize>
+       <pointsize>40</pointsize>
        <bold>true</bold>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: transparent;</string>
      </property>
      <property name="text">
       <string>ISHA</string>
@@ -843,17 +961,20 @@
     <widget class="QLabel" name="current_day_isha_time">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>40</y>
-       <width>301</width>
-       <height>41</height>
+       <x>120</x>
+       <y>30</y>
+       <width>181</width>
+       <height>51</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>35</pointsize>
+       <pointsize>60</pointsize>
        <bold>true</bold>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background: transparent;</string>
      </property>
      <property name="text">
       <string>00:00</string>
@@ -883,7 +1004,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1024</width>
+     <width>1037</width>
      <height>37</height>
     </rect>
    </property>
