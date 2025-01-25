@@ -229,8 +229,8 @@
    <widget class="QGroupBox" name="fajr_box">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>0</y>
+      <x>700</x>
+      <y>20</y>
       <width>301</width>
       <height>81</height>
      </rect>
@@ -272,9 +272,9 @@
     <widget class="QLabel" name="current_day_fajr_time">
      <property name="geometry">
       <rect>
-       <x>110</x>
+       <x>90</x>
        <y>30</y>
-       <width>191</width>
+       <width>211</width>
        <height>51</height>
       </rect>
      </property>
@@ -297,7 +297,7 @@
      <rect>
       <x>0</x>
       <y>390</y>
-      <width>711</width>
+      <width>701</width>
       <height>111</height>
      </rect>
     </property>
@@ -670,7 +670,7 @@
        <rect>
         <x>0</x>
         <y>30</y>
-        <width>121</width>
+        <width>111</width>
         <height>41</height>
        </rect>
       </property>
@@ -692,8 +692,8 @@
    <widget class="QGroupBox" name="zohr_box">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>160</y>
+      <x>700</x>
+      <y>180</y>
       <width>301</width>
       <height>81</height>
      </rect>
@@ -726,9 +726,9 @@
     <widget class="QLabel" name="current_day_zohr_time">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>90</x>
        <y>30</y>
-       <width>181</width>
+       <width>211</width>
        <height>51</height>
       </rect>
      </property>
@@ -754,8 +754,8 @@
    <widget class="QGroupBox" name="shroq_box">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>80</y>
+      <x>700</x>
+      <y>100</y>
       <width>301</width>
       <height>81</height>
      </rect>
@@ -788,9 +788,9 @@
     <widget class="QLabel" name="current_day_shroq_time">
      <property name="geometry">
       <rect>
-       <x>110</x>
+       <x>90</x>
        <y>30</y>
-       <width>191</width>
+       <width>211</width>
        <height>51</height>
       </rect>
      </property>
@@ -813,8 +813,8 @@
    <widget class="QGroupBox" name="asr_box">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>240</y>
+      <x>700</x>
+      <y>260</y>
       <width>301</width>
       <height>81</height>
      </rect>
@@ -847,9 +847,9 @@
     <widget class="QLabel" name="current_day_asr_time">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>90</x>
        <y>30</y>
-       <width>181</width>
+       <width>211</width>
        <height>51</height>
       </rect>
      </property>
@@ -870,8 +870,8 @@
    <widget class="QGroupBox" name="magrb_box">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>320</y>
+      <x>700</x>
+      <y>340</y>
       <width>301</width>
       <height>81</height>
      </rect>
@@ -904,9 +904,9 @@
     <widget class="QLabel" name="current_day_magrb_time">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>90</x>
        <y>30</y>
-       <width>181</width>
+       <width>211</width>
        <height>51</height>
       </rect>
      </property>
@@ -927,8 +927,8 @@
    <widget class="QGroupBox" name="isha_box">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>400</y>
+      <x>700</x>
+      <y>420</y>
       <width>301</width>
       <height>81</height>
      </rect>
@@ -961,9 +961,9 @@
     <widget class="QLabel" name="current_day_isha_time">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>90</x>
        <y>30</y>
-       <width>181</width>
+       <width>211</width>
        <height>51</height>
       </rect>
      </property>
