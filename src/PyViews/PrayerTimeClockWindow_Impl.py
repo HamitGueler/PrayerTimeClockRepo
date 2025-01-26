@@ -21,13 +21,14 @@ class TaskScheduler(QThread):
     task_started = Signal()
 
     def run(self):
-        schedule.every().day.at("00:02").do(self.run_task)
+        schedule.every().day.at("00:00").do(self.run_task)
         while True:
             schedule.run_pending()
             self.msleep(1000)
 
     def run_task(self):
         print("Task started!")
+        print("UPDATEEEE: ")
         self.task_started.emit()
         
 class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
@@ -134,23 +135,30 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
        
     def update_timer(self):
         current_time = QDateTime.currentDateTime().toString("hh:mm:ss")
+        print("TKME: ", current_time)
         next_prayer_time = self.prayer_times["nextDayPrayers"]["prayers"][0]
-        
+        print(next_prayer_time)
         for _ in range(len(self.prayer_times)):
             current_datetime = QDateTime.fromString(current_time, "hh:mm:ss")
             next_prayer_time =  self.prayer_times["Prayers"][self.current_prayer_index]
             next_prayer_datetime = QDateTime.fromString(self.prayer_times["Prayers"][self.current_prayer_index], "hh:mm")
             
             if(self.current_prayer_index < 5):
+                print("first if")
                 if current_datetime >= next_prayer_datetime:
                     self.current_prayer_index = self.current_prayer_index+1
-                elif current_datetime == QDateTime.fromString("00:00", "hh:mm"):
-                    self.current_prayer_index = 0
+                    print("first if: ", self.current_prayer_index)
 
             if(self.current_prayer_index == 5):
+                print("second if")
                 if current_datetime >= QDateTime.fromString(self.prayer_times["nextDayPrayers"]["prayers"][self.current_prayer_index], "hh:mm"):
                     next_prayer_time = self.prayer_times["nextDayPrayers"]["prayers"][0]
+                    print("second if2: ", next_prayer_time)
+                elif current_datetime == QDateTime.fromString("00:00:00", "hh:mm:ss"):
+                    self.current_prayer_index = 0
+                    print("zero: ", self.current_prayer_index)
                 next_prayer_datetime = QDateTime.fromString(next_prayer_time, "hh:mm")
+                print("second if3: ", next_prayer_time)
         
         time_difference = current_datetime.secsTo(next_prayer_datetime)
         if time_difference < 0:
@@ -179,21 +187,27 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         current_datetime = QDateTime.fromString(current_time, "hh:mm:ss")
         index = self.current_prayer_index
         if index == 0 or (index == 1 and current_datetime <= next_prayer_datetime):
+                    print("index: ", index)
                     self.__reset_style(index)
                     self.fajr_box.setStyleSheet(self._current_prayer_style)
         elif index == 2 and (current_datetime <= next_prayer_datetime):
+                    print("index: ", index)
                     self.__reset_style(index)
                     self.shroq_box.setStyleSheet(self._current_prayer_style)
         elif index == 3 and (current_datetime <= next_prayer_datetime):
+                    print("index: ", index)
                     self.__reset_style(index)
                     self.zohr_box.setStyleSheet(self._current_prayer_style)
         elif index == 4 and (current_datetime <= next_prayer_datetime):    
+                    print("index: ", index)
                     self.__reset_style(index)
                     self.asr_box.setStyleSheet(self._current_prayer_style)
         elif index == 5 and (current_datetime <= next_prayer_datetime):
+                    print("index: ", index)
                     self.__reset_style(index)
                     self.magrb_box.setStyleSheet(self._current_prayer_style)
         elif index == 5 and (current_datetime > next_prayer_datetime):
+                    print("index: ", index)
                     self.__reset_style(index) 
                     self.isha_box.setStyleSheet(self._current_prayer_style) 
                     
