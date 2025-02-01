@@ -61,11 +61,15 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                                 self.next_day_zohr_time, self.next_day_asr_time, self.next_day_magrb_time,
                                 self.next_day_isha_time]
         
+        self.__retry_timer = QTimer()
+        self.__retry_timer.timeout.connect(self.__refresh_data)
+        
         self.__setupData()
         
         self.__clock_timer = QTimer()
         self.__clock_timer.timeout.connect(self.__update_clock)
         self.__clock_timer.start(1000)
+
         
         self.toggle_timer = QTimer(self)
         self.toggle_timer.timeout.connect(self.__indicate_prayer)
@@ -95,10 +99,12 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         
     def __setupData(self):
         now = datetime.now()
+        self.current_prayer_index = 0
         current_time = now.strftime("%H:%M")
         prayer_times = self.scraper.get_prayer_times()
         
         if(prayer_times["requestSuccess"][0] == True):
+            self.__retry_timer.stop()
             now = datetime.now()
             self.prayer_times = prayer_times
             
@@ -120,6 +126,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             self.last_updated_date.setText(prayer_times["requestSuccess"][1])
             self.last_updated_time.setText(current_time)
             self.led_sign.setStyleSheet("color: red")
+            
+            self.__retry_timer.start(300000)
 
     def set_prayer_times(self):
             
@@ -135,30 +143,23 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
        
     def update_timer(self):
         current_time = QDateTime.currentDateTime().toString("hh:mm:ss")
-        print("TKME: ", current_time)
         next_prayer_time = self.prayer_times["nextDayPrayers"]["prayers"][0]
-        print(next_prayer_time)
+
         for _ in range(len(self.prayer_times)):
             current_datetime = QDateTime.fromString(current_time, "hh:mm:ss")
             next_prayer_time =  self.prayer_times["Prayers"][self.current_prayer_index]
             next_prayer_datetime = QDateTime.fromString(self.prayer_times["Prayers"][self.current_prayer_index], "hh:mm")
             
             if(self.current_prayer_index < 5):
-                print("first if")
                 if current_datetime >= next_prayer_datetime:
                     self.current_prayer_index = self.current_prayer_index+1
-                    print("first if: ", self.current_prayer_index)
 
             if(self.current_prayer_index == 5):
-                print("second if")
                 if current_datetime >= QDateTime.fromString(self.prayer_times["nextDayPrayers"]["prayers"][self.current_prayer_index], "hh:mm"):
                     next_prayer_time = self.prayer_times["nextDayPrayers"]["prayers"][0]
-                    print("second if2: ", next_prayer_time)
                 elif current_datetime == QDateTime.fromString("00:00:00", "hh:mm:ss"):
                     self.current_prayer_index = 0
-                    print("zero: ", self.current_prayer_index)
                 next_prayer_datetime = QDateTime.fromString(next_prayer_time, "hh:mm")
-                print("second if3: ", next_prayer_time)
         
         time_difference = current_datetime.secsTo(next_prayer_datetime)
         if time_difference < 0:
@@ -187,27 +188,21 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         current_datetime = QDateTime.fromString(current_time, "hh:mm:ss")
         index = self.current_prayer_index
         if index == 0 or (index == 1 and current_datetime <= next_prayer_datetime):
-                    print("index: ", index)
                     self.__reset_style(index)
                     self.fajr_box.setStyleSheet(self._current_prayer_style)
         elif index == 2 and (current_datetime <= next_prayer_datetime):
-                    print("index: ", index)
                     self.__reset_style(index)
                     self.shroq_box.setStyleSheet(self._current_prayer_style)
         elif index == 3 and (current_datetime <= next_prayer_datetime):
-                    print("index: ", index)
                     self.__reset_style(index)
                     self.zohr_box.setStyleSheet(self._current_prayer_style)
         elif index == 4 and (current_datetime <= next_prayer_datetime):    
-                    print("index: ", index)
                     self.__reset_style(index)
                     self.asr_box.setStyleSheet(self._current_prayer_style)
         elif index == 5 and (current_datetime <= next_prayer_datetime):
-                    print("index: ", index)
                     self.__reset_style(index)
                     self.magrb_box.setStyleSheet(self._current_prayer_style)
         elif index == 5 and (current_datetime > next_prayer_datetime):
-                    print("index: ", index)
                     self.__reset_style(index) 
                     self.isha_box.setStyleSheet(self._current_prayer_style) 
                     
