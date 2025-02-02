@@ -90,7 +90,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                                  self.next_day_asr_box, self.next_day_magrb_box, self.next_day_isha_box]
         
         for box in self.next_day_prayer_boxes:
-            box.setStyleSheet("background-color: #96b9ce")
+            box.setStyleSheet("background-color: #68b8e8")
             
         self.setStyleSheet(open("./style.css").read())
         
