@@ -984,9 +984,9 @@
    <widget class="QLabel" name="retry_time">
     <property name="geometry">
      <rect>
-      <x>350</x>
-      <y>250</y>
-      <width>131</width>
+      <x>330</x>
+      <y>240</y>
+      <width>151</width>
       <height>41</height>
      </rect>
     </property>
