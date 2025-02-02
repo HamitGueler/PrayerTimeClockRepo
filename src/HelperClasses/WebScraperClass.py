@@ -5,7 +5,7 @@ from dateutil import parser
 class WebScraperClass:
 
     def __init__(self):
-        self.url = "httpsasd://www.edarabia.com/prayer-times-berlin/#:~:text=Today's%20Prayer%20Time%20Berlin%20are,Prayer%20Time%2006%3A26%20PM."
+        self.url = "https://www.edarabia.com/prayer-times-berlin/#:~:text=Today's%20Prayer%20Time%20Berlin%20are,Prayer%20Time%2006%3A26%20PM."
         
 
     def get_prayer_times(self):
