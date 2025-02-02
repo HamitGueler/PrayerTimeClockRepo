@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'PrayerTime_Clock_WindowLehejR.ui'
+## Form generated from reading UI file 'PrayerTime_Clock_WindowIwJtMt.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.5.3
 ##
@@ -280,6 +280,11 @@ class Ui_MainWindow(object):
         self.current_day_isha_time.setGeometry(QRect(90, 30, 211, 51))
         self.current_day_isha_time.setFont(font4)
         self.current_day_isha_time.setStyleSheet(u"background: transparent;")
+        self.retry_time = QLabel(self.centralwidget)
+        self.retry_time.setObjectName(u"retry_time")
+        self.retry_time.setGeometry(QRect(350, 250, 131, 41))
+        self.retry_time.setFont(font4)
+        self.retry_time.setStyleSheet(u"background: transparent;")
         MainWindow.setCentralWidget(self.centralwidget)
         self.current_time.raise_()
         self.current_location.raise_()
@@ -298,6 +303,7 @@ class Ui_MainWindow(object):
         self.rest_time_description.raise_()
         self.refresh_button.raise_()
         self.led_sign.raise_()
+        self.retry_time.raise_()
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
         self.menubar.setGeometry(QRect(0, 0, 1019, 37))
@@ -362,5 +368,6 @@ class Ui_MainWindow(object):
         self.isha_box.setTitle("")
         self.current_day_isha.setText(QCoreApplication.translate("MainWindow", u"ISHA", None))
         self.current_day_isha_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
+        self.retry_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
     # retranslateUi
 

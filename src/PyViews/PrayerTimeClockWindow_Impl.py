@@ -62,7 +62,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                                 self.next_day_isha_time]
         
         self.__retry_timer = QTimer()
-        self.__retry_timer.timeout.connect(self.__refresh_data)
+        self.__retry_timer.timeout.connect(self.update_retry_timer)
+        self.retry_time.hide()
         
         self.__setupData()
         
@@ -127,7 +128,19 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             self.last_updated_time.setText(current_time)
             self.led_sign.setStyleSheet("color: red")
             
-            self.__retry_timer.start(300000)
+            self.retry_countdown = QTime(0, 5, 0)
+            self.__retry_timer.start(1000)
+            self.retry_time.show()
+            
+            
+    def update_retry_timer(self):
+        self.retry_countdown = self.retry_countdown.addSecs(-1)
+        self.retry_time.setText(self.retry_countdown.toString('mm:ss'))
+
+        if self.retry_countdown == QTime(0, 0, 0):
+            self.__retry_timer.stop()
+            self.retry_time.hide()
+            self.__refresh_data()
 
     def set_prayer_times(self):
             
