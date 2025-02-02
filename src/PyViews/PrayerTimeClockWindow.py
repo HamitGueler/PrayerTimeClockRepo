@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'PrayerTime_Clock_WindowgwxMCo.ui'
+## Form generated from reading UI file 'PrayerTime_Clock_WindowLayofW.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.5.3
 ##
@@ -282,7 +282,7 @@ class Ui_MainWindow(object):
         self.current_day_isha_time.setStyleSheet(u"background: transparent;")
         self.retry_time = QLabel(self.centralwidget)
         self.retry_time.setObjectName(u"retry_time")
-        self.retry_time.setGeometry(QRect(330, 240, 151, 41))
+        self.retry_time.setGeometry(QRect(330, 230, 151, 51))
         self.retry_time.setFont(font4)
         self.retry_time.setStyleSheet(u"background: transparent;")
         MainWindow.setCentralWidget(self.centralwidget)
