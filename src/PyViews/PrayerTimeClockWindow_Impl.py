@@ -169,9 +169,9 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
 
             if(self.current_prayer_index == 5):
                 if current_datetime >= QDateTime.fromString(self.prayer_times["nextDayPrayers"]["prayers"][self.current_prayer_index], "hh:mm"):
-                    next_prayer_time =  self.prayer_times["Prayers"][self.current_prayer_index]
-                elif current_datetime == QDateTime.fromString("00:00:00", "hh:mm:ss"):
-                    self.current_prayer_index = 0
+                    next_prayer_time = self.prayer_times["nextDayPrayers"]["prayers"][0]
+             #   elif current_datetime == QDateTime.fromString("00:00:00", "hh:mm:ss"):
+             #       self.current_prayer_index = 0
                 next_prayer_datetime = QDateTime.fromString(next_prayer_time, "hh:mm")
         
         time_difference = current_datetime.secsTo(next_prayer_datetime)
@@ -184,7 +184,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.__style_current_prayer()
         self.rest_time.setText(f"{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}")
 
-        if(current_time == QDateTime.fromString(self.prayer_times["Prayers"][self.current_prayer_index-1], "hh:mm").toString("hh:mm:ss")):
+        if(current_time == QDateTime.fromString(self.prayer_times["Prayers"][self.current_prayer_index], "hh:mm").toString("hh:mm:ss")):
             self.call_to_prayer()
         
     def call_to_prayer(self):
