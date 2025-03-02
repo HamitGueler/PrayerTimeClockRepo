@@ -160,8 +160,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
 
         for _ in range(len(self.prayer_times)):
             current_datetime = QDateTime.fromString(current_time, "hh:mm:ss")
-            next_prayer_time =  self.prayer_times["Prayers"][self.current_prayer_index]
-            next_prayer_datetime = QDateTime.fromString(self.prayer_times["Prayers"][self.current_prayer_index], "hh:mm")
+            next_prayer_datetime =  QDateTime.fromString(self.prayer_times["Prayers"][self.current_prayer_index], "hh:mm") if (self.current_prayer_index < 5) else self.prayer_times["nextDayPrayers"]["prayers"][0]
             
             if(self.current_prayer_index < 5):
                 if current_datetime >= next_prayer_datetime:
@@ -170,21 +169,21 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             if(self.current_prayer_index == 5):
                 if current_datetime >= QDateTime.fromString(self.prayer_times["nextDayPrayers"]["prayers"][self.current_prayer_index], "hh:mm"):
                     next_prayer_time = self.prayer_times["nextDayPrayers"]["prayers"][0]
-             #   elif current_datetime == QDateTime.fromString("00:00:00", "hh:mm:ss"):
-             #       self.current_prayer_index = 0
+                elif current_datetime == QDateTime.fromString("00:00:00", "hh:mm:ss"):
+                    self.current_prayer_index = 0
                 next_prayer_datetime = QDateTime.fromString(next_prayer_time, "hh:mm")
         
         time_difference = current_datetime.secsTo(next_prayer_datetime)
         if time_difference < 0:
             time_difference += 24 * 3600
-   
         hours = time_difference // 3600
         minutes = (time_difference % 3600) // 60
         seconds = time_difference % 60
         self.__style_current_prayer()
+        
         self.rest_time.setText(f"{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}")
-
-        if(current_time == QDateTime.fromString(self.prayer_times["Prayers"][self.current_prayer_index], "hh:mm").toString("hh:mm:ss")):
+        if(current_time == QDateTime.fromString(self.prayer_times["Prayers"][self.current_prayer_index-1], "hh:mm").toString("hh:mm:ss")):
+            print(self.current_prayer_index-1)
             self.call_to_prayer()
         
     def call_to_prayer(self):
