@@ -155,36 +155,49 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.current_time.setText(current_time)
        
     def update_timer(self):
-        current_time = QDateTime.currentDateTime().toString("hh:mm:ss")
-        next_prayer_time = self.prayer_times["nextDayPrayers"]["prayers"][0]
-
-        for _ in range(len(self.prayer_times)):
-            current_datetime = QDateTime.fromString(current_time, "hh:mm:ss")
-            next_prayer_datetime =  QDateTime.fromString(self.prayer_times["Prayers"][self.current_prayer_index], "hh:mm") if (self.current_prayer_index < 5) else self.prayer_times["nextDayPrayers"]["prayers"][0]
-            
-            if(self.current_prayer_index < 5):
-                if current_datetime >= next_prayer_datetime:
-                    self.current_prayer_index = self.current_prayer_index+1
-
-            if(self.current_prayer_index == 5):
-                if current_datetime >= QDateTime.fromString(self.prayer_times["nextDayPrayers"]["prayers"][self.current_prayer_index], "hh:mm"):
-                    next_prayer_time = self.prayer_times["nextDayPrayers"]["prayers"][0]
-                elif current_datetime == QDateTime.fromString("00:00:00", "hh:mm:ss"):
-                    self.current_prayer_index = 0
-                next_prayer_datetime = QDateTime.fromString(next_prayer_time, "hh:mm")
+        now = QDateTime.currentDateTime()
+        today_str = now.toString("yyyy-MM-dd")
         
-        time_difference = current_datetime.secsTo(next_prayer_datetime)
-        if time_difference < 0:
-            time_difference += 24 * 3600
-        hours = time_difference // 3600
-        minutes = (time_difference % 3600) // 60
-        seconds = time_difference % 60
+        # Bestimme den aktuell aktiven Gebetsindex, also das letzte Gebet, das bereits begonnen hat.
+        active_index = None
+        for i, pt in enumerate(self.prayer_times["Prayers"]):
+            prayer_dt = QDateTime.fromString(today_str + " " + pt, "yyyy-MM-dd hh:mm")
+            if now >= prayer_dt:
+                active_index = i
+            else:
+                break
+        # Falls noch kein Gebet begonnen hat (z. B. vor Fajr), setze den aktiven Index auf 0.
+        if active_index is None:
+            active_index = 0
+
+        # Bestimme das nächste Gebet:
+        if active_index < 5:
+            next_prayer_time_str = self.prayer_times["Prayers"][active_index + 1]
+            next_prayer_dt = QDateTime.fromString(today_str + " " + next_prayer_time_str, "yyyy-MM-dd hh:mm")
+        else:
+            # Wenn Isha bereits begonnen hat, ist das nächste Gebet morgen Fajr.
+            tomorrow = now.addDays(1).toString("yyyy-MM-dd")
+            next_prayer_time_str = self.prayer_times["nextDayPrayers"]["prayers"][0]
+            next_prayer_dt = QDateTime.fromString(tomorrow + " " + next_prayer_time_str, "yyyy-MM-dd hh:mm")
+        
+        # Berechne die verbleibende Zeit bis zum nächsten Gebet.
+        secs_to = now.secsTo(next_prayer_dt)
+        if secs_to < 0:
+            secs_to += 24 * 3600
+        hours = secs_to // 3600
+        minutes = (secs_to % 3600) // 60
+        seconds = secs_to % 60
+        self.rest_time.setText(f"{hours:02d}:{minutes:02d}:{seconds:02d}")
+        
+        # Setze den Marker auf das aktuell aktive Gebet.
+        self.current_prayer_index = active_index
         self.__style_current_prayer()
         
-        self.rest_time.setText(f"{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}")
-        if(current_time == QDateTime.fromString(self.prayer_times["Prayers"][self.current_prayer_index-1], "hh:mm").toString("hh:mm:ss")):
-            print(self.current_prayer_index-1)
+        # Wenn die aktuelle Zeit (hh:mm) exakt der nächsten Gebetszeit entspricht, wird der Azan ausgelöst.
+        if now.toString("hh:mm") == next_prayer_dt.toString("hh:mm"):
             self.call_to_prayer()
+
+
         
     def call_to_prayer(self):
         self.toggle_timer.start(1000)
@@ -195,59 +208,31 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         pygame.mixer.music.play()
     
     def __style_current_prayer(self):
-        next_prayer_datetime = QDateTime.fromString(self.prayer_times["Prayers"][self.current_prayer_index], "hh:mm")
-        current_time = QDateTime.currentDateTime().toString("hh:mm:ss")
-        current_datetime = QDateTime.fromString(current_time, "hh:mm:ss")
+        self.__reset_style()
         index = self.current_prayer_index
-        if index == 0 or (index == 1 and current_datetime <= next_prayer_datetime):
-                    self.__reset_style(index)
-                    self.fajr_box.setStyleSheet(self._current_prayer_style)
-        elif index == 2 and (current_datetime <= next_prayer_datetime):
-                    self.__reset_style(index)
-                    self.shroq_box.setStyleSheet(self._current_prayer_style)
-        elif index == 3 and (current_datetime <= next_prayer_datetime):
-                    self.__reset_style(index)
-                    self.zohr_box.setStyleSheet(self._current_prayer_style)
-        elif index == 4 and (current_datetime <= next_prayer_datetime):    
-                    self.__reset_style(index)
-                    self.asr_box.setStyleSheet(self._current_prayer_style)
-        elif index == 5 and (current_datetime <= next_prayer_datetime):
-                    self.__reset_style(index)
-                    self.magrb_box.setStyleSheet(self._current_prayer_style)
-        elif index == 5 and (current_datetime > next_prayer_datetime):
-                    self.__reset_style(index) 
-                    self.isha_box.setStyleSheet(self._current_prayer_style) 
-                    
-        
-    
-    def __reset_style(self, index):
-        boxes = [self.fajr_box, self.shroq_box, self.zohr_box, self.asr_box, self.magrb_box, self.isha_box]          
-        boxes.pop(index)
-        
-        for box in boxes:
+        if index == 0:
+            self.fajr_box.setStyleSheet(self._current_prayer_style)
+        elif index == 1:
+            self.shroq_box.setStyleSheet(self._current_prayer_style)
+        elif index == 2:
+            self.zohr_box.setStyleSheet(self._current_prayer_style)
+        elif index == 3:
+            self.asr_box.setStyleSheet(self._current_prayer_style)
+        elif index == 4:
+            self.magrb_box.setStyleSheet(self._current_prayer_style)
+        elif index == 5:
+            self.isha_box.setStyleSheet(self._current_prayer_style)
+
+    def __reset_style(self):
+        for box in [self.fajr_box, self.shroq_box, self.zohr_box, self.asr_box, self.magrb_box, self.isha_box]:
             box.setStyleSheet("")
         
     def __indicate_prayer(self):
-        next_prayer_datetime = QDateTime.fromString(self.prayer_times["Prayers"][self.current_prayer_index], "hh:mm")
-        current_time = QDateTime.currentDateTime().toString("hh:mm:ss")
-        current_datetime = QDateTime.fromString(current_time, "hh:mm:ss")
-        
-        index = self.current_prayer_index
-        if (index == 1 and (current_datetime <= next_prayer_datetime)):
-            self.toggle_prayer(0)
-        elif (index == 2 and (current_datetime <= next_prayer_datetime)):
-            self.toggle_prayer(1)
-        elif (index == 3 and (current_datetime <= next_prayer_datetime)):
-            self.toggle_prayer(2)
-        elif (index == 4 and (current_datetime <= next_prayer_datetime)):
-            self.toggle_prayer(3)
-        elif (index == 5 and (current_datetime <= next_prayer_datetime)):
-            self.toggle_prayer(4)
-        elif (index == 5 and (current_datetime > next_prayer_datetime)):
-            self.toggle_prayer(5)
-            
-        self.toggle_count +=1
-        if(self.toggle_count == 170):
+        # Toggle die Anzeige des aktuell aktiven Gebets (ohne Index-Verschiebung)
+        self.toggle_prayer(self.current_prayer_index)
+        self.toggle_count += 1
+        # Hier kannst Du anpassen, wie lange der Toggle-Effekt andauern soll.
+        if self.toggle_count >= 10:
             self.toggle_timer.stop()
             self.toggle_count = 0
     
