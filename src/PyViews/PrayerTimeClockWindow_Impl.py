@@ -101,7 +101,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         
     def __setupData(self):
         now = datetime.now()
-        self.current_prayer_index = 0
+       # self.current_prayer_index = 0
         current_time = now.strftime("%H:%M")
         prayer_times = self.scraper.get_prayer_times()
         
@@ -179,7 +179,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
 
         # Bestimme das nächste Gebet:
         if active_index < 5:
-            next_prayer_time_str = self.prayer_times["Prayers"][active_index + 1]
+            next_prayer_time_str = self.prayer_times["Prayers"][active_index] if active_index == 0 else self.prayer_times["Prayers"][active_index + 1]
             next_prayer_dt = QDateTime.fromString(today_str + " " + next_prayer_time_str, "yyyy-MM-dd hh:mm")
         else:
             # Wenn Isha bereits begonnen hat, ist das nächste Gebet morgen Fajr.
@@ -199,8 +199,6 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         # Setze den Marker auf das aktuell aktive Gebet.
         self.current_prayer_index = active_index
         self.__style_current_prayer()
-
-        print(self.current_prayer_time.toString("hh:mm:ss"))
         # Wenn die aktuelle Zeit (hh:mm) exakt der nächsten Gebetszeit entspricht, wird der Azan ausgelöst.
         if now.toString("hh:mm:ss") == self.current_prayer_time.toString("hh:mm:ss"):
             self.call_to_prayer()
