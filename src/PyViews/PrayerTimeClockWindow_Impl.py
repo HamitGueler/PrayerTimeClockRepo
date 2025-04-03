@@ -101,7 +101,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         
     def __setupData(self):
         now = datetime.now()
-       # self.current_prayer_index = 0
+        self.current_prayer_index = 0
         current_time = now.strftime("%H:%M")
         prayer_times = self.scraper.get_prayer_times()
         
@@ -176,16 +176,22 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         # Falls noch kein Gebet begonnen hat (z. B. vor Fajr), setze den aktiven Index auf 0.
         if active_index is None:
             active_index = 0
-
         # Bestimme das nächste Gebet:
-        if active_index < 5:
-            next_prayer_time_str = self.prayer_times["Prayers"][active_index] if active_index == 0 else self.prayer_times["Prayers"][active_index + 1]
-            next_prayer_dt = QDateTime.fromString(today_str + " " + next_prayer_time_str, "yyyy-MM-dd hh:mm")
+        # Berechne das nächste Gebet auf Basis von active_index
+        if now < QDateTime.fromString(today_str + " " + self.prayer_times["Prayers"][0], "yyyy-MM-dd hh:mm"):
+            # Noch vor Fajr → nächstes Gebet ist Fajr
+            next_prayer_str = self.prayer_times["Prayers"][0]
+            next_prayer_dt = QDateTime.fromString(today_str + " " + next_prayer_str, "yyyy-MM-dd hh:mm")
+        elif active_index < 5:
+            # Normalfall → nächstes Gebet ist +1
+            next_prayer_str = self.prayer_times["Prayers"][active_index + 1]
+            next_prayer_dt = QDateTime.fromString(today_str + " " + next_prayer_str, "yyyy-MM-dd hh:mm")
         else:
-            # Wenn Isha bereits begonnen hat, ist das nächste Gebet morgen Fajr.
+            # Nach Isha → nächstes Gebet ist Fajr morgen
             tomorrow = now.addDays(1).toString("yyyy-MM-dd")
-            next_prayer_time_str = self.prayer_times["nextDayPrayers"]["prayers"][0]
-            next_prayer_dt = QDateTime.fromString(tomorrow + " " + next_prayer_time_str, "yyyy-MM-dd hh:mm")
+            next_prayer_str = self.prayer_times["nextDayPrayers"]["prayers"][0]
+            next_prayer_dt = QDateTime.fromString(tomorrow + " " + next_prayer_str, "yyyy-MM-dd hh:mm")
+
         
         # Berechne die verbleibende Zeit bis zum nächsten Gebet.
         secs_to = now.secsTo(next_prayer_dt)
@@ -195,7 +201,6 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         minutes = (secs_to % 3600) // 60
         seconds = secs_to % 60
         self.rest_time.setText(f"{hours:02d}:{minutes:02d}:{seconds:02d}")
-        
         # Setze den Marker auf das aktuell aktive Gebet.
         self.current_prayer_index = active_index
         self.__style_current_prayer()
