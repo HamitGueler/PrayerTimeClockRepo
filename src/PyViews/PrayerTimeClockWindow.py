@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'PrayerTime_Clock_WindowwaGxWG.ui'
+## Form generated from reading UI file 'PrayerTime_Clock_WindowNQRPvR.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.5.3
 ##
@@ -295,7 +295,7 @@ class Ui_MainWindow(object):
         self.midnight_label.setStyleSheet(u"background: transparent;")
         self.midnight_time = QLabel(self.centralwidget)
         self.midnight_time.setObjectName(u"midnight_time")
-        self.midnight_time.setGeometry(QRect(460, 320, 131, 61))
+        self.midnight_time.setGeometry(QRect(430, 320, 131, 61))
         self.midnight_time.setFont(font4)
         self.midnight_time.setStyleSheet(u"background: transparent;")
         MainWindow.setCentralWidget(self.centralwidget)
