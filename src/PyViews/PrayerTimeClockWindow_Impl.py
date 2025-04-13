@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (QApplication, QGroupBox, QLabel, QMainWindow,
 
 from PyViews.PrayerTimeClockWindow import Ui_MainWindow
 from HelperClasses.WebScraperClass import WebScraperClass
-from datetime import datetime
+from datetime import datetime, timedelta
 import pygame
 import schedule
 import time
@@ -121,6 +121,23 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             self.last_updated_time.setText(current_time)
             self.led_sign.setStyleSheet("color: white")
             
+            time1 = datetime.strptime(self.prayer_times["Prayers"][4], "%H:%M")
+            time2 = datetime.strptime(self.prayer_times["Prayers"][0], "%H:%M")
+
+            # Falls time2 kleiner ist, ist es am nächsten Tag
+            if time2 <= time1:
+                time2 += timedelta(days=1)
+
+            diff = time2 - time1
+            print(diff)
+            half_diff = diff / 2
+            print(half_diff)
+            # Neue Zeit: Isha + halbe Differenz
+            midnight_time = time1 + half_diff
+            # Formatieren
+            midnight_str = midnight_time.strftime("%H:%M")
+            self.midnight_time.setText(midnight_str)
+
             self.__rest_timer = QTimer()
             self.__rest_timer.timeout.connect(self.update_timer)
             self.__rest_timer.start(1000)

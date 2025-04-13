@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'PrayerTime_Clock_WindowLayofW.ui'
+## Form generated from reading UI file 'PrayerTime_Clock_WindowkHQtIC.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.5.3
 ##
@@ -285,6 +285,19 @@ class Ui_MainWindow(object):
         self.retry_time.setGeometry(QRect(330, 230, 151, 51))
         self.retry_time.setFont(font4)
         self.retry_time.setStyleSheet(u"background: transparent;")
+        self.midnight_label = QLabel(self.centralwidget)
+        self.midnight_label.setObjectName(u"midnight_label")
+        self.midnight_label.setGeometry(QRect(220, 330, 161, 41))
+        font10 = QFont()
+        font10.setPointSize(25)
+        font10.setBold(True)
+        self.midnight_label.setFont(font10)
+        self.midnight_label.setStyleSheet(u"background: transparent;")
+        self.midnight_time = QLabel(self.centralwidget)
+        self.midnight_time.setObjectName(u"midnight_time")
+        self.midnight_time.setGeometry(QRect(370, 320, 131, 61))
+        self.midnight_time.setFont(font4)
+        self.midnight_time.setStyleSheet(u"background: transparent;")
         MainWindow.setCentralWidget(self.centralwidget)
         self.current_time.raise_()
         self.current_location.raise_()
@@ -304,6 +317,8 @@ class Ui_MainWindow(object):
         self.refresh_button.raise_()
         self.led_sign.raise_()
         self.retry_time.raise_()
+        self.midnight_label.raise_()
+        self.midnight_time.raise_()
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
         self.menubar.setGeometry(QRect(0, 0, 1019, 37))
@@ -369,5 +384,7 @@ class Ui_MainWindow(object):
         self.current_day_isha.setText(QCoreApplication.translate("MainWindow", u"ISHA", None))
         self.current_day_isha_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
         self.retry_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
+        self.midnight_label.setText(QCoreApplication.translate("MainWindow", u"Mitternacht:", None))
+        self.midnight_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
     # retranslateUi
 

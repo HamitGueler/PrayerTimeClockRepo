@@ -1003,6 +1003,50 @@
      <string>00:00</string>
     </property>
    </widget>
+   <widget class="QLabel" name="midnight_label">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>330</y>
+      <width>161</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>25</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: transparent;</string>
+    </property>
+    <property name="text">
+     <string>Mitternacht:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="midnight_time">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>320</y>
+      <width>131</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>40</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: transparent;</string>
+    </property>
+    <property name="text">
+     <string>00:00</string>
+    </property>
+   </widget>
    <zorder>current_time</zorder>
    <zorder>current_location</zorder>
    <zorder>rest_time</zorder>
@@ -1021,6 +1065,8 @@
    <zorder>refresh_button</zorder>
    <zorder>led_sign</zorder>
    <zorder>retry_time</zorder>
+   <zorder>midnight_label</zorder>
+   <zorder>midnight_time</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
