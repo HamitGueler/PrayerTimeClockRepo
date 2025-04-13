@@ -129,9 +129,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                 time2 += timedelta(days=1)
 
             diff = time2 - time1
-            print(diff)
             half_diff = diff / 2
-            print(half_diff)
             # Neue Zeit: Isha + halbe Differenz
             midnight_time = time1 + half_diff
             # Formatieren
