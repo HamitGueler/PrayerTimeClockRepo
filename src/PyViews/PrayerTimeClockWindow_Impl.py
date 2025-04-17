@@ -221,12 +221,14 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.__style_current_prayer()
         # Wenn die aktuelle Zeit (hh:mm) exakt der nächsten Gebetszeit entspricht, wird der Azan ausgelöst.
         if now.toString("hh:mm:ss") == self.current_prayer_time.toString("hh:mm:ss"):
+            print("2")
             self.call_to_prayer()
 
 
         
     def call_to_prayer(self):
         self.toggle_timer.start(1000)
+        print("1")
         if self.current_prayer_index == 0:
             pygame.mixer.music.load("./src/AudioFiles/fajr_adhan.mp3")
         else:
