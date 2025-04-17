@@ -94,6 +94,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             box.setStyleSheet("background-color: #68b8e8")
             
         self.setStyleSheet(open("./style.css").read())
+        pygame.mixer.music.load("./src/AudioFiles/adhan.mp3")
+        pygame.mixer.music.play()
         
     def closeEvent(self, event):
         # Terminate the thread when the GUI is closed
@@ -221,14 +223,12 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.__style_current_prayer()
         # Wenn die aktuelle Zeit (hh:mm) exakt der nächsten Gebetszeit entspricht, wird der Azan ausgelöst.
         if now.toString("hh:mm:ss") == self.current_prayer_time.toString("hh:mm:ss"):
-            print("2")
             self.call_to_prayer()
 
 
         
     def call_to_prayer(self):
         self.toggle_timer.start(1000)
-        print("1")
         if self.current_prayer_index == 0:
             pygame.mixer.music.load("./src/AudioFiles/fajr_adhan.mp3")
         else:
