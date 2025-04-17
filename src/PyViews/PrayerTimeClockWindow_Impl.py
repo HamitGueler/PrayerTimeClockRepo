@@ -94,11 +94,6 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             box.setStyleSheet("background-color: #68b8e8")
             
         self.setStyleSheet(open("./style.css").read())
-        try:
-            pygame.mixer.music.load("./src/AudioFiles/adhan.mp3")
-            pygame.mixer.music.play()
-        except Exception as e:
-            print("Fehler beim Laden/Abspielen der Datei:", e)
         
     def closeEvent(self, event):
         # Terminate the thread when the GUI is closed
@@ -232,6 +227,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         
     def call_to_prayer(self):
         self.toggle_timer.start(1000)
+        print("1")
         if self.current_prayer_index == 0:
             pygame.mixer.music.load("./src/AudioFiles/fajr_adhan.mp3")
         else:
