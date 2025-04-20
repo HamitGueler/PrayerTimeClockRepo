@@ -43,7 +43,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
 
         pygame.mixer.init()
         pygame.mixer.music.load("./src/AudioFiles/adhan.mp3")
-
+        pygame.mixer.music.play()
         self.scraper = WebScraperClass()
         self.prayer_times = {}
         self.toggle_bool = False
