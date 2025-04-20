@@ -43,7 +43,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
 
         pygame.mixer.init()
         pygame.mixer.music.load("./src/AudioFiles/adhan.mp3")
-        pygame.mixer.music.play()
+
         self.scraper = WebScraperClass()
         self.prayer_times = {}
         self.toggle_bool = False
@@ -179,11 +179,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             next_prayer_time_str = self.prayer_times["Prayers"][0]
             self.current_prayer_time = QDateTime.fromString(today_str + " " + next_prayer_time_str, "yyyy-MM-dd hh:mm")
         else:
-            if self.current_prayer_index < 5:
-                self.current_prayer_time = QDateTime.fromString(today_str + " " + self.prayer_times["Prayers"][self.current_prayer_index], "yyyy-MM-dd hh:mm")
-            else:
-                self.current_prayer_time = QDateTime.fromString(today_str + " " + self.prayer_times["Prayers"][0], "yyyy-MM-dd hh:mm")
-            
+            self.current_prayer_time = QDateTime.fromString(today_str + " " + self.prayer_times["Prayers"][self.current_prayer_index], "yyyy-MM-dd hh:mm")
+                
         active_index = None
         for i, pt in enumerate(self.prayer_times["Prayers"]):
             prayer_dt = QDateTime.fromString(today_str + " " + pt, "yyyy-MM-dd hh:mm")
