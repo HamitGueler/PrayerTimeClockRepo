@@ -179,7 +179,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             next_prayer_time_str = self.prayer_times["Prayers"][0]
             self.current_prayer_time = QDateTime.fromString(today_str + " " + next_prayer_time_str, "yyyy-MM-dd hh:mm")
         else:
-            if self.current_prayer_index == 5:
+            if self.current_prayer_index == 5 or self.current_prayer_index == 0:
                 print(self.current_prayer_index)
                 self.current_prayer_time = QDateTime.fromString(today_str + " " + self.prayer_times["Prayers"][self.current_prayer_index], "yyyy-MM-dd hh:mm")
             else:
