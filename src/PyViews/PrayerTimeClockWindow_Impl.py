@@ -43,7 +43,11 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.setWindowTitle("Clock")
 
         pygame.mixer.init()
-        pygame.mixer.music.load("./src/AudioFiles/adhan.mp3")
+        self.current_dir = os.path.dirname(os.path.abspath(__file__))
+        self.project_root = os.path.abspath(os.path.join(self.current_dir, ".."))
+        self.fajr_adhan_path = os.path.join(self.project_root, "AudioFiles", "fajr_adhan.mp3")
+        self.adhan_path = os.path.join(self.project_root, "AudioFiles", "adhan.mp3")
+        pygame.mixer.music.load(self.adhan_path)
 
         self.scraper = WebScraperClass()
         self.prayer_times = {}
@@ -62,6 +66,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.tomorrows_prayers = [self.next_day_fajr_time, self.next_day_shroq_time, 
                                 self.next_day_zohr_time, self.next_day_asr_time, self.next_day_magrb_time,
                                 self.next_day_isha_time]
+        
         
         self.__retry_timer = QTimer()
         self.__retry_timer.timeout.connect(self.update_retry_timer)
@@ -239,11 +244,10 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         
     def call_to_prayer(self):
         self.toggle_timer.start(1000)
-        print("1")
         if self.current_prayer_index == 0:
-            pygame.mixer.music.load("./src/AudioFiles/fajr_adhan.mp3")
+            pygame.mixer.music.load(self.fajr_adhan_path)
         else:
-            pygame.mixer.music.load("./src/AudioFiles/adhan.mp3")
+            pygame.mixer.music.load(self.adhan_path)
         pygame.mixer.music.play()
     
     def __style_current_prayer(self):
