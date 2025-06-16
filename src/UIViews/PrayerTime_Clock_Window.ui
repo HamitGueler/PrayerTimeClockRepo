@@ -1047,6 +1047,27 @@
      <string>00:00</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="reboot_button">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>20</y>
+      <width>101</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>Neustart</string>
+    </property>
+   </widget>
    <zorder>current_time</zorder>
    <zorder>current_location</zorder>
    <zorder>rest_time</zorder>
@@ -1067,6 +1088,7 @@
    <zorder>retry_time</zorder>
    <zorder>midnight_label</zorder>
    <zorder>midnight_time</zorder>
+   <zorder>reboot_button</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

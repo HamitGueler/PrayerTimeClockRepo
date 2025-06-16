@@ -16,6 +16,7 @@ import pygame
 import schedule
 import time
 import os
+import subprocess
 
 class TaskScheduler(QThread):
     task_started = Signal()
@@ -95,8 +96,13 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             
         self.setStyleSheet(open("./style.css").read())
         
+        self.reboot_button.clicked.connect(self.reboot_pi)
+        
+    def reboot_pi(self):
+        subprocess.run(["sudo", "reboot"])
+
+        
     def closeEvent(self, event):
-        # Terminate the thread when the GUI is closed
         event.accept()
         
     def __setupData(self):
