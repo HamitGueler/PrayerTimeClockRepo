@@ -47,8 +47,10 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.project_root = os.path.abspath(os.path.join(self.current_dir, ".."))
         self.fajr_adhan_path = os.path.join(self.project_root, "AudioFiles", "fajr_adhan.mp3")
         self.adhan_path = os.path.join(self.project_root, "AudioFiles", "adhan.mp3")
+        print(self.adhan_path)
+        print(self.fajr_adhan_path)
         pygame.mixer.music.load(self.adhan_path)
-
+        pygame.mixer.music.play()
         self.scraper = WebScraperClass()
         self.prayer_times = {}
         self.toggle_bool = False
