@@ -42,6 +42,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.showFullScreen()
         self.setWindowTitle("Clock")
 
+        pygame.mixer.pre_init(44100, -16, 2, 2048)
         pygame.mixer.init()
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
         self.project_root = os.path.abspath(os.path.join(self.current_dir, ".."))
