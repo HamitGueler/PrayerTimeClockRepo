@@ -2,6 +2,17 @@
 
 cd ~/prayertimeclock
 
+export DISPLAY=:0
+export XAUTHORITY=/home/hamitgueler/.Xauthority
+export XDG_RUNTIME_DIR=/run/user/1000
+export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+export SDL_AUDIODRIVER=pulse  # Erzwinge PulseAudio statt ALSA
+
+until pactl info >/dev/null 2>&1; do
+  echo "Warte auf PulseAudio..."
+  sleep 0.5
+done
+
 # Warte auf Internetverbindung (max. 60s)
 for i in {1..60}; do
     echo Warte auf Internetverbindung...
