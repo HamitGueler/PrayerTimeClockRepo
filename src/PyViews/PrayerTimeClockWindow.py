@@ -300,7 +300,7 @@ class Ui_MainWindow(object):
         self.midnight_time.setStyleSheet(u"background: transparent;")
         self.reboot_button = QPushButton(self.centralwidget)
         self.reboot_button.setObjectName(u"reboot_button")
-        self.reboot_button.setGeometry(QRect(480, 20, 101, 41))
+        self.reboot_button.setGeometry(QRect(520, 20, 101, 41))
         self.reboot_button.setFont(font6)
         self.reboot_button.setStyleSheet(u"")
         MainWindow.setCentralWidget(self.centralwidget)
