@@ -29,8 +29,8 @@ for i in {1..60}; do
         # Aktiviere virtuelle Umgebung
         source venv/bin/activate
 
-        # Starte die App
-        python src/PrayerTimeClock.py   
+        # Starte die App  
+        python src/PrayerTimeClock.py  >> python_output.log 2>&1
         exit 0
     fi
     sleep 1
