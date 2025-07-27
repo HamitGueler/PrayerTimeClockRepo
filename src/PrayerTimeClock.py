@@ -7,8 +7,6 @@ from PyViews.PrayerTimeClockWindow_Impl import PrayerTimeClockWindow
 def main():
     print("Hello World")
 
-    with open("startup.log", "a") as f:
-        f.write(">>> App gestartet\n")
     app = QApplication(sys.argv)
     PrayerClock = PrayerTimeClockWindow()
     PrayerClock.show()
