@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd ~/Dekstop/PrayerTimeClockRepo
+cd ~/Desktop/PrayerTimeClockRepo
 
 export DISPLAY=:0
 export XAUTHORITY=/home/hamitgueler/.Xauthority
