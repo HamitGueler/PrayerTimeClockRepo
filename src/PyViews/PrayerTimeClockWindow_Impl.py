@@ -140,13 +140,6 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             box.setStyleSheet("background-color: #68b8e8")
             
         self.setStyleSheet(open("./style.css").read())
-        
-        self.reboot_button.clicked.connect(self.reboot_pi)
-        
-    def reboot_pi(self):
-        self._try_reconnect_and_refresh()
-
-        
             
     @staticmethod
     def _is_online_static(host="8.8.8.8", port=53, timeout=3) -> bool:
@@ -208,10 +201,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             self.last_updated_date.setText(prayer_times["requestSuccess"][1])
             self.last_updated_time.setText(current_time)
             self.led_sign.setStyleSheet("color: white")
-            
             time1 = datetime.strptime(self.prayer_times["Prayers"][4], "%H:%M")
             time2 = datetime.strptime(self.prayer_times["Prayers"][0], "%H:%M")
-
             # Falls time2 kleiner ist, ist es am nächsten Tag
             if time2 <= time1:
                 time2 += timedelta(days=1)

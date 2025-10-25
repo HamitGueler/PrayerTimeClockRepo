@@ -298,11 +298,6 @@ class Ui_MainWindow(object):
         self.midnight_time.setGeometry(QRect(430, 320, 131, 61))
         self.midnight_time.setFont(font4)
         self.midnight_time.setStyleSheet(u"background: transparent;")
-        self.reboot_button = QPushButton(self.centralwidget)
-        self.reboot_button.setObjectName(u"reboot_button")
-        self.reboot_button.setGeometry(QRect(520, 20, 101, 41))
-        self.reboot_button.setFont(font6)
-        self.reboot_button.setStyleSheet(u"")
         MainWindow.setCentralWidget(self.centralwidget)
         self.current_time.raise_()
         self.current_location.raise_()
@@ -324,7 +319,6 @@ class Ui_MainWindow(object):
         self.retry_time.raise_()
         self.midnight_label.raise_()
         self.midnight_time.raise_()
-        self.reboot_button.raise_()
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
         self.menubar.setGeometry(QRect(0, 0, 1019, 37))
@@ -392,6 +386,5 @@ class Ui_MainWindow(object):
         self.retry_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
         self.midnight_label.setText(QCoreApplication.translate("MainWindow", u"Mitternacht:", None))
         self.midnight_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
-        self.reboot_button.setText(QCoreApplication.translate("MainWindow", u"Neustart", None))
     # retranslateUi
 
