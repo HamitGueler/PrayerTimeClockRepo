@@ -18,6 +18,46 @@ import time
 import os
 import subprocess
 
+
+class ReconnectWorker(QThread):
+    finished = Signal(bool, str)  # (success, message)
+
+    def __init__(self, method="nmcli", ssid=None, iface="wlan0", parent=None):
+        super().__init__(parent)
+        self.method = method     # "nmcli" | "wpa" | "networking"
+        self.ssid = ssid
+        self.iface = iface
+
+    def run(self):
+        try:
+            # Versuche Reconnect je nach Methode
+            if self.method == "nmcli":
+                subprocess.run(["nmcli", "radio", "wifi", "off"], check=False)
+                time.sleep(0.5)
+                subprocess.run(["nmcli", "radio", "wifi", "on"], check=False)
+                if self.ssid:
+                    subprocess.run(["nmcli", "device", "wifi", "connect", self.ssid], check=False)
+
+            elif self.method == "wpa":   # Raspberry Pi OS Lite
+                subprocess.run(["wpa_cli", "-i", self.iface, "reassociate"], check=False)
+                subprocess.run(["dhclient", "-r", self.iface], check=False)
+                subprocess.run(["dhclient", self.iface], check=False)
+
+            elif self.method == "networking":
+                # Achtung: benötigt meist sudo/NOPASSWD
+                subprocess.run(["sudo", "systemctl", "restart", "NetworkManager"], check=False)
+
+            # Nach dem Versuch kurz warten und prüfen
+            for _ in range(10):
+                if PrayerTimeClockWindow._is_online_static():
+                    self.finished.emit(True, "Reconnected")
+                    return
+                time.sleep(1)
+
+            self.finished.emit(False, "Reconnect failed")
+        except Exception as e:
+            self.finished.emit(False, f"Reconnect error: {e}")
+
 class TaskScheduler(QThread):
     task_started = Signal()
 
@@ -48,10 +88,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.project_root = os.path.abspath(os.path.join(self.current_dir, ".."))
         self.fajr_adhan_path = os.path.join(self.project_root, "AudioFiles", "fajr_adhan.mp3")
         self.adhan_path = os.path.join(self.project_root, "AudioFiles", "adhan.mp3")
-        print(self.adhan_path)
-        print(self.fajr_adhan_path)
         pygame.mixer.music.load(self.adhan_path)
-        pygame.mixer.music.play()
         self.scraper = WebScraperClass()
         self.prayer_times = {}
         self.toggle_bool = False
@@ -107,12 +144,49 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.reboot_button.clicked.connect(self.reboot_pi)
         
     def reboot_pi(self):
-        subprocess.run(["sudo", "reboot"])
+        self._try_reconnect_and_refresh()
 
         
-    def closeEvent(self, event):
-        event.accept()
-        
+            
+    @staticmethod
+    def _is_online_static(host="8.8.8.8", port=53, timeout=3) -> bool:
+        try:
+            import socket
+            socket.setdefaulttimeout(timeout)
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((host, port))
+            s.close()
+            return True
+        except OSError:
+            return False
+
+    def _is_online(self) -> bool:
+        return PrayerTimeClockWindow._is_online_static()
+
+    def _try_reconnect_and_refresh(self):
+        if self._is_online():
+            self.__setupData()
+            return
+
+        self.reconnect_worker = ReconnectWorker(
+            method="nmcli",
+            ssid=None,
+            iface="wlan0",
+            parent=self
+        )
+        self.reconnect_worker.finished.connect(self._after_reconnect_then_refresh)
+        self.reconnect_worker.start()
+
+    def _after_reconnect_then_refresh(self, ok: bool, msg: str):
+        if ok:
+            self.__setupData()
+        else:
+            self.retry_countdown = QTime(0, 5, 0)
+            if not self.__retry_timer.isActive():
+                self.__retry_timer.start(1000)
+            self.retry_time.show()
+
+
     def __setupData(self):
         now = datetime.now()
         self.current_prayer_index = 0
@@ -158,9 +232,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             self.last_updated_time.setText(current_time)
             self.led_sign.setStyleSheet("color: red")
             
-            self.retry_countdown = QTime(0, 5, 0)
-            self.__retry_timer.start(1000)
-            self.retry_time.show()
+            self._try_reconnect_and_refresh()
             
             
     def update_retry_timer(self):
@@ -170,7 +242,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         if self.retry_countdown == QTime(0, 0, 0):
             self.__retry_timer.stop()
             self.retry_time.hide()
-            self.__refresh_data()
+            self._try_reconnect_and_refresh()
 
     def set_prayer_times(self):
             
