@@ -174,6 +174,9 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
 
     def _after_reconnect_then_refresh(self, ok: bool, msg: str):
         if ok:
+            self.retry_countdown = QTime(0, 0, 0)
+            self.__retry_timer.stop()
+            self.retry_time.hide()
             self.__setupData()
         else:
             self.retry_countdown = QTime(0, 5, 0)
@@ -189,9 +192,6 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         prayer_times = self.scraper.get_prayer_times()
         
         if(prayer_times["requestSuccess"][0] == True):
-            self.__retry_timer.stop()
-            self.retry_countdown = QTime(0, 0, 0)
-            self.retry_time.hide()
             now = datetime.now()
             self.prayer_times = prayer_times
             
