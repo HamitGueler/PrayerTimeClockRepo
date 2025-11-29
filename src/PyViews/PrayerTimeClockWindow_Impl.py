@@ -190,6 +190,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         
         if(prayer_times["requestSuccess"][0] == True):
             self.__retry_timer.stop()
+            self.retry_countdown = QTime(0, 0, 0)
+            self.retry_time.hide()
             now = datetime.now()
             self.prayer_times = prayer_times
             
