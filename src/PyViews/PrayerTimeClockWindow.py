@@ -178,9 +178,9 @@ class IslamicGirihOrnament(QWidget):
         # Calm, but a little more perceptible than before. The approved ring
         # geometry stays unchanged; only the duration of each revolution changes.
         rotations = (
-            ("outer", seconds * 360.0 / 145.0),
-            ("middle", -seconds * 360.0 / 170.0),
-            ("inner", seconds * 360.0 / 125.0),
+            ("outer", seconds * 360.0 / 126.0),
+            ("middle", -seconds * 360.0 / 148.0),
+            ("inner", seconds * 360.0 / 109.0),
         )
         center = QPointF(self.width() / 2, self.height() / 2)
         for layer, angle in rotations:
