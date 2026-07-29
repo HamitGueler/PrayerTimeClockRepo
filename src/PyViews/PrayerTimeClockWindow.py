@@ -175,12 +175,12 @@ class IslamicGirihOrnament(QWidget):
         painter.setRenderHint(QPainter.SmoothPixmapTransform)
         painter.drawPixmap(0, 0, self._layer_cache["base"])
         seconds = self._animation_clock.elapsed() / 1000.0
-        # Deliberately calm but still perceptible: the approved rings retain
-        # their geometry and only rotate more slowly.
+        # Calm, but a little more perceptible than before. The approved ring
+        # geometry stays unchanged; only the duration of each revolution changes.
         rotations = (
-            ("outer", seconds * 360.0 / 174.0),
-            ("middle", -seconds * 360.0 / 204.0),
-            ("inner", seconds * 360.0 / 150.0),
+            ("outer", seconds * 360.0 / 145.0),
+            ("middle", -seconds * 360.0 / 170.0),
+            ("inner", seconds * 360.0 / 125.0),
         )
         center = QPointF(self.width() / 2, self.height() / 2)
         for layer, angle in rotations:
