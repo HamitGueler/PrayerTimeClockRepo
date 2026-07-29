@@ -377,9 +377,9 @@ class Ui_MainWindow:
         self.retranslateUi(main_window)
 
     def _build_clock_panel(self):
-        panel = OrientalClockPanel()
-        panel.setObjectName("clockPanel")
-        layout = QVBoxLayout(panel)
+        self.clockPanel = OrientalClockPanel()
+        self.clockPanel.setObjectName("clockPanel")
+        layout = QVBoxLayout(self.clockPanel)
         layout.setContentsMargins(24, 15, 24, 16)
         layout.setSpacing(0)
 
@@ -475,7 +475,7 @@ class Ui_MainWindow:
         self.quran_translation.setAlignment(Qt.AlignCenter)
         self.quran_translation.setWordWrap(True)
         layout.addWidget(self.quran_translation)
-        return panel
+        return self.clockPanel
 
     def _build_today_panel(self):
         panel = IslamicBorderFrame()
