@@ -1,39 +1,246 @@
-QWidget{
-    background-color: #191b1c;
+/* PrayerTimeClock – optimized for a 1024×600 Raspberry Pi display */
+QWidget {
+    background-color: #071217;
+    color: #eef7f7;
+    font-family: "DejaVu Sans", "Noto Sans", sans-serif;
 }
 
-QLabel{
-    color: white;
+QLabel {
+    background: transparent;
 }
 
-#next_prayers_box{
-    border: 2px solid #37a7ed;
+#clockPanel {
+    background-color: rgba(13, 29, 34, 0.60);
+    border: 0;
+    border-radius: 13px;
 }
 
-QPushButton{
-    color: white;
-    border: 1px solid #79b2d6;
-    background-color: #37a7ed;
+#todayPanel, #next_day_prayers_box {
+    background-color: rgba(13, 29, 34, 0.50);
+    border: 0;
+    border-radius: 13px;
 }
 
-QPushButton:hover{
-    color: white;
-    border: 1px solid #256a96;
-    background-color: #256a96;
+#current_time {
+    color: #f5f0e4;
+    font-size: 116px;
+    font-weight: 700;
+    letter-spacing: -5px;
 }
 
-QPushButton:pressed{
-    color: white;
-    border: 1px solid #0e4a6f;
-    background-color: #0e4a6f;
+#current_location {
+    color: #d1aa5d;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 2px;
 }
 
-QPushButton:disabled{
-    color: rgb(160, 156, 156);
-    border: 1px solid #6f7071;
-    background-color: #6f7071;
+#current_date {
+    color: #aabac0;
+    font-size: 20px;
+    padding-bottom: 2px;
 }
 
-QGroupBox{
-    background-color: #191b1c;
+#hijri_date {
+    color: #8fcfc5;
+    font-size: 16px;
+    font-weight: 650;
+    padding-bottom: 6px;
+}
+
+#islamic_event {
+    background-color: rgba(209, 170, 93, 0.15);
+    border: 1px solid rgba(224, 184, 95, 0.52);
+    border-radius: 9px;
+}
+
+#islamic_event #eventHeading {
+    color: #f0ce7b;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+}
+
+#islamic_event #eventTag, #tomorrow_islamic_notice #eventTag {
+    color: #f0ce7b;
+    background-color: rgba(209, 170, 93, 0.10);
+    border: 1px solid rgba(224, 184, 95, 0.42);
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 6px;
+}
+
+#clockPanel[sacredMonth="true"] {
+    border: 0;
+    background-color: rgba(16, 29, 33, 0.48);
+}
+
+#quran_arabic {
+    color: #d9c9a2;
+    font-family: "Noto Naskh Arabic", "Noto Sans Arabic", serif;
+    font-size: 22px;
+    font-weight: 600;
+    padding-top: 3px;
+}
+
+#quran_translation {
+    color: #a6b5b9;
+    font-size: 13px;
+    font-weight: 500;
+    font-style: italic;
+}
+
+#divider {
+    background-color: #20343b;
+    border: 0;
+    max-height: 1px;
+    margin: 6px 0 14px 0;
+}
+
+#rest_time_description, #midnight_label, #sectionTitle,
+#next_day_description, #last_updated_descrition {
+    color: #7d939b;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+#rest_time {
+    color: #56d7c1;
+    font-size: 43px;
+    font-weight: 700;
+}
+
+#midnight_time {
+    color: #d9e5e6;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+#last_updated_time {
+    color: #9fb1b7;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+#led_sign {
+    color: #56d7c1;
+    font-size: 16px;
+}
+
+#led_sign[online="true"] {
+    color: #56d7c1;
+}
+
+#led_sign[online="false"] {
+    color: #ffb86b;
+}
+
+#refresh_button {
+    color: #9bb0b7;
+    background-color: #14262d;
+    border: 1px solid #29414a;
+    border-radius: 17px;
+    font-size: 19px;
+    font-weight: 600;
+}
+
+#refresh_button:hover {
+    color: #ffffff;
+    background-color: #1a343b;
+    border-color: #56d7c1;
+}
+
+#refresh_button:pressed {
+    background-color: #56d7c1;
+    color: #081116;
+}
+
+#refresh_button:disabled {
+    color: #53666c;
+    background-color: #101c21;
+}
+
+#sectionTitle {
+    padding: 1px 8px 5px 8px;
+}
+
+#fajr_box, #shroq_box, #zohr_box, #asr_box, #magrb_box, #isha_box {
+    background-color: rgba(16, 38, 44, 0.76);
+    border: 1px solid rgba(71, 116, 112, 0.72);
+    border-radius: 10px 10px 5px 5px;
+}
+
+#fajr_box QLabel, #shroq_box QLabel, #zohr_box QLabel,
+#asr_box QLabel, #magrb_box QLabel, #isha_box QLabel {
+    background: transparent;
+    font-size: 21px;
+    font-weight: 600;
+}
+
+#current_day_fajr_time, #current_day_shroq_time, #current_day_zohr_time,
+#current_day_asr_time, #current_day_magrb_time, #current_day_isha_time {
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+QGroupBox[activePrayer="true"] {
+    background-color: #183b39;
+    border: 2px solid #d1aa5d;
+}
+
+QGroupBox[sunrise="true"] {
+    background-color: rgba(211, 169, 92, 0.08);
+    border-color: rgba(211, 169, 92, 0.35);
+}
+
+#next_day_prayers_box {
+    margin-top: 0;
+}
+
+#next_day_description {
+    color: #d1aa5d;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+#next_day_date {
+    color: #c7d4d7;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+#next_day_fajr_box, #next_day_shroq_box, #next_day_zohr_box,
+#next_day_asr_box, #next_day_magrb_box, #next_day_isha_box {
+    background-color: rgba(14, 33, 39, 0.74);
+    border: 1px solid rgba(98, 143, 132, 0.76);
+    border-radius: 12px 12px 4px 4px;
+}
+
+#tomorrow_islamic_notice {
+    background-color: rgba(209, 170, 93, 0.15);
+    border: 1px solid rgba(224, 184, 95, 0.50);
+    border-radius: 8px;
+}
+
+#next_day_fajr, #next_day_shroq, #next_day_zohr,
+#next_day_asr, #next_day_magrb, #next_day_isha {
+    color: #a8babf;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+#next_day_fajr_time, #next_day_shroq_time, #next_day_zohr_time,
+#next_day_asr_time, #next_day_magrb_time, #next_day_isha_time {
+    color: #f5efe1;
+    font-size: 23px;
+    font-weight: 800;
+}
+
+#retry_time {
+    color: #ffb86b;
+    font-size: 13px;
 }
