@@ -1,7 +1,7 @@
 import math
 
 from PySide6.QtCore import QElapsedTimer, QPointF, QRectF, Qt, QTimer
-from PySide6.QtGui import QColor, QPainter, QPainterPath, QPen, QPixmap, QPolygonF
+from PySide6.QtGui import QColor, QLinearGradient, QPainter, QPainterPath, QPen, QPixmap, QPolygonF
 from PySide6.QtWidgets import (
     QFrame,
     QGridLayout,
@@ -22,14 +22,14 @@ class IslamicGirihOrnament(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setFixedSize(158, 158)
+        self.setFixedSize(154, 154)
         self.setAttribute(Qt.WA_TransparentForMouseEvents)
         self._layer_cache = None
         self._animation_clock = QElapsedTimer()
         self._animation_clock.start()
         self._animation_timer = QTimer(self)
         self._animation_timer.timeout.connect(self.update)
-        self._animation_timer.start(40)
+        self._animation_timer.start(80)
 
     @staticmethod
     def _star(center, outer_radius, inner_radius, points=12, rotation=-math.pi / 2):
@@ -160,9 +160,9 @@ class IslamicGirihOrnament(QWidget):
         # Deliberately calm but still perceptible: the approved rings retain
         # their geometry and only rotate more slowly.
         rotations = (
-            ("outer", seconds * 360.0 / 58.0),
-            ("middle", -seconds * 360.0 / 68.0),
-            ("inner", seconds * 360.0 / 50.0),
+            ("outer", seconds * 360.0 / 174.0),
+            ("middle", -seconds * 360.0 / 204.0),
+            ("inner", seconds * 360.0 / 150.0),
         )
         center = QPointF(self.width() / 2, self.height() / 2)
         for layer, angle in rotations:
@@ -179,7 +179,7 @@ class IslamicGirihOrnament(QWidget):
 
 
 class IslamicPatternBackground(QWidget):
-    """Continuous, restrained stepped-star pattern used across the whole screen."""
+    """The same continuous 144 px arabesque tile used by the approved preview."""
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -187,43 +187,46 @@ class IslamicPatternBackground(QWidget):
 
     def _render_tile(self):
         ratio = self.devicePixelRatioF()
-        width, height = 192, 128
+        width = height = 144
         pixmap = QPixmap(int(width * ratio), int(height * ratio))
         pixmap.setDevicePixelRatio(ratio)
         pixmap.fill(Qt.transparent)
         painter = QPainter(pixmap)
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setBrush(Qt.NoBrush)
-        line = QColor(67, 92, 87, 42)
-        painter.setPen(QPen(line, 1.35, Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
+        painter.setPen(QPen(QColor(211, 173, 88, 43), 1.05, Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
 
-        # The single approved motif: a large stepped twelve-sided star with
-        # quiet parallel ribbons continuing seamlessly into neighbouring tiles.
-        star = QPolygonF([
-            QPointF(72, 16), QPointF(84, 28), QPointF(108, 28), QPointF(120, 16),
-            QPointF(120, 40), QPointF(136, 56), QPointF(136, 72), QPointF(120, 88),
-            QPointF(120, 112), QPointF(108, 100), QPointF(84, 100), QPointF(72, 112),
-            QPointF(72, 88), QPointF(56, 72), QPointF(56, 56), QPointF(72, 40),
-        ])
-        painter.drawPolygon(star)
-        painter.drawEllipse(QPointF(96, 64), 27, 27)
+        def polygon(points):
+            painter.drawPolygon(QPolygonF([QPointF(x, y) for x, y in points]))
 
+        polygon(((72, 34), (83, 45), (98, 45), (98, 60), (110, 72), (98, 84),
+                 (98, 99), (83, 99), (72, 110), (61, 99), (46, 99), (46, 84),
+                 (34, 72), (46, 60), (46, 45), (61, 45)))
+        polygon(((72, 41), (81, 52), (92, 52), (92, 63), (103, 72), (92, 81),
+                 (92, 92), (81, 92), (72, 103), (63, 92), (52, 92), (52, 81),
+                 (41, 72), (52, 63), (52, 52), (63, 52)))
         paths = (
-            # upper and lower horizontal continuations
-            ((0, 0), (48, 0), (64, 16), (72, 16)),
-            ((120, 16), (128, 16), (144, 0), (192, 0)),
-            ((0, 128), (48, 128), (64, 112), (72, 112)),
-            ((120, 112), (128, 112), (144, 128), (192, 128)),
-            # broad diagonal ribbons entering from both sides
-            ((0, 24), (40, 64), (56, 64)),
-            ((0, 40), (32, 72), (56, 96), (56, 112)),
-            ((192, 24), (152, 64), (136, 64)),
-            ((192, 40), (160, 72), (136, 96), (136, 112)),
-            ((0, 104), (40, 64), (56, 64)),
-            ((192, 104), (152, 64), (136, 64)),
+            ((0, 34), (18, 34), (34, 50), (34, 64), (42, 72), (34, 80), (34, 94), (18, 110), (0, 110)),
+            ((144, 34), (126, 34), (110, 50), (110, 64), (102, 72), (110, 80), (110, 94), (126, 110), (144, 110)),
+            ((34, 0), (34, 18), (50, 34), (64, 34), (72, 42), (80, 34), (94, 34), (110, 18), (110, 0)),
+            ((34, 144), (34, 126), (50, 110), (64, 110), (72, 102), (80, 110), (94, 110), (110, 126), (110, 144)),
+            ((0, 42), (14, 42), (34, 62)), ((0, 50), (11, 50), (28, 67)),
+            ((144, 42), (130, 42), (110, 62)), ((144, 50), (133, 50), (116, 67)),
+            ((42, 0), (42, 14), (62, 34)), ((50, 0), (50, 11), (67, 28)),
+            ((42, 144), (42, 130), (62, 110)), ((50, 144), (50, 133), (67, 116)),
         )
         for points in paths:
             painter.drawPolyline(QPolygonF([QPointF(x, y) for x, y in points]))
+        for points in (
+            ((72, 10), (80, 18), (72, 26), (64, 18)),
+            ((72, 118), (80, 126), (72, 134), (64, 126)),
+            ((10, 72), (18, 64), (26, 72), (18, 80)),
+            ((118, 72), (126, 64), (134, 72), (126, 80)),
+        ):
+            polygon(points)
+        painter.setPen(QPen(QColor(85, 213, 192, 17), 0.8))
+        painter.drawEllipse(QPointF(72, 72), 24, 24)
+        painter.drawEllipse(QPointF(72, 72), 15, 15)
         painter.end()
         return pixmap
 
@@ -231,7 +234,10 @@ class IslamicPatternBackground(QWidget):
         if self._cache is None:
             self._cache = self._render_tile()
         painter = QPainter(self)
-        painter.fillRect(self.rect(), QColor("#071217"))
+        gradient = QLinearGradient(0, 0, 0, self.height())
+        gradient.setColorAt(0, QColor("#071217"))
+        gradient.setColorAt(1, QColor("#050c10"))
+        painter.fillRect(self.rect(), gradient)
         painter.drawTiledPixmap(self.rect(), self._cache)
 
     def changeEvent(self, event):
