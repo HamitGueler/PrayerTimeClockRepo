@@ -10,7 +10,7 @@ QLabel {
 }
 
 #clockPanel {
-    background-color: rgba(13, 29, 34, 0.60);
+    background-color: rgba(13, 31, 37, 0.82);
     border: 0;
     border-radius: 13px;
 }
@@ -100,7 +100,7 @@ QLabel {
 
 #rest_time_description, #midnight_label, #sectionTitle,
 #next_day_description, #last_updated_descrition {
-    color: #a2b8bf;
+    color: #c5d6da;
     font-size: 17px;
     font-weight: 700;
     letter-spacing: 1px;
@@ -118,15 +118,23 @@ QLabel {
     font-weight: 600;
 }
 
+#update_status_panel {
+    background-color: rgba(21, 54, 61, 0.92);
+    border: 1px solid rgba(104, 168, 164, 0.62);
+    border-radius: 8px;
+}
+
 #last_updated_time {
-    color: #c3d1d5;
+    color: #f5faf9;
     font-size: 15px;
     font-weight: 650;
 }
 
 #led_sign {
     color: #52ead1;
-    font-size: 19px;
+    font-size: 17px;
+    padding: 0;
+    margin: 0;
 }
 
 #led_sign[online="true"] {
