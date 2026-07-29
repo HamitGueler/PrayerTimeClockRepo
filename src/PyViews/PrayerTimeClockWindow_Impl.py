@@ -27,7 +27,6 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.setWindowTitle("PrayerTimeClock")
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
-        self.setCursor(QCursor(Qt.BlankCursor))
         self.showFullScreen()
 
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
