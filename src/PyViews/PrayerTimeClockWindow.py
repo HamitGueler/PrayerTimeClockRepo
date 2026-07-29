@@ -56,100 +56,112 @@ class IslamicGirihOrnament(QWidget):
         painter = QPainter(pixmap)
         painter.setRenderHint(QPainter.Antialiasing)
         center = QPointF(self.width() / 2, self.height() / 2)
-        radius = min(self.width(), self.height()) * 0.475
+        # The approved SVG is drawn in a 138 x 138 ornament coordinate system
+        # (outer circle r=69) and displayed at 154 px.  Keep those coordinates
+        # instead of approximating the shapes from the widget radius.
+        scale = min(self.width(), self.height()) / 154.0
+        radius = 69.0 * scale
 
         if layer == "base":
-            # This field does not rotate; every ornamental path above it remains
-            # exactly the same as in the approved design.
-            painter.setPen(QPen(QColor(225, 188, 98, 125), 1.5))
-            painter.setBrush(QColor(5, 30, 35, 142))
-            painter.drawEllipse(center, radius * 0.92, radius * 0.92)
+            painter.setPen(QPen(QColor(217, 179, 95, 148), 1.0 * scale))
+            painter.setBrush(QColor(5, 33, 38, 199))
+            painter.drawEllipse(center, radius, radius)
 
-        def petal_path(angle, inner, shoulder, outer, half_width, pointed=False):
-            radial = QPointF(math.cos(angle), math.sin(angle))
-            tangent = QPointF(-math.sin(angle), math.cos(angle))
-            base = center + radial * inner
-            tip = center + radial * outer
-            left = center + radial * shoulder + tangent * half_width
-            right = center + radial * shoulder - tangent * half_width
-            path = QPainterPath(base)
-            if pointed:
-                path.cubicTo(base + tangent * half_width * 0.55, left, tip)
-                path.cubicTo(right, base - tangent * half_width * 0.55, base)
-            else:
-                crown_left = tip + tangent * half_width * 0.22 - radial * 2
-                crown_right = tip - tangent * half_width * 0.22 - radial * 2
-                path.cubicTo(base + tangent * half_width * 0.62, left, crown_left)
-                path.quadTo(tip + radial * 1.5, crown_right)
-                path.cubicTo(right, base - tangent * half_width * 0.62, base)
+        def preview_path(points):
+            """Build one of the exact paths used by the approved SVG preview."""
+            path = QPainterPath(center + QPointF(points[0][0], points[0][1]) * scale)
+            for command in points[1:]:
+                path.cubicTo(*[
+                    center + QPointF(command[index], command[index + 1]) * scale
+                    for index in range(0, 6, 2)
+                ])
             return path
 
+        outer_petal = (
+            (0, -44),
+            (10, -45, 13, -53, 0, -63),
+            (-13, -53, -10, -45, 0, -44),
+        )
+        lancet = (
+            (0, -27),
+            (10, -31, 14, -41, 0, -52),
+            (-14, -41, -10, -31, 0, -27),
+        )
+
+        def draw_rotated_path(path, angle, pen, brush):
+            painter.save()
+            painter.translate(center)
+            painter.rotate(angle)
+            painter.translate(-center)
+            painter.setPen(pen)
+            painter.setBrush(brush)
+            painter.drawPath(path)
+            painter.restore()
+
         if layer == "outer":
-            # Scalloped outer halo, comparable to the rounded lobes of a mandala.
+            path = preview_path(outer_petal)
             for index in range(24):
-                angle = -math.pi / 2 + index * math.tau / 24
-                petal = petal_path(angle, radius * 0.70, radius * 0.82, radius * 0.97, radius * 0.105)
-                painter.setPen(QPen(QColor(224, 187, 96, 178), 1.25))
-                painter.setBrush(QColor(18, 105, 98, 44) if index % 2 == 0 else QColor(181, 132, 49, 35))
-                painter.drawPath(petal)
+                draw_rotated_path(
+                    path,
+                    index * 15,
+                    QPen(QColor(226, 189, 104, 204), 1.0 * scale),
+                    QColor(20, 108, 103, 64),
+                )
 
-            # A dotted illuminated border, like the beadwork in the first reference.
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(QColor(235, 201, 115, 175))
-            for index in range(72):
-                angle = index * math.tau / 72
-                point = center + QPointF(math.cos(angle), math.sin(angle)) * radius * 0.885
-                painter.drawEllipse(point, 0.95, 0.95)
-
-            # Final enclosing ring from the approved preview. It is deliberately
-            # drawn last so the outer silhouette stays visible above the petals.
+            # Exact dotted r=57 ring from the preview plus the visible outer
+            # closure ring the Pi rendering previously lost.
+            painter.setPen(QPen(QColor(232, 200, 120, 204), 2.0 * scale, Qt.DotLine))
             painter.setBrush(Qt.NoBrush)
-            painter.setPen(QPen(QColor(239, 204, 118, 205), 1.35))
-            painter.drawEllipse(center, radius * 0.985, radius * 0.985)
+            painter.drawEllipse(center, 57.0 * scale, 57.0 * scale)
+            painter.setPen(QPen(QColor(226, 189, 104, 185), 1.0 * scale))
+            painter.drawEllipse(center, radius, radius)
 
-        # Two interleaved rings of curved lancets.  Their shoulders are broad,
-        # so the visible shapes read as leaves rather than narrow triangles.
         if layer == "middle":
-            for ring, rotation, color in (
-                ((0.43, 0.59, 0.78, 0.175), 0.0, QColor(35, 151, 139, 88)),
-                ((0.32, 0.47, 0.67, 0.155), math.pi / 12, QColor(176, 124, 43, 68)),
-            ):
-                inner, shoulder, outer, width = ring
-                for index in range(12):
-                    angle = -math.pi / 2 + rotation + index * math.tau / 12
-                    path = petal_path(angle, radius * inner, radius * shoulder, radius * outer, radius * width)
-                    painter.setPen(QPen(QColor(236, 202, 119, 190), 1.25))
-                    painter.setBrush(color)
-                    painter.drawPath(path)
+            path = preview_path(lancet)
+            for index in range(12):
+                draw_rotated_path(
+                    path,
+                    index * 30,
+                    QPen(QColor(231, 193, 109, 224), 1.0 * scale),
+                    QColor(23, 125, 118, 82),
+                )
 
-            # Curved interlace belt: three strokes create a dark separation,
-            # turquoise ribbon and thin gold inlay.
-            belt = QPainterPath()
-            for index in range(25):
-                angle = -math.pi / 2 + index * math.tau / 24
-                wave = radius * (0.535 + (0.075 if index % 2 == 0 else -0.025))
-                point = center + QPointF(math.cos(angle), math.sin(angle)) * wave
-                belt.moveTo(point) if index == 0 else belt.lineTo(point)
+            belt_points = (
+                (0, -39), (10, -31), (20, -33), (23, -23), (34, -19), (31, -9),
+                (39, 0), (31, 9), (34, 19), (23, 23), (20, 33), (10, 31),
+                (0, 39), (-10, 31), (-20, 33), (-23, 23), (-34, 19), (-31, 9),
+                (-39, 0), (-31, -9), (-34, -19), (-23, -23), (-20, -33),
+                (-10, -31),
+            )
+            belt = QPainterPath(center + QPointF(*belt_points[0]) * scale)
+            for point in belt_points[1:]:
+                belt.lineTo(center + QPointF(*point) * scale)
+            belt.closeSubpath()
             for width, color in ((9.0, QColor(2, 13, 16, 220)), (6.0, QColor(28, 137, 130, 190)), (1.35, QColor(240, 207, 125, 220))):
-                painter.setPen(QPen(color, width, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+                painter.setPen(QPen(color, width * scale, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
                 painter.setBrush(Qt.NoBrush)
                 painter.drawPath(belt)
 
-        # Fine central flower: 24 curved petals, two lace circles and a rosette.
         if layer == "inner":
+            path = preview_path(lancet)
             for index in range(24):
-                angle = -math.pi / 2 + index * math.tau / 24
-                painter.setPen(QPen(QColor(230, 194, 107, 170), 0.85))
-                painter.setBrush(QColor(13, 85, 82, 82))
-                painter.drawPath(petal_path(angle, radius * 0.10, radius * 0.22, radius * 0.37, radius * 0.055, True))
+                painter.save()
+                painter.translate(center)
+                painter.rotate(index * 15)
+                painter.scale(0.51, 0.51)
+                painter.translate(-center)
+                painter.setPen(QPen(QColor(230, 194, 107, 209), 0.85 * scale))
+                painter.setBrush(QColor(13, 85, 82, 148))
+                painter.drawPath(path)
+                painter.restore()
             painter.setBrush(Qt.NoBrush)
-            painter.setPen(QPen(QColor(236, 202, 117, 185), 1.1))
-            painter.drawEllipse(center, radius * 0.285, radius * 0.285)
-            painter.drawEllipse(center, radius * 0.17, radius * 0.17)
+            painter.setPen(QPen(QColor(231, 193, 107, 220), 1.0 * scale))
+            painter.drawEllipse(center, 19.5 * scale, 19.5 * scale)
+            painter.drawEllipse(center, 11.5 * scale, 11.5 * scale)
             painter.setBrush(QColor(192, 139, 49, 210))
-            painter.drawPolygon(self._star(center, radius * 0.12, radius * 0.072, points=12))
+            painter.drawPolygon(self._star(center, 8.1 * scale, 5.7 * scale, points=8))
             painter.setBrush(QColor(7, 36, 40, 235))
-            painter.drawEllipse(center, radius * 0.035, radius * 0.035)
+            painter.drawEllipse(center, 2.4 * scale, 2.4 * scale)
         painter.end()
         return pixmap
 
@@ -460,11 +472,11 @@ class Ui_MainWindow:
         midnight_col.setContentsMargins(8, 0, 0, 0)
         self.midnight_label = QLabel()
         self.midnight_label.setObjectName("midnight_label")
-        self.midnight_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        self.midnight_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         midnight_col.addWidget(self.midnight_label)
         self.midnight_time = QLabel()
         self.midnight_time.setObjectName("midnight_time")
-        self.midnight_time.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        self.midnight_time.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         midnight_col.addWidget(self.midnight_time)
         next_row.addLayout(midnight_col, 3)
         layout.addLayout(next_row)
