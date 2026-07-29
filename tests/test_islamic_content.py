@@ -1,6 +1,9 @@
 import unittest
+from datetime import datetime
+from unittest.mock import patch
 
 from src.PyViews.IslamicContent import (
+    get_hijri_info,
     special_day_status,
     special_day_tomorrow_notice,
     special_day_tomorrow_notices,
@@ -8,6 +11,15 @@ from src.PyViews.IslamicContent import (
 
 
 class SpecialDayStatusTests(unittest.TestCase):
+    def test_berlin_calendar_default_makes_july_30_third_white_day(self):
+        with patch.dict("os.environ", {}, clear=True):
+            tomorrow = get_hijri_info(datetime(2026, 7, 30))
+        self.assertEqual((15, 2), (tomorrow["day"], tomorrow["month"]))
+        self.assertEqual(
+            ["DONNERSTAG", "15. WEISSER TAG", "FASTEN EMPFOHLEN"],
+            special_day_tomorrow_notices(tomorrow["day"], tomorrow["month"], weekday=3),
+        )
+
     def test_white_days_have_today_and_tomorrow_indicators(self):
         self.assertIn("HEUTE", special_day_status(13, 2))
         self.assertIn("FASTEN", special_day_status(13, 2))
