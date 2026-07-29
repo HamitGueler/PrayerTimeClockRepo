@@ -165,7 +165,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
 
         self.reconnect_worker = ReconnectWorker(
             method="nmcli",
-            ssid=self.wifi_connection_name,  # <<< NEU: hier den Namen übergeben
+            ssid=self.wifi_connection_name,
             iface="wlan0",
             parent=self
         )
