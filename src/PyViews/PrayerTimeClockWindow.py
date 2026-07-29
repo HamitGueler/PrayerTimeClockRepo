@@ -212,8 +212,8 @@ class IslamicPatternBackground(QWidget):
         painter = QPainter(pixmap)
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setBrush(Qt.NoBrush)
-        line = QColor(67, 92, 87, 42)
-        painter.setPen(QPen(line, 1.35, Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
+        line = QColor(79, 121, 111, 68)
+        painter.setPen(QPen(line, 1.5, Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
 
         star = QPolygonF([
             QPointF(72, 16), QPointF(84, 28), QPointF(108, 28), QPointF(120, 16),
@@ -402,19 +402,29 @@ class Ui_MainWindow:
         status_row.addWidget(self.current_location)
         status_row.addStretch()
 
+        self.update_status_panel = QWidget()
+        self.update_status_panel.setObjectName("update_status_panel")
+        update_status_layout = QHBoxLayout(self.update_status_panel)
+        update_status_layout.setContentsMargins(9, 3, 8, 3)
+        update_status_layout.setSpacing(6)
+
         self.led_sign = QLabel("●")
         self.led_sign.setObjectName("led_sign")
         self.led_sign.setToolTip("Datenverbindung")
-        status_row.addWidget(self.led_sign)
+        self.led_sign.setFixedSize(18, 24)
+        self.led_sign.setAlignment(Qt.AlignCenter)
+        update_status_layout.addWidget(self.led_sign)
 
         self.last_updated_descrition = QLabel()
         self.last_updated_descrition.setObjectName("last_updated_descrition")
-        status_row.addWidget(self.last_updated_descrition)
+        self.last_updated_descrition.setAlignment(Qt.AlignVCenter)
+        update_status_layout.addWidget(self.last_updated_descrition)
         self.last_updated_time = QLabel()
         self.last_updated_time.setObjectName("last_updated_time")
         self.last_updated_time.setMinimumWidth(132)
         self.last_updated_time.setAlignment(Qt.AlignCenter)
-        status_row.addWidget(self.last_updated_time)
+        update_status_layout.addWidget(self.last_updated_time)
+        status_row.addWidget(self.update_status_panel)
 
         self.refresh_button = QPushButton()
         self.refresh_button.setObjectName("refresh_button")
