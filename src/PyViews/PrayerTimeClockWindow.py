@@ -1,7 +1,7 @@
 import math
 
 from PySide6.QtCore import QElapsedTimer, QPointF, QRectF, Qt, QTimer
-from PySide6.QtGui import QColor, QLinearGradient, QPainter, QPainterPath, QPen, QPixmap, QPolygonF
+from PySide6.QtGui import QColor, QPainter, QPainterPath, QPen, QPixmap, QPolygonF
 from PySide6.QtWidgets import (
     QFrame,
     QGridLayout,
@@ -101,17 +101,23 @@ class IslamicGirihOrnament(QWidget):
                 point = center + QPointF(math.cos(angle), math.sin(angle)) * radius * 0.885
                 painter.drawEllipse(point, 0.95, 0.95)
 
+            # Final enclosing ring from the approved preview. It is deliberately
+            # drawn last so the outer silhouette stays visible above the petals.
+            painter.setBrush(Qt.NoBrush)
+            painter.setPen(QPen(QColor(239, 204, 118, 205), 1.35))
+            painter.drawEllipse(center, radius * 0.985, radius * 0.985)
+
         # Two interleaved rings of curved lancets.  Their shoulders are broad,
         # so the visible shapes read as leaves rather than narrow triangles.
         if layer == "middle":
             for ring, rotation, color in (
-                ((0.45, 0.61, 0.78, 0.145), 0.0, QColor(35, 151, 139, 88)),
-                ((0.34, 0.49, 0.67, 0.125), math.pi / 12, QColor(176, 124, 43, 68)),
+                ((0.43, 0.59, 0.78, 0.175), 0.0, QColor(35, 151, 139, 88)),
+                ((0.32, 0.47, 0.67, 0.155), math.pi / 12, QColor(176, 124, 43, 68)),
             ):
                 inner, shoulder, outer, width = ring
                 for index in range(12):
                     angle = -math.pi / 2 + rotation + index * math.tau / 12
-                    path = petal_path(angle, radius * inner, radius * shoulder, radius * outer, radius * width, True)
+                    path = petal_path(angle, radius * inner, radius * shoulder, radius * outer, radius * width)
                     painter.setPen(QPen(QColor(236, 202, 119, 190), 1.25))
                     painter.setBrush(color)
                     painter.drawPath(path)
@@ -179,7 +185,7 @@ class IslamicGirihOrnament(QWidget):
 
 
 class IslamicPatternBackground(QWidget):
-    """The same continuous 144 px arabesque tile used by the approved preview."""
+    """Continuous, restrained stepped-star pattern used across the whole screen."""
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -187,46 +193,39 @@ class IslamicPatternBackground(QWidget):
 
     def _render_tile(self):
         ratio = self.devicePixelRatioF()
-        width = height = 144
+        width, height = 192, 128
         pixmap = QPixmap(int(width * ratio), int(height * ratio))
         pixmap.setDevicePixelRatio(ratio)
         pixmap.fill(Qt.transparent)
         painter = QPainter(pixmap)
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setBrush(Qt.NoBrush)
-        painter.setPen(QPen(QColor(211, 173, 88, 43), 1.05, Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
+        line = QColor(67, 92, 87, 42)
+        painter.setPen(QPen(line, 1.35, Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
 
-        def polygon(points):
-            painter.drawPolygon(QPolygonF([QPointF(x, y) for x, y in points]))
+        star = QPolygonF([
+            QPointF(72, 16), QPointF(84, 28), QPointF(108, 28), QPointF(120, 16),
+            QPointF(120, 40), QPointF(136, 56), QPointF(136, 72), QPointF(120, 88),
+            QPointF(120, 112), QPointF(108, 100), QPointF(84, 100), QPointF(72, 112),
+            QPointF(72, 88), QPointF(56, 72), QPointF(56, 56), QPointF(72, 40),
+        ])
+        painter.drawPolygon(star)
+        painter.drawEllipse(QPointF(96, 64), 27, 27)
 
-        polygon(((72, 34), (83, 45), (98, 45), (98, 60), (110, 72), (98, 84),
-                 (98, 99), (83, 99), (72, 110), (61, 99), (46, 99), (46, 84),
-                 (34, 72), (46, 60), (46, 45), (61, 45)))
-        polygon(((72, 41), (81, 52), (92, 52), (92, 63), (103, 72), (92, 81),
-                 (92, 92), (81, 92), (72, 103), (63, 92), (52, 92), (52, 81),
-                 (41, 72), (52, 63), (52, 52), (63, 52)))
         paths = (
-            ((0, 34), (18, 34), (34, 50), (34, 64), (42, 72), (34, 80), (34, 94), (18, 110), (0, 110)),
-            ((144, 34), (126, 34), (110, 50), (110, 64), (102, 72), (110, 80), (110, 94), (126, 110), (144, 110)),
-            ((34, 0), (34, 18), (50, 34), (64, 34), (72, 42), (80, 34), (94, 34), (110, 18), (110, 0)),
-            ((34, 144), (34, 126), (50, 110), (64, 110), (72, 102), (80, 110), (94, 110), (110, 126), (110, 144)),
-            ((0, 42), (14, 42), (34, 62)), ((0, 50), (11, 50), (28, 67)),
-            ((144, 42), (130, 42), (110, 62)), ((144, 50), (133, 50), (116, 67)),
-            ((42, 0), (42, 14), (62, 34)), ((50, 0), (50, 11), (67, 28)),
-            ((42, 144), (42, 130), (62, 110)), ((50, 144), (50, 133), (67, 116)),
+            ((0, 0), (48, 0), (64, 16), (72, 16)),
+            ((120, 16), (128, 16), (144, 0), (192, 0)),
+            ((0, 128), (48, 128), (64, 112), (72, 112)),
+            ((120, 112), (128, 112), (144, 128), (192, 128)),
+            ((0, 24), (40, 64), (56, 64)),
+            ((0, 40), (32, 72), (56, 96), (56, 112)),
+            ((192, 24), (152, 64), (136, 64)),
+            ((192, 40), (160, 72), (136, 96), (136, 112)),
+            ((0, 104), (40, 64), (56, 64)),
+            ((192, 104), (152, 64), (136, 64)),
         )
         for points in paths:
             painter.drawPolyline(QPolygonF([QPointF(x, y) for x, y in points]))
-        for points in (
-            ((72, 10), (80, 18), (72, 26), (64, 18)),
-            ((72, 118), (80, 126), (72, 134), (64, 126)),
-            ((10, 72), (18, 64), (26, 72), (18, 80)),
-            ((118, 72), (126, 64), (134, 72), (126, 80)),
-        ):
-            polygon(points)
-        painter.setPen(QPen(QColor(85, 213, 192, 17), 0.8))
-        painter.drawEllipse(QPointF(72, 72), 24, 24)
-        painter.drawEllipse(QPointF(72, 72), 15, 15)
         painter.end()
         return pixmap
 
@@ -234,10 +233,7 @@ class IslamicPatternBackground(QWidget):
         if self._cache is None:
             self._cache = self._render_tile()
         painter = QPainter(self)
-        gradient = QLinearGradient(0, 0, 0, self.height())
-        gradient.setColorAt(0, QColor("#071217"))
-        gradient.setColorAt(1, QColor("#050c10"))
-        painter.fillRect(self.rect(), gradient)
+        painter.fillRect(self.rect(), QColor("#071217"))
         painter.drawTiledPixmap(self.rect(), self._cache)
 
     def changeEvent(self, event):
