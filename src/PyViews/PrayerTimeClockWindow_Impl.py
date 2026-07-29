@@ -39,6 +39,12 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.audio_output.setVolume(1.0)
         self.audio_player = QMediaPlayer(self)
         self.audio_player.setAudioOutput(self.audio_output)
+        self.audio_player.playbackStateChanged.connect(self._on_audio_state_changed)
+        self.adhan_blink_timer = QTimer(self)
+        self.adhan_blink_timer.setInterval(450)
+        self.adhan_blink_timer.timeout.connect(self._toggle_adhan_blink)
+        self.adhan_blink_visible = False
+        self.active_prayer_index = None
 
         self.scraper = WebScraperClass()
         self.prayer_times = {}
@@ -201,7 +207,33 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             self.audio_player.setSource(QUrl.fromLocalFile(path))
             self.audio_player.play()
 
+    @Slot()
+    def _on_audio_state_changed(self, state):
+        if state == QMediaPlayer.PlayingState:
+            self.adhan_blink_visible = True
+            self._apply_adhan_blink()
+            self.adhan_blink_timer.start()
+        else:
+            self.adhan_blink_timer.stop()
+            self.adhan_blink_visible = False
+            self._apply_adhan_blink()
+
+    def _toggle_adhan_blink(self):
+        self.adhan_blink_visible = not self.adhan_blink_visible
+        self._apply_adhan_blink()
+
+    def _apply_adhan_blink(self):
+        for index, box in enumerate(self.prayer_boxes):
+            box.setProperty(
+                "adhanBlink",
+                self.adhan_blink_visible and index == self.active_prayer_index,
+            )
+            box.style().unpolish(box)
+            box.style().polish(box)
+            box.update()
+
     def _style_active_prayer(self, active_index):
+        self.active_prayer_index = active_index
         for index, box in enumerate(self.prayer_boxes):
             box.setProperty("activePrayer", index == active_index and index != 1)
             box.setProperty("sunrise", index == 1)
