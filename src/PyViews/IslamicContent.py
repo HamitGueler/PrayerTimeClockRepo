@@ -50,7 +50,9 @@ def get_hijri_info(value):
     from hijridate import Gregorian
 
     try:
-        adjustment = int(os.getenv("HIJRI_DATE_ADJUSTMENT", "0"))
+        # The Berlin mosque calendar used by this clock is one day behind the
+        # Umm al-Qura conversion used by hijridate. It can still be overridden.
+        adjustment = int(os.getenv("HIJRI_DATE_ADJUSTMENT", "-1"))
     except ValueError:
         adjustment = 0
     adjustment = max(-1, min(1, adjustment))
