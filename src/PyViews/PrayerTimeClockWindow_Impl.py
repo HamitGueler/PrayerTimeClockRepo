@@ -207,6 +207,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             box.setProperty("sunrise", index == 1)
             box.style().unpolish(box)
             box.style().polish(box)
+            box.update()
 
     def _update_midnight(self):
         maghrib = datetime.strptime(self.prayer_times["Prayers"][4], "%H:%M")
