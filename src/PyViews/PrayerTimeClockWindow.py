@@ -1,390 +1,579 @@
-# -*- coding: utf-8 -*-
+import math
 
-################################################################################
-## Form generated from reading UI file 'PrayerTime_Clock_WindowqciuaY.ui'
-##
-## Created by: Qt User Interface Compiler version 6.5.3
-##
-## WARNING! All changes made in this file will be lost when recompiling UI file!
-################################################################################
+from PySide6.QtCore import QElapsedTimer, QPointF, QRectF, Qt, QTimer
+from PySide6.QtGui import QColor, QPainter, QPainterPath, QPen, QPixmap, QPolygonF
+from PySide6.QtWidgets import (
+    QFrame,
+    QGridLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
+    QWidget,
+)
 
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFrame, QGroupBox, QLabel,
-    QMainWindow, QMenuBar, QPushButton, QSizePolicy,
-    QStatusBar, QWidget)
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        if not MainWindow.objectName():
-            MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1019, 685)
-        self.centralwidget = QWidget(MainWindow)
-        self.centralwidget.setObjectName(u"centralwidget")
-        self.current_time = QLabel(self.centralwidget)
-        self.current_time.setObjectName(u"current_time")
-        self.current_time.setGeometry(QRect(0, 0, 671, 171))
-        font = QFont()
-        font.setPointSize(150)
-        font.setBold(True)
-        self.current_time.setFont(font)
-        self.current_time.setStyleSheet(u"background: transparent;")
-        self.current_date = QLabel(self.centralwidget)
-        self.current_date.setObjectName(u"current_date")
-        self.current_date.setGeometry(QRect(10, 240, 631, 51))
-        font1 = QFont()
-        font1.setPointSize(30)
-        self.current_date.setFont(font1)
-        self.current_date.setStyleSheet(u"background: transparent;")
-        self.current_location = QLabel(self.centralwidget)
-        self.current_location.setObjectName(u"current_location")
-        self.current_location.setGeometry(QRect(10, 170, 281, 71))
-        font2 = QFont()
-        font2.setPointSize(50)
-        self.current_location.setFont(font2)
-        self.current_location.setStyleSheet(u"background: transparent;")
-        self.rest_time_description = QLabel(self.centralwidget)
-        self.rest_time_description.setObjectName(u"rest_time_description")
-        self.rest_time_description.setGeometry(QRect(10, 290, 661, 41))
-        font3 = QFont()
-        font3.setPointSize(20)
-        self.rest_time_description.setFont(font3)
-        self.rest_time_description.setStyleSheet(u"background: transparent;")
-        self.rest_time = QLabel(self.centralwidget)
-        self.rest_time.setObjectName(u"rest_time")
-        self.rest_time.setGeometry(QRect(10, 330, 341, 51))
-        font4 = QFont()
-        font4.setPointSize(40)
-        font4.setBold(True)
-        self.rest_time.setFont(font4)
-        self.rest_time.setStyleSheet(u"background: transparent;")
-        self.last_updated_descrition = QLabel(self.centralwidget)
-        self.last_updated_descrition.setObjectName(u"last_updated_descrition")
-        self.last_updated_descrition.setGeometry(QRect(230, 160, 321, 41))
-        self.last_updated_descrition.setFont(font3)
-        self.last_updated_descrition.setStyleSheet(u"background: transparent;")
-        self.last_updated_date = QLabel(self.centralwidget)
-        self.last_updated_date.setObjectName(u"last_updated_date")
-        self.last_updated_date.setGeometry(QRect(320, 200, 141, 21))
-        self.last_updated_date.setFont(font3)
-        self.last_updated_date.setStyleSheet(u"background: transparent;")
-        self.last_updated_time = QLabel(self.centralwidget)
-        self.last_updated_time.setObjectName(u"last_updated_time")
-        self.last_updated_time.setGeometry(QRect(230, 200, 71, 21))
-        self.last_updated_time.setFont(font3)
-        self.last_updated_time.setStyleSheet(u"background: transparent;")
-        self.led_sign = QLabel(self.centralwidget)
-        self.led_sign.setObjectName(u"led_sign")
-        self.led_sign.setGeometry(QRect(480, 200, 81, 91))
-        font5 = QFont()
-        font5.setPointSize(180)
-        self.led_sign.setFont(font5)
-        self.led_sign.setStyleSheet(u"background: transparent;")
-        self.refresh_button = QPushButton(self.centralwidget)
-        self.refresh_button.setObjectName(u"refresh_button")
-        self.refresh_button.setGeometry(QRect(220, 240, 101, 41))
-        font6 = QFont()
-        font6.setBold(True)
-        self.refresh_button.setFont(font6)
-        self.refresh_button.setStyleSheet(u"")
-        self.fajr_box = QGroupBox(self.centralwidget)
-        self.fajr_box.setObjectName(u"fajr_box")
-        self.fajr_box.setGeometry(QRect(710, 20, 291, 81))
-        self.current_day_fajr = QLabel(self.fajr_box)
-        self.current_day_fajr.setObjectName(u"current_day_fajr")
-        self.current_day_fajr.setGeometry(QRect(0, 0, 301, 41))
-        font7 = QFont()
-        font7.setPointSize(30)
-        font7.setBold(True)
-        font7.setUnderline(False)
-        font7.setStrikeOut(False)
-        font7.setKerning(True)
-        self.current_day_fajr.setFont(font7)
-        self.current_day_fajr.setStyleSheet(u"background: transparent;")
-        self.current_day_fajr.setFrameShape(QFrame.NoFrame)
-        self.current_day_fajr.setFrameShadow(QFrame.Plain)
-        self.current_day_fajr_time = QLabel(self.fajr_box)
-        self.current_day_fajr_time.setObjectName(u"current_day_fajr_time")
-        self.current_day_fajr_time.setGeometry(QRect(90, 30, 211, 51))
-        self.current_day_fajr_time.setFont(font4)
-        self.current_day_fajr_time.setStyleSheet(u"background: transparent;")
-        self.next_day_prayers_box = QGroupBox(self.centralwidget)
-        self.next_day_prayers_box.setObjectName(u"next_day_prayers_box")
-        self.next_day_prayers_box.setGeometry(QRect(0, 390, 701, 111))
-        self.next_day_description = QLabel(self.next_day_prayers_box)
-        self.next_day_description.setObjectName(u"next_day_description")
-        self.next_day_description.setGeometry(QRect(10, -10, 341, 51))
-        self.next_day_description.setFont(font3)
-        self.next_day_description.setStyleSheet(u"background: transparent;")
-        self.next_day_date = QLabel(self.next_day_prayers_box)
-        self.next_day_date.setObjectName(u"next_day_date")
-        self.next_day_date.setGeometry(QRect(270, 0, 301, 31))
-        self.next_day_date.setFont(font3)
-        self.next_day_date.setStyleSheet(u"background: transparent;")
-        self.next_day_magrb_box = QGroupBox(self.next_day_prayers_box)
-        self.next_day_magrb_box.setObjectName(u"next_day_magrb_box")
-        self.next_day_magrb_box.setGeometry(QRect(460, 40, 131, 71))
-        self.next_day_magrb = QLabel(self.next_day_magrb_box)
-        self.next_day_magrb.setObjectName(u"next_day_magrb")
-        self.next_day_magrb.setGeometry(QRect(0, 0, 131, 31))
-        font8 = QFont()
-        font8.setPointSize(20)
-        font8.setBold(True)
-        self.next_day_magrb.setFont(font8)
-        self.next_day_magrb.setStyleSheet(u"background: transparent;")
-        self.next_day_magrb_time = QLabel(self.next_day_magrb_box)
-        self.next_day_magrb_time.setObjectName(u"next_day_magrb_time")
-        self.next_day_magrb_time.setGeometry(QRect(0, 30, 121, 41))
-        font9 = QFont()
-        font9.setPointSize(30)
-        font9.setBold(True)
-        self.next_day_magrb_time.setFont(font9)
-        self.next_day_magrb_time.setStyleSheet(u"background: transparent;")
-        self.next_day_asr_box = QGroupBox(self.next_day_prayers_box)
-        self.next_day_asr_box.setObjectName(u"next_day_asr_box")
-        self.next_day_asr_box.setGeometry(QRect(350, 40, 111, 71))
-        self.next_day_asr = QLabel(self.next_day_asr_box)
-        self.next_day_asr.setObjectName(u"next_day_asr")
-        self.next_day_asr.setGeometry(QRect(0, 0, 111, 31))
-        self.next_day_asr.setFont(font8)
-        self.next_day_asr.setStyleSheet(u"background: transparent;")
-        self.next_day_asr_time = QLabel(self.next_day_asr_box)
-        self.next_day_asr_time.setObjectName(u"next_day_asr_time")
-        self.next_day_asr_time.setGeometry(QRect(0, 30, 111, 41))
-        self.next_day_asr_time.setFont(font9)
-        self.next_day_asr_time.setStyleSheet(u"background: transparent;")
-        self.next_day_zohr_box = QGroupBox(self.next_day_prayers_box)
-        self.next_day_zohr_box.setObjectName(u"next_day_zohr_box")
-        self.next_day_zohr_box.setGeometry(QRect(240, 40, 111, 71))
-        self.next_day_zohr = QLabel(self.next_day_zohr_box)
-        self.next_day_zohr.setObjectName(u"next_day_zohr")
-        self.next_day_zohr.setGeometry(QRect(0, 0, 111, 31))
-        self.next_day_zohr.setFont(font8)
-        self.next_day_zohr.setStyleSheet(u"background: transparent;")
-        self.next_day_zohr_time = QLabel(self.next_day_zohr_box)
-        self.next_day_zohr_time.setObjectName(u"next_day_zohr_time")
-        self.next_day_zohr_time.setGeometry(QRect(0, 30, 111, 41))
-        self.next_day_zohr_time.setFont(font9)
-        self.next_day_zohr_time.setStyleSheet(u"background: transparent;")
-        self.next_day_shroq_box = QGroupBox(self.next_day_prayers_box)
-        self.next_day_shroq_box.setObjectName(u"next_day_shroq_box")
-        self.next_day_shroq_box.setGeometry(QRect(120, 40, 121, 71))
-        self.next_day_shroq = QLabel(self.next_day_shroq_box)
-        self.next_day_shroq.setObjectName(u"next_day_shroq")
-        self.next_day_shroq.setGeometry(QRect(0, 0, 121, 31))
-        self.next_day_shroq.setFont(font8)
-        self.next_day_shroq.setStyleSheet(u"background: transparent;")
-        self.next_day_shroq_time = QLabel(self.next_day_shroq_box)
-        self.next_day_shroq_time.setObjectName(u"next_day_shroq_time")
-        self.next_day_shroq_time.setGeometry(QRect(0, 30, 121, 41))
-        self.next_day_shroq_time.setFont(font9)
-        self.next_day_shroq_time.setStyleSheet(u"background: transparent;")
-        self.next_day_fajr_box = QGroupBox(self.next_day_prayers_box)
-        self.next_day_fajr_box.setObjectName(u"next_day_fajr_box")
-        self.next_day_fajr_box.setGeometry(QRect(0, 40, 121, 71))
-        self.next_day_fajr = QLabel(self.next_day_fajr_box)
-        self.next_day_fajr.setObjectName(u"next_day_fajr")
-        self.next_day_fajr.setGeometry(QRect(0, 0, 121, 31))
-        self.next_day_fajr.setFont(font8)
-        self.next_day_fajr.setStyleSheet(u"background: transparent;")
-        self.next_day_fajr_time = QLabel(self.next_day_fajr_box)
-        self.next_day_fajr_time.setObjectName(u"next_day_fajr_time")
-        self.next_day_fajr_time.setGeometry(QRect(0, 30, 121, 41))
-        self.next_day_fajr_time.setFont(font9)
-        self.next_day_fajr_time.setStyleSheet(u"background: transparent;")
-        self.next_day_isha_box = QGroupBox(self.next_day_prayers_box)
-        self.next_day_isha_box.setObjectName(u"next_day_isha_box")
-        self.next_day_isha_box.setGeometry(QRect(590, 40, 121, 71))
-        self.next_day_isha = QLabel(self.next_day_isha_box)
-        self.next_day_isha.setObjectName(u"next_day_isha")
-        self.next_day_isha.setGeometry(QRect(0, 0, 111, 31))
-        self.next_day_isha.setFont(font8)
-        self.next_day_isha.setStyleSheet(u"background: transparent;")
-        self.next_day_isha_time = QLabel(self.next_day_isha_box)
-        self.next_day_isha_time.setObjectName(u"next_day_isha_time")
-        self.next_day_isha_time.setGeometry(QRect(0, 30, 111, 41))
-        self.next_day_isha_time.setFont(font9)
-        self.next_day_isha_time.setStyleSheet(u"background: transparent;")
-        self.zohr_box = QGroupBox(self.centralwidget)
-        self.zohr_box.setObjectName(u"zohr_box")
-        self.zohr_box.setGeometry(QRect(710, 180, 291, 81))
-        self.current_day_zohr = QLabel(self.zohr_box)
-        self.current_day_zohr.setObjectName(u"current_day_zohr")
-        self.current_day_zohr.setGeometry(QRect(0, 0, 301, 41))
-        self.current_day_zohr.setFont(font9)
-        self.current_day_zohr.setStyleSheet(u"background: transparent;")
-        self.current_day_zohr_time = QLabel(self.zohr_box)
-        self.current_day_zohr_time.setObjectName(u"current_day_zohr_time")
-        self.current_day_zohr_time.setGeometry(QRect(90, 30, 211, 51))
-        self.current_day_zohr_time.setFont(font4)
-        self.current_day_zohr_time.setToolTipDuration(-2)
-        self.current_day_zohr_time.setStyleSheet(u"background: transparent;")
-        self.current_day_zohr_time.raise_()
-        self.current_day_zohr.raise_()
-        self.shroq_box = QGroupBox(self.centralwidget)
-        self.shroq_box.setObjectName(u"shroq_box")
-        self.shroq_box.setGeometry(QRect(710, 100, 291, 81))
-        self.current_day_shroq = QLabel(self.shroq_box)
-        self.current_day_shroq.setObjectName(u"current_day_shroq")
-        self.current_day_shroq.setGeometry(QRect(0, 0, 301, 41))
-        self.current_day_shroq.setFont(font9)
-        self.current_day_shroq.setStyleSheet(u"background: transparent;")
-        self.current_day_shroq_time = QLabel(self.shroq_box)
-        self.current_day_shroq_time.setObjectName(u"current_day_shroq_time")
-        self.current_day_shroq_time.setGeometry(QRect(90, 30, 211, 51))
-        self.current_day_shroq_time.setFont(font4)
-        self.current_day_shroq_time.setStyleSheet(u"background: transparent;")
-        self.current_day_shroq_time.raise_()
-        self.current_day_shroq.raise_()
-        self.asr_box = QGroupBox(self.centralwidget)
-        self.asr_box.setObjectName(u"asr_box")
-        self.asr_box.setGeometry(QRect(710, 260, 291, 81))
-        self.current_day_asr = QLabel(self.asr_box)
-        self.current_day_asr.setObjectName(u"current_day_asr")
-        self.current_day_asr.setGeometry(QRect(0, 0, 301, 41))
-        self.current_day_asr.setFont(font9)
-        self.current_day_asr.setStyleSheet(u"background: transparent;")
-        self.current_day_asr_time = QLabel(self.asr_box)
-        self.current_day_asr_time.setObjectName(u"current_day_asr_time")
-        self.current_day_asr_time.setGeometry(QRect(90, 30, 211, 51))
-        self.current_day_asr_time.setFont(font4)
-        self.current_day_asr_time.setStyleSheet(u"background: transparent;")
-        self.magrb_box = QGroupBox(self.centralwidget)
-        self.magrb_box.setObjectName(u"magrb_box")
-        self.magrb_box.setGeometry(QRect(710, 340, 291, 81))
-        self.current_day_magrb = QLabel(self.magrb_box)
-        self.current_day_magrb.setObjectName(u"current_day_magrb")
-        self.current_day_magrb.setGeometry(QRect(0, 0, 301, 41))
-        self.current_day_magrb.setFont(font9)
-        self.current_day_magrb.setStyleSheet(u"background: transparent;")
-        self.current_day_magrb_time = QLabel(self.magrb_box)
-        self.current_day_magrb_time.setObjectName(u"current_day_magrb_time")
-        self.current_day_magrb_time.setGeometry(QRect(90, 30, 211, 51))
-        self.current_day_magrb_time.setFont(font4)
-        self.current_day_magrb_time.setStyleSheet(u"background: transparent;")
-        self.isha_box = QGroupBox(self.centralwidget)
-        self.isha_box.setObjectName(u"isha_box")
-        self.isha_box.setGeometry(QRect(710, 420, 291, 81))
-        self.current_day_isha = QLabel(self.isha_box)
-        self.current_day_isha.setObjectName(u"current_day_isha")
-        self.current_day_isha.setGeometry(QRect(0, 0, 301, 41))
-        self.current_day_isha.setFont(font9)
-        self.current_day_isha.setStyleSheet(u"background: transparent;")
-        self.current_day_isha_time = QLabel(self.isha_box)
-        self.current_day_isha_time.setObjectName(u"current_day_isha_time")
-        self.current_day_isha_time.setGeometry(QRect(90, 30, 211, 51))
-        self.current_day_isha_time.setFont(font4)
-        self.current_day_isha_time.setStyleSheet(u"background: transparent;")
-        self.retry_time = QLabel(self.centralwidget)
-        self.retry_time.setObjectName(u"retry_time")
-        self.retry_time.setGeometry(QRect(330, 230, 151, 51))
-        self.retry_time.setFont(font4)
-        self.retry_time.setStyleSheet(u"background: transparent;")
-        self.midnight_label = QLabel(self.centralwidget)
-        self.midnight_label.setObjectName(u"midnight_label")
-        self.midnight_label.setGeometry(QRect(220, 330, 241, 41))
-        font10 = QFont()
-        font10.setPointSize(25)
-        font10.setBold(True)
-        self.midnight_label.setFont(font10)
-        self.midnight_label.setStyleSheet(u"background: transparent;")
-        self.midnight_time = QLabel(self.centralwidget)
-        self.midnight_time.setObjectName(u"midnight_time")
-        self.midnight_time.setGeometry(QRect(430, 320, 131, 61))
-        self.midnight_time.setFont(font4)
-        self.midnight_time.setStyleSheet(u"background: transparent;")
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.current_time.raise_()
-        self.current_location.raise_()
-        self.rest_time.raise_()
-        self.last_updated_descrition.raise_()
-        self.last_updated_date.raise_()
-        self.last_updated_time.raise_()
-        self.fajr_box.raise_()
-        self.next_day_prayers_box.raise_()
-        self.zohr_box.raise_()
-        self.shroq_box.raise_()
-        self.asr_box.raise_()
-        self.magrb_box.raise_()
-        self.isha_box.raise_()
-        self.current_date.raise_()
-        self.rest_time_description.raise_()
-        self.refresh_button.raise_()
-        self.led_sign.raise_()
-        self.retry_time.raise_()
-        self.midnight_label.raise_()
-        self.midnight_time.raise_()
-        self.menubar = QMenuBar(MainWindow)
-        self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1019, 37))
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QStatusBar(MainWindow)
-        self.statusbar.setObjectName(u"statusbar")
-        MainWindow.setStatusBar(self.statusbar)
+class IslamicGirihOrnament(QWidget):
+    """Curved Islamic mandala inspired by carved arabesque and illuminated girih."""
 
-        self.retranslateUi(MainWindow)
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setFixedSize(158, 158)
+        self.setAttribute(Qt.WA_TransparentForMouseEvents)
+        self._layer_cache = None
+        self._animation_clock = QElapsedTimer()
+        self._animation_clock.start()
+        self._animation_timer = QTimer(self)
+        self._animation_timer.setTimerType(Qt.PreciseTimer)
+        self._animation_timer.timeout.connect(self.update)
+        self._animation_timer.start(40)
 
-        QMetaObject.connectSlotsByName(MainWindow)
-    # setupUi
+    @staticmethod
+    def _star(center, outer_radius, inner_radius, points=12, rotation=-math.pi / 2):
+        vertices = []
+        for index in range(points * 2):
+            angle = rotation + index * math.pi / points
+            radius = outer_radius if index % 2 == 0 else inner_radius
+            vertices.append(QPointF(center.x() + math.cos(angle) * radius, center.y() + math.sin(angle) * radius))
+        return QPolygonF(vertices)
 
-    def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.current_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
-        self.current_date.setText(QCoreApplication.translate("MainWindow", u"DD.MM.YY", None))
-        self.current_location.setText(QCoreApplication.translate("MainWindow", u"Location", None))
-        self.rest_time_description.setText(QCoreApplication.translate("MainWindow", u"Verbleibende Zeit bis zum n\u00e4chsten Gebet", None))
-        self.rest_time.setText(QCoreApplication.translate("MainWindow", u"00:00:00", None))
-        self.last_updated_descrition.setText(QCoreApplication.translate("MainWindow", u"Letzte Aktualisierung:", None))
-        self.last_updated_date.setText(QCoreApplication.translate("MainWindow", u"DD:MM:YY", None))
-        self.last_updated_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
-        self.led_sign.setText(QCoreApplication.translate("MainWindow", u":", None))
-        self.refresh_button.setText(QCoreApplication.translate("MainWindow", u"Aktualisieren", None))
-        self.fajr_box.setTitle("")
-        self.current_day_fajr.setText(QCoreApplication.translate("MainWindow", u"FAJR", None))
-        self.current_day_fajr_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
-        self.next_day_prayers_box.setTitle("")
-        self.next_day_description.setText(QCoreApplication.translate("MainWindow", u"Gebetszeiten f\u00fcr den", None))
-        self.next_day_date.setText(QCoreApplication.translate("MainWindow", u"DD.MM:YY", None))
-        self.next_day_magrb_box.setTitle("")
-        self.next_day_magrb.setText(QCoreApplication.translate("MainWindow", u"MAGHRIB", None))
-        self.next_day_magrb_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
-        self.next_day_asr_box.setTitle("")
-        self.next_day_asr.setText(QCoreApplication.translate("MainWindow", u"ASR", None))
-        self.next_day_asr_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
-        self.next_day_zohr_box.setTitle("")
-        self.next_day_zohr.setText(QCoreApplication.translate("MainWindow", u"DHUHR", None))
-        self.next_day_zohr_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
-        self.next_day_shroq_box.setTitle("")
-        self.next_day_shroq.setText(QCoreApplication.translate("MainWindow", u"SHURUQ", None))
-        self.next_day_shroq_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
-        self.next_day_fajr_box.setTitle("")
-        self.next_day_fajr.setText(QCoreApplication.translate("MainWindow", u"FAJR", None))
-        self.next_day_fajr_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
-        self.next_day_isha_box.setTitle("")
-        self.next_day_isha.setText(QCoreApplication.translate("MainWindow", u"ISHA", None))
-        self.next_day_isha_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
-        self.zohr_box.setTitle("")
-        self.current_day_zohr.setText(QCoreApplication.translate("MainWindow", u"DHUHR", None))
-        self.current_day_zohr_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
-        self.shroq_box.setTitle("")
-        self.current_day_shroq.setText(QCoreApplication.translate("MainWindow", u"SHURUQ", None))
-        self.current_day_shroq_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
-        self.asr_box.setTitle("")
-        self.current_day_asr.setText(QCoreApplication.translate("MainWindow", u"ASR", None))
-        self.current_day_asr_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
-        self.magrb_box.setTitle("")
-        self.current_day_magrb.setText(QCoreApplication.translate("MainWindow", u"MAGHRIB", None))
-        self.current_day_magrb_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
-        self.isha_box.setTitle("")
-        self.current_day_isha.setText(QCoreApplication.translate("MainWindow", u"ISHA", None))
-        self.current_day_isha_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
-        self.retry_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
-        self.midnight_label.setText(QCoreApplication.translate("MainWindow", u"Mitternacht:", None))
-        self.midnight_time.setText(QCoreApplication.translate("MainWindow", u"00:00", None))
-    # retranslateUi
+    @staticmethod
+    def _regular_polygon(center, radius, points, rotation=-math.pi / 2):
+        return QPolygonF([
+            QPointF(center.x() + math.cos(rotation + index * math.tau / points) * radius,
+                    center.y() + math.sin(rotation + index * math.tau / points) * radius)
+            for index in range(points)
+        ])
 
+    def _render(self, layer):
+        ratio = self.devicePixelRatioF()
+        pixmap = QPixmap(int(self.width() * ratio), int(self.height() * ratio))
+        pixmap.setDevicePixelRatio(ratio)
+        pixmap.fill(Qt.transparent)
+        painter = QPainter(pixmap)
+        painter.setRenderHint(QPainter.Antialiasing)
+        center = QPointF(self.width() / 2, self.height() / 2)
+        radius = min(self.width(), self.height()) * 0.475
+
+        if layer == "base":
+            # This field does not rotate; every ornamental path above it remains
+            # exactly the same as in the approved design.
+            painter.setPen(QPen(QColor(225, 188, 98, 125), 1.5))
+            painter.setBrush(QColor(5, 30, 35, 142))
+            painter.drawEllipse(center, radius * 0.92, radius * 0.92)
+
+        def petal_path(angle, inner, shoulder, outer, half_width, pointed=False):
+            radial = QPointF(math.cos(angle), math.sin(angle))
+            tangent = QPointF(-math.sin(angle), math.cos(angle))
+            base = center + radial * inner
+            tip = center + radial * outer
+            left = center + radial * shoulder + tangent * half_width
+            right = center + radial * shoulder - tangent * half_width
+            path = QPainterPath(base)
+            if pointed:
+                path.cubicTo(base + tangent * half_width * 0.55, left, tip)
+                path.cubicTo(right, base - tangent * half_width * 0.55, base)
+            else:
+                crown_left = tip + tangent * half_width * 0.22 - radial * 2
+                crown_right = tip - tangent * half_width * 0.22 - radial * 2
+                path.cubicTo(base + tangent * half_width * 0.62, left, crown_left)
+                path.quadTo(tip + radial * 1.5, crown_right)
+                path.cubicTo(right, base - tangent * half_width * 0.62, base)
+            return path
+
+        if layer == "outer":
+            # Scalloped outer halo, comparable to the rounded lobes of a mandala.
+            for index in range(24):
+                angle = -math.pi / 2 + index * math.tau / 24
+                petal = petal_path(angle, radius * 0.70, radius * 0.82, radius * 0.97, radius * 0.105)
+                painter.setPen(QPen(QColor(224, 187, 96, 178), 1.25))
+                painter.setBrush(QColor(18, 105, 98, 44) if index % 2 == 0 else QColor(181, 132, 49, 35))
+                painter.drawPath(petal)
+
+            # A dotted illuminated border, like the beadwork in the first reference.
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(QColor(235, 201, 115, 175))
+            for index in range(72):
+                angle = index * math.tau / 72
+                point = center + QPointF(math.cos(angle), math.sin(angle)) * radius * 0.885
+                painter.drawEllipse(point, 0.95, 0.95)
+
+        # Two interleaved rings of curved lancets.  Their shoulders are broad,
+        # so the visible shapes read as leaves rather than narrow triangles.
+        if layer == "middle":
+            for ring, rotation, color in (
+                ((0.45, 0.61, 0.78, 0.145), 0.0, QColor(35, 151, 139, 88)),
+                ((0.34, 0.49, 0.67, 0.125), math.pi / 12, QColor(176, 124, 43, 68)),
+            ):
+                inner, shoulder, outer, width = ring
+                for index in range(12):
+                    angle = -math.pi / 2 + rotation + index * math.tau / 12
+                    path = petal_path(angle, radius * inner, radius * shoulder, radius * outer, radius * width, True)
+                    painter.setPen(QPen(QColor(236, 202, 119, 190), 1.25))
+                    painter.setBrush(color)
+                    painter.drawPath(path)
+
+            # Curved interlace belt: three strokes create a dark separation,
+            # turquoise ribbon and thin gold inlay.
+            belt = QPainterPath()
+            for index in range(25):
+                angle = -math.pi / 2 + index * math.tau / 24
+                wave = radius * (0.535 + (0.075 if index % 2 == 0 else -0.025))
+                point = center + QPointF(math.cos(angle), math.sin(angle)) * wave
+                belt.moveTo(point) if index == 0 else belt.lineTo(point)
+            for width, color in ((9.0, QColor(2, 13, 16, 220)), (6.0, QColor(28, 137, 130, 190)), (1.35, QColor(240, 207, 125, 220))):
+                painter.setPen(QPen(color, width, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+                painter.setBrush(Qt.NoBrush)
+                painter.drawPath(belt)
+
+        # Fine central flower: 24 curved petals, two lace circles and a rosette.
+        if layer == "inner":
+            for index in range(24):
+                angle = -math.pi / 2 + index * math.tau / 24
+                painter.setPen(QPen(QColor(230, 194, 107, 170), 0.85))
+                painter.setBrush(QColor(13, 85, 82, 82))
+                painter.drawPath(petal_path(angle, radius * 0.10, radius * 0.22, radius * 0.37, radius * 0.055, True))
+            painter.setBrush(Qt.NoBrush)
+            painter.setPen(QPen(QColor(236, 202, 117, 185), 1.1))
+            painter.drawEllipse(center, radius * 0.285, radius * 0.285)
+            painter.drawEllipse(center, radius * 0.17, radius * 0.17)
+            painter.setBrush(QColor(192, 139, 49, 210))
+            painter.drawPolygon(self._star(center, radius * 0.12, radius * 0.072, points=12))
+            painter.setBrush(QColor(7, 36, 40, 235))
+            painter.drawEllipse(center, radius * 0.035, radius * 0.035)
+        painter.end()
+        return pixmap
+
+    def paintEvent(self, event):
+        if self._layer_cache is None:
+            self._layer_cache = {
+                layer: self._render(layer)
+                for layer in ("base", "outer", "middle", "inner")
+            }
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.SmoothPixmapTransform)
+        painter.drawPixmap(0, 0, self._layer_cache["base"])
+        seconds = self._animation_clock.elapsed() / 1000.0
+        # Deliberately calm but still perceptible: the approved rings retain
+        # their geometry and only rotate more slowly.
+        rotations = (
+            ("outer", seconds * 360.0 / 58.0),
+            ("middle", -seconds * 360.0 / 68.0),
+            ("inner", seconds * 360.0 / 50.0),
+        )
+        center = QPointF(self.width() / 2, self.height() / 2)
+        for layer, angle in rotations:
+            painter.save()
+            painter.translate(center)
+            painter.rotate(angle)
+            painter.translate(-center)
+            painter.drawPixmap(0, 0, self._layer_cache[layer])
+            painter.restore()
+
+    def resizeEvent(self, event):
+        self._layer_cache = None
+        super().resizeEvent(event)
+
+
+class IslamicPatternBackground(QWidget):
+    """Continuous, restrained stepped-star pattern used across the whole screen."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._cache = None
+
+    def _render_tile(self):
+        ratio = self.devicePixelRatioF()
+        width, height = 192, 128
+        pixmap = QPixmap(int(width * ratio), int(height * ratio))
+        pixmap.setDevicePixelRatio(ratio)
+        pixmap.fill(Qt.transparent)
+        painter = QPainter(pixmap)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setBrush(Qt.NoBrush)
+        line = QColor(67, 92, 87, 42)
+        painter.setPen(QPen(line, 1.35, Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin))
+
+        # The single approved motif: a large stepped twelve-sided star with
+        # quiet parallel ribbons continuing seamlessly into neighbouring tiles.
+        star = QPolygonF([
+            QPointF(72, 16), QPointF(84, 28), QPointF(108, 28), QPointF(120, 16),
+            QPointF(120, 40), QPointF(136, 56), QPointF(136, 72), QPointF(120, 88),
+            QPointF(120, 112), QPointF(108, 100), QPointF(84, 100), QPointF(72, 112),
+            QPointF(72, 88), QPointF(56, 72), QPointF(56, 56), QPointF(72, 40),
+        ])
+        painter.drawPolygon(star)
+        painter.drawEllipse(QPointF(96, 64), 27, 27)
+
+        paths = (
+            # upper and lower horizontal continuations
+            ((0, 0), (48, 0), (64, 16), (72, 16)),
+            ((120, 16), (128, 16), (144, 0), (192, 0)),
+            ((0, 128), (48, 128), (64, 112), (72, 112)),
+            ((120, 112), (128, 112), (144, 128), (192, 128)),
+            # broad diagonal ribbons entering from both sides
+            ((0, 24), (40, 64), (56, 64)),
+            ((0, 40), (32, 72), (56, 96), (56, 112)),
+            ((192, 24), (152, 64), (136, 64)),
+            ((192, 40), (160, 72), (136, 96), (136, 112)),
+            ((0, 104), (40, 64), (56, 64)),
+            ((192, 104), (152, 64), (136, 64)),
+        )
+        for points in paths:
+            painter.drawPolyline(QPolygonF([QPointF(x, y) for x, y in points]))
+        painter.end()
+        return pixmap
+
+    def paintEvent(self, event):
+        if self._cache is None:
+            self._cache = self._render_tile()
+        painter = QPainter(self)
+        painter.fillRect(self.rect(), QColor("#071217"))
+        painter.drawTiledPixmap(self.rect(), self._cache)
+
+    def changeEvent(self, event):
+        self._cache = None
+        super().changeEvent(event)
+
+
+class OrientalClockPanel(QFrame):
+    """Paints a calm mihrab silhouette over the shared background lattice."""
+
+    def paintEvent(self, event):
+        super().paintEvent(event)
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+
+        painter.setBrush(Qt.NoBrush)
+        painter.setPen(QPen(QColor(202, 166, 91, 34), 1.2))
+        painter.drawLine(26, 32, self.width() - 26, 32)
+
+        # Nested pointed mihrab arches frame the time.
+        arch = QPainterPath()
+        left, right, top, bottom = 34.0, self.width() - 34.0, 51.0, 286.0
+        arch.moveTo(left, bottom)
+        arch.lineTo(left, 138)
+        arch.cubicTo(left, 92, self.width() * 0.34, 77, self.width() / 2, top)
+        arch.cubicTo(self.width() * 0.66, 77, right, 92, right, 138)
+        arch.lineTo(right, bottom)
+        painter.setPen(QPen(QColor(86, 215, 193, 26), 1.3))
+        painter.drawPath(arch)
+        inner_arch = QPainterPath()
+        inner_arch.moveTo(left + 8, bottom)
+        inner_arch.lineTo(left + 8, 143)
+        inner_arch.cubicTo(left + 8, 102, self.width() * 0.36, 87, self.width() / 2, top + 12)
+        inner_arch.cubicTo(self.width() * 0.64, 87, right - 8, 102, right - 8, 143)
+        inner_arch.lineTo(right - 8, bottom)
+        painter.setPen(QPen(QColor(202, 166, 91, 22), 1.0))
+        painter.drawPath(inner_arch)
+
+        # Small ornamental corner fans.
+        painter.setPen(QPen(QColor(86, 215, 193, 34), 1.0))
+        for mirrored in (False, True):
+            origin_x = 34 if not mirrored else self.width() - 34
+            direction = 1 if not mirrored else -1
+            for radius in (10, 17, 24):
+                painter.drawArc(QRectF(origin_x - radius if not mirrored else origin_x,
+                                       337, radius, radius), 0 if not mirrored else 90 * 16, 90 * 16)
+            painter.drawLine(origin_x, 361, origin_x + direction * 31, 361)
+
+
+class IslamicBorderFrame(QFrame):
+    """Fine illuminated frame with small eightfold arabesques in the corners."""
+
+    def paintEvent(self, event):
+        super().paintEvent(event)
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setBrush(Qt.NoBrush)
+        inset = 4.5
+        painter.setPen(QPen(QColor(211, 170, 93, 76), 1.0))
+        painter.drawRoundedRect(
+            QRectF(inset, inset, self.width() - 2 * inset, self.height() - 2 * inset),
+            10,
+            10,
+        )
+        painter.setPen(QPen(QColor(86, 215, 193, 64), 0.9))
+        for x, y, sx, sy in (
+            (inset + 9, inset + 9, 1, 1),
+            (self.width() - inset - 9, inset + 9, -1, 1),
+            (inset + 9, self.height() - inset - 9, 1, -1),
+            (self.width() - inset - 9, self.height() - inset - 9, -1, -1),
+        ):
+            path = QPainterPath(QPointF(x, y + sy * 8))
+            path.quadTo(QPointF(x + sx * 2, y + sy * 2), QPointF(x + sx * 8, y))
+            path.quadTo(QPointF(x + sx * 2, y - sy * 2), QPointF(x, y - sy * 8))
+            painter.drawPath(path)
+
+
+class SpecialEventTags(QWidget):
+    """A shared day heading followed by every matching event tag."""
+
+    def __init__(self, heading="", parent=None):
+        super().__init__(parent)
+        row = QHBoxLayout(self)
+        row.setContentsMargins(7, 3, 7, 3)
+        row.setSpacing(6)
+        self.heading = QLabel(heading)
+        self.heading.setObjectName("eventHeading")
+        self.heading.setVisible(bool(heading))
+        row.addWidget(self.heading, 0, Qt.AlignVCenter)
+        self.row = row
+        self.tags = []
+        row.addStretch(1)
+        self.hide()
+
+    def setTags(self, values):
+        values = list(values)
+        while len(self.tags) < len(values):
+            tag = QLabel()
+            tag.setObjectName("eventTag")
+            tag.setAlignment(Qt.AlignCenter)
+            self.tags.append(tag)
+            self.row.insertWidget(self.row.count() - 1, tag, 0, Qt.AlignVCenter)
+        for index, tag in enumerate(self.tags):
+            if index < len(values):
+                tag.setText(values[index])
+                tag.show()
+            else:
+                tag.clear()
+                tag.hide()
+        self.setVisible(bool(values))
+
+
+class Ui_MainWindow:
+    PRAYERS = (
+        ("fajr", "FAJR"),
+        ("shroq", "SHURŪQ"),
+        ("zohr", "DHUHR"),
+        ("asr", "ASR"),
+        ("magrb", "MAGHRIB"),
+        ("isha", "ISHA"),
+    )
+
+    def setupUi(self, main_window: QMainWindow):
+        main_window.setObjectName("MainWindow")
+        main_window.resize(1024, 600)
+        main_window.setMinimumSize(800, 480)
+
+        self.centralwidget = IslamicPatternBackground(main_window)
+        self.centralwidget.setObjectName("centralwidget")
+        root = QVBoxLayout(self.centralwidget)
+        root.setContentsMargins(24, 18, 24, 16)
+        root.setSpacing(12)
+
+        content = QHBoxLayout()
+        content.setSpacing(18)
+        content.addWidget(self._build_clock_panel(), 3)
+        content.addWidget(self._build_today_panel(), 2)
+        root.addLayout(content, 1)
+        root.addWidget(self._build_tomorrow_panel())
+
+        main_window.setCentralWidget(self.centralwidget)
+        self.retranslateUi(main_window)
+
+    def _build_clock_panel(self):
+        panel = OrientalClockPanel()
+        panel.setObjectName("clockPanel")
+        layout = QVBoxLayout(panel)
+        layout.setContentsMargins(24, 15, 24, 16)
+        layout.setSpacing(0)
+
+        status_row = QHBoxLayout()
+        self.current_location = QLabel()
+        self.current_location.setObjectName("current_location")
+        status_row.addWidget(self.current_location)
+        status_row.addStretch()
+
+        self.led_sign = QLabel("●")
+        self.led_sign.setObjectName("led_sign")
+        self.led_sign.setToolTip("Datenverbindung")
+        status_row.addWidget(self.led_sign)
+
+        self.last_updated_descrition = QLabel()
+        self.last_updated_descrition.setObjectName("last_updated_descrition")
+        status_row.addWidget(self.last_updated_descrition)
+        self.last_updated_time = QLabel()
+        self.last_updated_time.setObjectName("last_updated_time")
+        self.last_updated_time.setMinimumWidth(132)
+        self.last_updated_time.setAlignment(Qt.AlignCenter)
+        status_row.addWidget(self.last_updated_time)
+
+        self.refresh_button = QPushButton()
+        self.refresh_button.setObjectName("refresh_button")
+        self.refresh_button.setFixedSize(34, 34)
+        status_row.addWidget(self.refresh_button)
+        status_row.setSpacing(7)
+        layout.addLayout(status_row)
+
+        time_row = QHBoxLayout()
+        time_row.setSpacing(8)
+        self.current_time = QLabel()
+        self.current_time.setObjectName("current_time")
+        self.current_time.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        time_row.addWidget(self.current_time, 1)
+
+        ornament_column = QVBoxLayout()
+        ornament_column.setContentsMargins(0, 18, 0, 0)
+        ornament_column.addStretch(1)
+        self.islamic_ornament = IslamicGirihOrnament()
+        ornament_column.addWidget(self.islamic_ornament, 0, Qt.AlignHCenter | Qt.AlignBottom)
+        time_row.addLayout(ornament_column)
+        layout.addLayout(time_row, 1)
+
+        self.current_date = QLabel()
+        self.current_date.setObjectName("current_date")
+        layout.addWidget(self.current_date)
+
+        self.hijri_date = QLabel()
+        self.hijri_date.setObjectName("hijri_date")
+        layout.addWidget(self.hijri_date)
+
+        self.islamic_event = SpecialEventTags("HEUTE")
+        self.islamic_event.setObjectName("islamic_event")
+        layout.addWidget(self.islamic_event)
+
+        divider = QFrame()
+        divider.setObjectName("divider")
+        divider.setFrameShape(QFrame.HLine)
+        layout.addWidget(divider)
+
+        next_row = QHBoxLayout()
+        next_col = QVBoxLayout()
+        self.rest_time_description = QLabel()
+        self.rest_time_description.setObjectName("rest_time_description")
+        next_col.addWidget(self.rest_time_description)
+        self.rest_time = QLabel()
+        self.rest_time.setObjectName("rest_time")
+        next_col.addWidget(self.rest_time)
+        next_row.addLayout(next_col, 1)
+
+        midnight_col = QVBoxLayout()
+        self.midnight_label = QLabel()
+        self.midnight_label.setObjectName("midnight_label")
+        midnight_col.addWidget(self.midnight_label)
+        self.midnight_time = QLabel()
+        self.midnight_time.setObjectName("midnight_time")
+        midnight_col.addWidget(self.midnight_time)
+        next_row.addLayout(midnight_col)
+        layout.addLayout(next_row)
+
+        self.retry_time = QLabel()
+        self.retry_time.setObjectName("retry_time")
+        layout.addWidget(self.retry_time)
+
+        self.quran_arabic = QLabel()
+        self.quran_arabic.setObjectName("quran_arabic")
+        self.quran_arabic.setAlignment(Qt.AlignCenter)
+        layout.addWidget(self.quran_arabic)
+        self.quran_translation = QLabel()
+        self.quran_translation.setObjectName("quran_translation")
+        self.quran_translation.setAlignment(Qt.AlignCenter)
+        self.quran_translation.setWordWrap(True)
+        layout.addWidget(self.quran_translation)
+        return panel
+
+    def _build_today_panel(self):
+        panel = IslamicBorderFrame()
+        panel.setObjectName("todayPanel")
+        layout = QVBoxLayout(panel)
+        layout.setContentsMargins(14, 12, 14, 12)
+        layout.setSpacing(5)
+
+        title = QLabel("HEUTIGE GEBETSZEITEN")
+        title.setObjectName("sectionTitle")
+        layout.addWidget(title)
+
+        for key, title_text in self.PRAYERS:
+            box = QGroupBox()
+            box.setObjectName(f"{key}_box")
+            row = QHBoxLayout(box)
+            row.setContentsMargins(15, 5, 15, 5)
+
+            name = QLabel(title_text)
+            name.setObjectName(f"current_day_{key}")
+            time = QLabel("00:00")
+            time.setObjectName(f"current_day_{key}_time")
+            time.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            row.addWidget(name)
+            row.addStretch()
+            row.addWidget(time)
+            setattr(self, f"current_day_{key}", name)
+            setattr(self, f"current_day_{key}_time", time)
+            setattr(self, f"{key}_box", box)
+            layout.addWidget(box, 1)
+        return panel
+
+    def _build_tomorrow_panel(self):
+        self.next_day_prayers_box = IslamicBorderFrame()
+        self.next_day_prayers_box.setObjectName("next_day_prayers_box")
+        layout = QVBoxLayout(self.next_day_prayers_box)
+        layout.setContentsMargins(18, 8, 18, 10)
+        layout.setSpacing(5)
+
+        heading = QHBoxLayout()
+        heading.setSpacing(18)
+        self.next_day_description = QLabel()
+        self.next_day_description.setObjectName("next_day_description")
+        self.next_day_description.setMinimumWidth(100)
+        self.next_day_description.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+        heading.addWidget(self.next_day_description, 0, Qt.AlignLeft | Qt.AlignVCenter)
+        self.next_day_date = QLabel()
+        self.next_day_date.setObjectName("next_day_date")
+        self.next_day_date.setMinimumWidth(120)
+        self.next_day_date.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+        self.next_day_date.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        self.next_day_date.hide()
+        self.tomorrow_islamic_notice = SpecialEventTags()
+        self.tomorrow_islamic_notice.setObjectName("tomorrow_islamic_notice")
+        self.tomorrow_islamic_notice.hide()
+        heading.addWidget(self.tomorrow_islamic_notice, 1)
+        heading.addStretch()
+        layout.addLayout(heading)
+
+        prayers = QGridLayout()
+        prayers.setHorizontalSpacing(8)
+        for column, (key, title_text) in enumerate(self.PRAYERS):
+            box = QGroupBox()
+            box.setObjectName(f"next_day_{key}_box")
+            inner = QVBoxLayout(box)
+            inner.setContentsMargins(7, 4, 7, 5)
+            inner.setSpacing(0)
+            name = QLabel(title_text)
+            name.setAlignment(Qt.AlignCenter)
+            name.setObjectName(f"next_day_{key}")
+            time = QLabel("00:00")
+            time.setAlignment(Qt.AlignCenter)
+            time.setObjectName(f"next_day_{key}_time")
+            inner.addWidget(name)
+            inner.addWidget(time)
+            setattr(self, f"next_day_{key}_box", box)
+            setattr(self, f"next_day_{key}", name)
+            setattr(self, f"next_day_{key}_time", time)
+            prayers.addWidget(box, 0, column)
+        layout.addLayout(prayers)
+        return self.next_day_prayers_box
+
+    def retranslateUi(self, main_window: QMainWindow):
+        main_window.setWindowTitle("PrayerTimeClock")
+        self.current_location.setText("BERLIN")
+        self.current_time.setText("23:35")
+        self.current_date.setText("Dienstag, 04. Februar 2025")
+        self.hijri_date.setText("5. Schaʿbān 1446")
+        self.islamic_event.setTags([])
+        self.last_updated_descrition.setText("AKTUELL")
+        self.last_updated_time.setText("04.02.2025 · 23:35")
+        self.refresh_button.setText("↻")
+        self.rest_time_description.setText("NÄCHSTES GEBET · FAJR")
+        self.rest_time.setText("06:08:18")
+        self.midnight_label.setText("ISLAMISCHE MITTERNACHT")
+        self.midnight_time.setText("00:47")
+        self.retry_time.setText("Neuer Verbindungsversuch in 05:00")
+        self.quran_arabic.setText("إِنَّ مَعَ الْعُسْرِ يُسْرًا")
+        self.quran_translation.setText("„Gewiss, mit der Erschwernis ist Erleichterung.“ · Qurʾān 94:6")
+        self.next_day_description.setText("MORGEN")
+        self.next_day_date.setText("05.02.2025")
