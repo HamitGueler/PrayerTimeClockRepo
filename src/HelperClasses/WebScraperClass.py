@@ -19,7 +19,7 @@ class WebScraperClass:
     def _extract_times_from_row(row):
         cells = [cell.get_text(strip=True).replace("\xa0", " ") for cell in row.find_all("td")]
         times = [cell for cell in cells if TIME_RE.fullmatch(cell)]
-        return times[1:7] if len(times) >= 7 else []
+        return times[:6] if len(times) >= 6 else []
 
     def get_prayer_times(self):
         today = datetime.now()
