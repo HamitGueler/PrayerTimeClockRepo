@@ -451,16 +451,22 @@ class Ui_MainWindow:
         self.rest_time = QLabel()
         self.rest_time.setObjectName("rest_time")
         next_col.addWidget(self.rest_time)
-        next_row.addLayout(next_col, 1)
+        # Match the approved 1024 px preview: the countdown owns roughly
+        # three fifths of the row and the midnight block begins clearly in
+        # the right-hand part of the clock panel.
+        next_row.addLayout(next_col, 5)
 
         midnight_col = QVBoxLayout()
+        midnight_col.setContentsMargins(8, 0, 0, 0)
         self.midnight_label = QLabel()
         self.midnight_label.setObjectName("midnight_label")
+        self.midnight_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         midnight_col.addWidget(self.midnight_label)
         self.midnight_time = QLabel()
         self.midnight_time.setObjectName("midnight_time")
+        self.midnight_time.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         midnight_col.addWidget(self.midnight_time)
-        next_row.addLayout(midnight_col)
+        next_row.addLayout(midnight_col, 3)
         layout.addLayout(next_row)
 
         self.retry_time = QLabel()
