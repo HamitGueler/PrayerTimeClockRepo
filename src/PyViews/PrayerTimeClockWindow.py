@@ -28,7 +28,6 @@ class IslamicGirihOrnament(QWidget):
         self._animation_clock = QElapsedTimer()
         self._animation_clock.start()
         self._animation_timer = QTimer(self)
-        self._animation_timer.setTimerType(Qt.PreciseTimer)
         self._animation_timer.timeout.connect(self.update)
         self._animation_timer.start(40)
 
