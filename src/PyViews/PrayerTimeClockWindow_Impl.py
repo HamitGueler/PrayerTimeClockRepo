@@ -2,9 +2,9 @@ import json
 import os
 from datetime import datetime, timedelta
 
-import pygame
-from PySide6.QtCore import QObject, QRunnable, QThreadPool, QTimer, Qt, Signal, Slot
+from PySide6.QtCore import QObject, QRunnable, QThreadPool, QTimer, Qt, QUrl, Signal, Slot
 from PySide6.QtGui import QCursor
+from PySide6.QtMultimedia import QAudioOutput, QMediaPlayer
 from PySide6.QtWidgets import QMainWindow
 
 from PyViews.PrayerTimeClockWindow import Ui_MainWindow
@@ -49,10 +49,12 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.project_root = os.path.abspath(os.path.join(self.current_dir, "..", ".."))
         self.src_dir = os.path.abspath(os.path.join(self.current_dir, ".."))
         self.cache_path = os.path.join(self.src_dir, "prayer_times_cache.json")
-        pygame.mixer.pre_init(44100, -16, 2, 2048)
-        pygame.mixer.init()
         self.fajr_adhan_path = os.path.join(self.src_dir, "AudioFiles", "fajr_adhan.mp3")
         self.adhan_path = os.path.join(self.src_dir, "AudioFiles", "adhan.mp3")
+        self.audio_output = QAudioOutput(self)
+        self.audio_output.setVolume(1.0)
+        self.audio_player = QMediaPlayer(self)
+        self.audio_player.setAudioOutput(self.audio_output)
 
         self.scraper = WebScraperClass()
         self.thread_pool = QThreadPool.globalInstance()
@@ -224,12 +226,11 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         path = self.fajr_adhan_path if index == 0 else self.adhan_path
         self._play_audio(path)
 
-    @staticmethod
-    def _play_audio(path):
+    def _play_audio(self, path):
         if os.path.exists(path):
-            pygame.mixer.music.stop()
-            pygame.mixer.music.load(path)
-            pygame.mixer.music.play()
+            self.audio_player.stop()
+            self.audio_player.setSource(QUrl.fromLocalFile(path))
+            self.audio_player.play()
 
     def _style_active_prayer(self, active_index):
         for index, box in enumerate(self.prayer_boxes):
