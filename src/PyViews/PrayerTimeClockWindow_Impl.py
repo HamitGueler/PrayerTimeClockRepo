@@ -2,7 +2,7 @@ import json
 import os
 from datetime import datetime, timedelta
 
-from PySide6.QtCore import QObject, QRunnable, QThreadPool, QTimer, Qt, QUrl, Signal, Slot
+from PySide6.QtCore import QTimer, Qt, QUrl, Slot
 from PySide6.QtGui import QCursor
 from PySide6.QtMultimedia import QAudioOutput, QMediaPlayer
 from PySide6.QtWidgets import QMainWindow
@@ -15,21 +15,6 @@ from PyViews.IslamicContent import (
     special_day_tomorrow_notices,
 )
 from HelperClasses.WebScraperClass import WebScraperClass
-
-
-class _FetchSignals(QObject):
-    finished = Signal(dict)
-
-
-class _FetchPrayerTimes(QRunnable):
-    def __init__(self, scraper):
-        super().__init__()
-        self.scraper = scraper
-        self.signals = _FetchSignals()
-
-    @Slot()
-    def run(self):
-        self.signals.finished.emit(self.scraper.get_prayer_times())
 
 
 class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
@@ -57,7 +42,6 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.audio_player.setAudioOutput(self.audio_output)
 
         self.scraper = WebScraperClass()
-        self.thread_pool = QThreadPool.globalInstance()
         self.prayer_times = {}
         self.fetch_in_progress = False
         self.last_fetch_date = None
@@ -93,23 +77,9 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.retry_timer.timeout.connect(self.refresh_data)
         self.retry_time.hide()
 
-        # Keep the clock visible on a dedicated kiosk display. This intentionally
-        # does not click or confirm foreign dialogs.
-        self.kiosk_timer = QTimer(self)
-        self.kiosk_timer.setInterval(2000)
-        self.kiosk_timer.timeout.connect(self._keep_clock_in_foreground)
-        self.kiosk_timer.start()
-
         self.update_clock()
         self._load_cached_prayer_times()
         self.refresh_data()
-
-    @Slot()
-    def _keep_clock_in_foreground(self):
-        if self.isMinimized():
-            self.showFullScreen()
-        self.raise_()
-        self.activateWindow()
 
     @Slot()
     def refresh_data(self):
@@ -117,14 +87,14 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             return
         self.fetch_in_progress = True
         self.refresh_button.setDisabled(True)
-        worker = _FetchPrayerTimes(self.scraper)
-        worker.signals.finished.connect(self._apply_prayer_times)
-        self.thread_pool.start(worker)
+        try:
+            self._apply_prayer_times(self.scraper.get_prayer_times())
+        finally:
+            self.fetch_in_progress = False
+            self.refresh_button.setDisabled(False)
 
     @Slot(dict)
     def _apply_prayer_times(self, data):
-        self.fetch_in_progress = False
-        self.refresh_button.setDisabled(False)
         now = datetime.now()
         if data.get("requestSuccess", [False])[0] and self.scraper.has_valid_prayer_times(data):
             self.prayer_times = data
