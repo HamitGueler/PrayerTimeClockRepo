@@ -13,28 +13,24 @@ until pactl info >/dev/null 2>&1; do
   sleep 0.5
 done
 
-# Warte auf Internetverbindung (max. 60s)
+# Prüfe die Internetverbindung (max. 60s). Die App startet anschließend
+# in jedem Fall, damit der lokale Tages-Cache auch offline genutzt wird.
+online=false
 for i in {1..60}; do
     echo Warte auf Internetverbindung...
     if ping -c 1 8.8.8.8 &> /dev/null; then
         echo "Internetverbindung erkannt"
-
-        # Git Pull ausführen
-        if git pull | grep -q -v "Already up to date."; then
-            echo "Git Pull erfolgreich mit Änderungen"
-        else
-            echo "Git Pull erfolgreich, aber keine Änderungen"
-        fi
-
-        # Aktiviere virtuelle Umgebung
-        source venv/bin/activate
-
-        # Starte die App
-    exec    python src/PrayerTimeClock.py
-        exit 0
+        online=true
+        break
     fi
     sleep 1
 done
 
-echo "Keine Internetverbindung – App wird NICHT gestartet"
-exit 1
+if "$online"; then
+    git pull --ff-only || echo "Git Pull fehlgeschlagen – vorhandenen Stand starten"
+else
+    echo "Keine Internetverbindung – starte mit lokalem Tages-Cache"
+fi
+
+source venv/bin/activate
+exec python src/PrayerTimeClock.py
