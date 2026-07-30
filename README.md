@@ -237,8 +237,12 @@ atmen bereits im Normalbetrieb sichtbar über Kerngröße und zwei getrennte
 Leuchthöfe. Während des
 Adhāns steuert das Analyseprofil zusätzlich stufenlos Anzahl, Größe,
 Auf-/Abbewegung, Deckkraft und Glow der Partikel sowie Ausdehnung und Leuchten
-der drei Ornamentringe. Die Ringe starten bewusst mit innerem Spielraum, damit
-ihre Expansion nicht mehr an der Widget-Grenze abgeschnitten wird.
+der drei Ornamentringe. Die normale Ornamentgröße bleibt dabei unverändert:
+Der äußere Ring reagiert nur dezent, während der Impuls in Mittel- und Innenring
+deutlicher sichtbar wird. Die zusätzlichen Leuchtringe bleiben vollständig
+innerhalb der Zeichenfläche und werden auch in der Mini-Vorschau nicht
+abgeschnitten. Der äußere Partikel-Halo ist gegenüber der kräftigeren
+Tageslichtabstimmung leicht reduziert.
 
 Die Diyanet-Quelle ist derzeit fest auf Berlin eingestellt:
 
