@@ -20,6 +20,13 @@ class SpecialDayStatusTests(unittest.TestCase):
             special_day_tomorrow_notices(tomorrow["day"], tomorrow["month"], weekday=3),
         )
 
+    def test_hijri_adjustment_can_be_selected_in_settings(self):
+        previous = get_hijri_info(datetime(2026, 7, 30), adjustment=-2)
+        default = get_hijri_info(datetime(2026, 7, 30), adjustment=-1)
+        following = get_hijri_info(datetime(2026, 7, 30), adjustment=0)
+        self.assertEqual(default["day"] - 1, previous["day"])
+        self.assertEqual(default["day"] + 1, following["day"])
+
     def test_white_days_have_today_and_tomorrow_indicators(self):
         self.assertIn("HEUTE", special_day_status(13, 2))
         self.assertIn("FASTEN", special_day_status(13, 2))

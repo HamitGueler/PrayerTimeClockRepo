@@ -149,7 +149,7 @@ QLabel {
     color: #ff626f;
 }
 
-#refresh_button {
+#refresh_button, #settings_button {
     color: #6debd7;
     background-color: #17343b;
     border: 1px solid #46717a;
@@ -158,18 +158,18 @@ QLabel {
     font-weight: 600;
 }
 
-#refresh_button:hover {
+#refresh_button:hover, #settings_button:hover {
     color: #ffffff;
     background-color: #1a343b;
     border-color: #56d7c1;
 }
 
-#refresh_button:pressed {
+#refresh_button:pressed, #settings_button:pressed {
     background-color: #56d7c1;
     color: #081116;
 }
 
-#refresh_button:disabled {
+#refresh_button:disabled, #settings_button:disabled {
     color: #53666c;
     background-color: #101c21;
 }
@@ -265,4 +265,66 @@ QGroupBox[sunrise="true"] {
 #retry_time[status="stale"] {
     color: #ff7a84;
     font-weight: 700;
+}
+
+#settings_dialog {
+    background-color: #0b1f25;
+    border: 2px solid #d7b35f;
+    border-radius: 16px;
+}
+
+#settings_title {
+    color: #f1c867;
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+#settings_subtitle, #settings_hint {
+    color: #b8cdd1;
+    font-size: 15px;
+}
+
+#settings_dialog QLabel, #settings_dialog QSpinBox,
+#settings_dialog QComboBox, #settings_dialog QPushButton {
+    font-size: 17px;
+}
+
+#settings_dialog QComboBox, #settings_dialog QSpinBox {
+    color: #ffffff;
+    background-color: #15353d;
+    border: 1px solid #47767c;
+    border-radius: 7px;
+    padding: 7px 10px;
+}
+
+#settings_dialog QSlider::groove:horizontal {
+    height: 8px;
+    background: #173941;
+    border-radius: 4px;
+}
+
+#settings_dialog QSlider::sub-page:horizontal {
+    background: #50d9c4;
+    border-radius: 4px;
+}
+
+#settings_dialog QSlider::handle:horizontal {
+    width: 22px;
+    margin: -7px 0;
+    background: #f0c765;
+    border-radius: 11px;
+}
+
+#settings_dialog QPushButton {
+    color: #ffffff;
+    background-color: #19454b;
+    border: 1px solid #5b8c8d;
+    border-radius: 8px;
+    padding: 9px 18px;
+}
+
+#settings_dialog QPushButton:hover {
+    background-color: #246059;
+    border-color: #70dfca;
 }

@@ -1,11 +1,26 @@
 import json
 import os
+import re
+import shutil
+import subprocess
 from datetime import datetime, timedelta
 
-from PySide6.QtCore import QTimer, Qt, QUrl, Slot
+from PySide6.QtCore import QSettings, QTimer, Qt, QUrl, Signal, Slot
 from PySide6.QtGui import QCursor
 from PySide6.QtMultimedia import QAudioOutput, QMediaPlayer
-from PySide6.QtWidgets import QMainWindow
+from PySide6.QtWidgets import (
+    QComboBox,
+    QDialog,
+    QDialogButtonBox,
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QPushButton,
+    QSlider,
+    QSpinBox,
+    QVBoxLayout,
+)
 
 from PyViews.PrayerTimeClockWindow import Ui_MainWindow
 from PyViews.IslamicContent import (
@@ -17,10 +32,94 @@ from PyViews.IslamicContent import (
 from HelperClasses.WebScraperClass import WebScraperClass
 
 
+class SettingsDialog(QDialog):
+    test_adhan_requested = Signal()
+
+    def __init__(self, volume, brightness, display_profile, hijri_adjustment, parent=None):
+        super().__init__(parent)
+        self.setObjectName("settings_dialog")
+        self.setWindowTitle("Einstellungen")
+        self.setModal(True)
+        self.setMinimumWidth(520)
+        self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
+
+        page = QVBoxLayout(self)
+        page.setContentsMargins(32, 26, 32, 24)
+        title = QLabel("EINSTELLUNGEN")
+        title.setObjectName("settings_title")
+        page.addWidget(title)
+        subtitle = QLabel("Änderungen werden nach dem Speichern dauerhaft übernommen.")
+        subtitle.setObjectName("settings_subtitle")
+        page.addWidget(subtitle)
+
+        form = QFormLayout()
+        form.setHorizontalSpacing(26)
+        form.setVerticalSpacing(18)
+
+        self.volume_slider = QSlider(Qt.Horizontal)
+        self.volume_slider.setRange(0, 100)
+        self.volume_slider.setValue(volume)
+        self.volume_value = QLabel()
+        self.volume_slider.valueChanged.connect(
+            lambda value: self.volume_value.setText(f"{value} %")
+        )
+        self.volume_value.setText(f"{volume} %")
+        volume_row = QHBoxLayout()
+        volume_row.addWidget(self.volume_slider, 1)
+        volume_row.addWidget(self.volume_value)
+        form.addRow("Adhān-Lautstärke", volume_row)
+
+        self.brightness_slider = QSlider(Qt.Horizontal)
+        self.brightness_slider.setRange(10, 100)
+        self.brightness_slider.setValue(brightness)
+        self.brightness_value = QLabel()
+        self.brightness_slider.valueChanged.connect(
+            lambda value: self.brightness_value.setText(f"{value} %")
+        )
+        self.brightness_value.setText(f"{brightness} %")
+        brightness_row = QHBoxLayout()
+        brightness_row.addWidget(self.brightness_slider, 1)
+        brightness_row.addWidget(self.brightness_value)
+        form.addRow("Bildschirmhelligkeit", brightness_row)
+
+        self.display_profile = QComboBox()
+        self.display_profile.addItems(("7 Zoll", "10 Zoll", "14 Zoll"))
+        self.display_profile.setCurrentText(display_profile)
+        form.addRow("Displayprofil", self.display_profile)
+
+        self.hijri_adjustment = QSpinBox()
+        self.hijri_adjustment.setRange(-2, 2)
+        self.hijri_adjustment.setValue(hijri_adjustment)
+        self.hijri_adjustment.setSuffix(" Tage")
+        form.addRow("Hijri-Korrektur", self.hijri_adjustment)
+        page.addLayout(form)
+
+        hint = QLabel(
+            "Die Helligkeitssteuerung funktioniert, wenn der angeschlossene "
+            "Bildschirm sie dem Raspberry Pi zur Verfügung stellt."
+        )
+        hint.setObjectName("settings_hint")
+        hint.setWordWrap(True)
+        page.addWidget(hint)
+
+        test_button = QPushButton("Adhān testen")
+        test_button.setObjectName("test_adhan_button")
+        test_button.clicked.connect(self.test_adhan_requested)
+        page.addWidget(test_button)
+
+        buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
+        buttons.button(QDialogButtonBox.Save).setText("Speichern")
+        buttons.button(QDialogButtonBox.Cancel).setText("Abbrechen")
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        page.addWidget(buttons)
+
+
 class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
     # Diyanet order: Fajr/Imsak, sunrise, Dhuhr, Asr, Maghrib, Isha.
     ACTUAL_PRAYER_INDICES = (0, 2, 3, 4, 5)
     PRAYER_NAMES = ("FAJR", "SHURŪQ", "DHUHR", "ASR", "MAGHRIB", "ISHA")
+    DISPLAY_SCALES = {"7 Zoll": 1.0, "10 Zoll": 1.14, "14 Zoll": 1.28}
 
     def __init__(self):
         super().__init__()
@@ -35,8 +134,13 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.cache_path = os.path.join(self.src_dir, "prayer_times_cache.json")
         self.fajr_adhan_path = os.path.join(self.src_dir, "AudioFiles", "fajr_adhan.mp3")
         self.adhan_path = os.path.join(self.src_dir, "AudioFiles", "adhan.mp3")
+        self.settings = QSettings("PrayerTimeClock", "PrayerTimeClock")
+        self.volume = self.settings.value("volume", 100, int)
+        self.brightness = self.settings.value("brightness", 100, int)
+        self.display_profile = self.settings.value("displayProfile", "7 Zoll", str)
+        self.hijri_adjustment = self.settings.value("hijriAdjustment", -1, int)
         self.audio_output = QAudioOutput(self)
-        self.audio_output.setVolume(1.0)
+        self.audio_output.setVolume(self.volume / 100.0)
         self.audio_player = QMediaPlayer(self)
         self.audio_player.setAudioOutput(self.audio_output)
         self.audio_player.playbackStateChanged.connect(self._on_audio_state_changed)
@@ -70,10 +174,14 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
 
         style_path = os.path.join(self.project_root, "style.css")
         with open(style_path, encoding="utf-8") as style_file:
-            self.setStyleSheet(style_file.read())
+            self.base_style_sheet = style_file.read()
+        self._apply_display_profile(self.display_profile)
+        self._apply_brightness(self.brightness)
 
         self.refresh_button.clicked.connect(self.refresh_data)
         self.refresh_button.setCursor(QCursor(Qt.PointingHandCursor))
+        self.settings_button.clicked.connect(self.open_settings)
+        self.settings_button.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.clock_timer = QTimer(self)
         self.clock_timer.timeout.connect(self.update_clock)
@@ -87,6 +195,80 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.update_clock()
         self._load_cached_prayer_times()
         self.refresh_data()
+
+    @Slot()
+    def open_settings(self):
+        dialog = SettingsDialog(
+            self.volume,
+            self.brightness,
+            self.display_profile,
+            self.hijri_adjustment,
+            self,
+        )
+        dialog.setStyleSheet(self.styleSheet())
+        dialog.test_adhan_requested.connect(
+            lambda: self._preview_adhan(dialog.volume_slider.value())
+        )
+        if dialog.exec() != QDialog.Accepted:
+            self.audio_player.stop()
+            self.audio_output.setVolume(self.volume / 100.0)
+            return
+        self.volume = dialog.volume_slider.value()
+        self.brightness = dialog.brightness_slider.value()
+        self.display_profile = dialog.display_profile.currentText()
+        self.hijri_adjustment = dialog.hijri_adjustment.value()
+        self.settings.setValue("volume", self.volume)
+        self.settings.setValue("brightness", self.brightness)
+        self.settings.setValue("displayProfile", self.display_profile)
+        self.settings.setValue("hijriAdjustment", self.hijri_adjustment)
+        self.settings.sync()
+        self.audio_output.setVolume(self.volume / 100.0)
+        self._apply_brightness(self.brightness)
+        self._apply_display_profile(self.display_profile)
+        self.last_content_date = None
+        self._update_islamic_content(datetime.now())
+
+    def _preview_adhan(self, volume):
+        self.audio_output.setVolume(volume / 100.0)
+        self._play_audio(self.adhan_path)
+
+    def _apply_display_profile(self, profile):
+        scale = self.DISPLAY_SCALES.get(profile, 1.0)
+
+        def scale_pixels(match):
+            value = float(match.group(1))
+            return f"{max(1, round(value * scale))}px"
+
+        scaled_style = re.sub(r"(\d+(?:\.\d+)?)px", scale_pixels, self.base_style_sheet)
+        self.setStyleSheet(scaled_style)
+        ornament_size = round(154 * scale)
+        self.islamic_ornament.setFixedSize(ornament_size, ornament_size)
+
+    @staticmethod
+    def _apply_brightness(value):
+        if shutil.which("brightnessctl"):
+            result = subprocess.run(
+                ["brightnessctl", "set", f"{value}%"],
+                check=False,
+                capture_output=True,
+                timeout=3,
+            )
+            if result.returncode == 0:
+                return True
+        backlight_root = "/sys/class/backlight"
+        if os.path.isdir(backlight_root):
+            for device in os.listdir(backlight_root):
+                device_path = os.path.join(backlight_root, device)
+                try:
+                    with open(os.path.join(device_path, "max_brightness"), encoding="utf-8") as file:
+                        maximum = int(file.read().strip())
+                    brightness_path = os.path.join(device_path, "brightness")
+                    with open(brightness_path, "w", encoding="utf-8") as file:
+                        file.write(str(max(1, round(maximum * value / 100))))
+                    return True
+                except (OSError, ValueError):
+                    continue
+        return False
 
     @Slot()
     def refresh_data(self):
@@ -308,7 +490,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         if self.last_content_date == value.date():
             return
         try:
-            info = get_hijri_info(value)
+            info = get_hijri_info(value, self.hijri_adjustment)
             if info["sacred_month"]:
                 self.hijri_date.setText(
                     f"{info['day']}. <span style=\"color:#e0b85f; font-weight:800;\">"
@@ -317,7 +499,10 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             else:
                 self.hijri_date.setText(info["date"])
             self.islamic_event.setTags(special_day_statuses(info["day"], info["month"]))
-            tomorrow_info = get_hijri_info(value + timedelta(days=1))
+            tomorrow_info = get_hijri_info(
+                value + timedelta(days=1),
+                self.hijri_adjustment,
+            )
             self.tomorrow_islamic_notice.setTags(
                 special_day_tomorrow_notices(
                     tomorrow_info["day"],
