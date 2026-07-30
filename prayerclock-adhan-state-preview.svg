@@ -85,11 +85,10 @@
     <text x="51" y="210" fill="#f5f0e4" font-size="112" font-weight="700" letter-spacing="-7">11:42</text>
 
     <g transform="translate(510 181)" fill="none" stroke="#ffe9aa">
-      <circle r="77" opacity=".62" stroke-width="4"><animate attributeName="r" values="73;84;76;89;73" dur="4.8s" repeatCount="indefinite"/><animate attributeName="opacity" values=".28;.85;.38;1;.28" dur="4.8s" repeatCount="indefinite"/></circle>
-      <circle r="84" opacity=".36" stroke-width="3"><animate attributeName="r" values="80;92;83;98;80" dur="4.8s" repeatCount="indefinite"/><animate attributeName="opacity" values=".14;.58;.22;.72;.14" dur="4.8s" repeatCount="indefinite"/></circle>
+      <circle r="64" opacity=".62" stroke-width="4"><animate attributeName="r" values="62;66;63;68;62" dur="4.8s" repeatCount="indefinite"/><animate attributeName="opacity" values=".28;.85;.38;1;.28" dur="4.8s" repeatCount="indefinite"/></circle>
+      <circle r="70" opacity=".36" stroke-width="3"><animate attributeName="r" values="68;72;69;74;68" dur="4.8s" repeatCount="indefinite"/><animate attributeName="opacity" values=".14;.58;.22;.72;.14" dur="4.8s" repeatCount="indefinite"/></circle>
     </g>
-    <g transform="translate(510 181) scale(1.11)" fill="none">
-      <animateTransform attributeName="transform" additive="sum" type="scale" values="1;1.035;1.012;1.05;1" dur="4.8s" repeatCount="indefinite"/>
+    <g transform="translate(510 181)" fill="none">
       <circle r="69" fill="#052126" fill-opacity=".91" stroke="#e2bd68" stroke-opacity=".86"/>
       <g class="ring-outer">
       <g fill="#146c67" fill-opacity=".44" stroke="#e2bd68" stroke-opacity=".86">
@@ -98,6 +97,7 @@
       <circle r="57" stroke="#e7c16b" stroke-opacity=".88" stroke-dasharray="1 5" stroke-width="2"/>
       </g>
       <g class="ring-middle">
+      <animateTransform attributeName="transform" type="scale" values="1;1.09;1.025;1.14;1" dur="4.8s" repeatCount="indefinite"/>
       <g fill="#146c67" fill-opacity=".44" stroke="#e7c16b" stroke-opacity=".88">
         <use href="#lancet"/><use href="#lancet" transform="rotate(30)"/><use href="#lancet" transform="rotate(60)"/><use href="#lancet" transform="rotate(90)"/><use href="#lancet" transform="rotate(120)"/><use href="#lancet" transform="rotate(150)"/><use href="#lancet" transform="rotate(180)"/><use href="#lancet" transform="rotate(210)"/><use href="#lancet" transform="rotate(240)"/><use href="#lancet" transform="rotate(270)"/><use href="#lancet" transform="rotate(300)"/><use href="#lancet" transform="rotate(330)"/>
       </g>
@@ -106,6 +106,7 @@
       <path d="M0-39 10-31 20-33 23-23 34-19 31-9 39 0 31 9 34 19 23 23 20 33 10 31 0 39-10 31-20 33-23 23-34 19-31 9-39 0-31-9-34-19-23-23-20-33-10-31Z" stroke="#e7c16b" stroke-width="1.1"/>
       </g>
       <g class="ring-inner">
+      <animateTransform attributeName="transform" type="scale" values="1;1.15;1.04;1.24;1" dur="4.8s" repeatCount="indefinite"/>
       <g fill="#0d5552" fill-opacity=".67" stroke="#e2bd68" stroke-opacity=".86" stroke-width=".85">
         <use href="#lancet" transform="scale(.51)"/><use href="#lancet" transform="rotate(15) scale(.51)"/><use href="#lancet" transform="rotate(30) scale(.51)"/><use href="#lancet" transform="rotate(45) scale(.51)"/><use href="#lancet" transform="rotate(60) scale(.51)"/><use href="#lancet" transform="rotate(75) scale(.51)"/><use href="#lancet" transform="rotate(90) scale(.51)"/><use href="#lancet" transform="rotate(105) scale(.51)"/><use href="#lancet" transform="rotate(120) scale(.51)"/><use href="#lancet" transform="rotate(135) scale(.51)"/><use href="#lancet" transform="rotate(150) scale(.51)"/><use href="#lancet" transform="rotate(165) scale(.51)"/><use href="#lancet" transform="rotate(180) scale(.51)"/><use href="#lancet" transform="rotate(195) scale(.51)"/><use href="#lancet" transform="rotate(210) scale(.51)"/><use href="#lancet" transform="rotate(225) scale(.51)"/><use href="#lancet" transform="rotate(240) scale(.51)"/><use href="#lancet" transform="rotate(255) scale(.51)"/><use href="#lancet" transform="rotate(270) scale(.51)"/><use href="#lancet" transform="rotate(285) scale(.51)"/><use href="#lancet" transform="rotate(300) scale(.51)"/><use href="#lancet" transform="rotate(315) scale(.51)"/><use href="#lancet" transform="rotate(330) scale(.51)"/><use href="#lancet" transform="rotate(345) scale(.51)"/>
       </g>
