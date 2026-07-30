@@ -31,4 +31,19 @@ if ! "$online"; then
 fi
 
 source venv/bin/activate
+
+# Install dependencies only when requirements.txt has changed. In-app updates
+# already do this before switching versions; this also protects manual pulls.
+requirements_hash=$(sha256sum requirements.txt | cut -d' ' -f1)
+requirements_marker="venv/.requirements.sha256"
+installed_hash=$(cat "$requirements_marker" 2>/dev/null || true)
+if [ "$requirements_hash" != "$installed_hash" ]; then
+    echo "Prüfe neue Python-Abhängigkeiten..."
+    if python -m pip install --disable-pip-version-check -r requirements.txt; then
+        printf '%s\n' "$requirements_hash" > "$requirements_marker"
+    else
+        echo "Abhängigkeiten konnten nicht vollständig installiert werden."
+    fi
+fi
+
 exec python src/PrayerTimeClock.py
