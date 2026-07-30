@@ -42,6 +42,7 @@
   </g>
 
   <g clip-path="url(#mainCardClip)" opacity=".62">
+    <animate attributeName="opacity" values=".55;.88;.63;1;.55" dur="4.8s" repeatCount="indefinite"/>
     <circle cx="72" cy="148" r="11" fill="url(#turquoiseGlow)"><animate attributeName="cy" values="148;132;148" dur="9s" repeatCount="indefinite"/></circle>
     <circle cx="111" cy="388" r="3.2" fill="#e7c16b"><animate attributeName="cy" values="388;369;388" dur="11s" repeatCount="indefinite"/></circle>
     <circle cx="166" cy="123" r="4.2" fill="#52ead1"><animate attributeName="cy" values="123;108;123" dur="8s" repeatCount="indefinite"/></circle>
@@ -54,6 +55,15 @@
     <circle cx="493" cy="390" r="3.3" fill="#52ead1"><animate attributeName="cy" values="390;371;390" dur="9s" repeatCount="indefinite"/></circle>
     <circle cx="548" cy="143" r="10" fill="url(#turquoiseGlow)"><animate attributeName="cy" values="143;126;143" dur="11.5s" repeatCount="indefinite"/></circle>
     <circle cx="575" cy="345" r="3" fill="#e7c16b"><animate attributeName="cy" values="345;329;345" dur="8s" repeatCount="indefinite"/></circle>
+    <g>
+      <animate attributeName="opacity" values="0;.62;.18;.82;0" dur="4.8s" repeatCount="indefinite"/>
+      <circle cx="92" cy="275" r="2.7" fill="#52ead1"><animate attributeName="cy" values="281;261;277;252;281" dur="4.8s" repeatCount="indefinite"/></circle>
+      <circle cx="147" cy="331" r="4.2" fill="url(#goldGlow)"><animate attributeName="cy" values="337;311;329;300;337" dur="4.8s" repeatCount="indefinite"/></circle>
+      <circle cx="234" cy="105" r="2.5" fill="#e7c16b"><animate attributeName="cy" values="111;92;106;82;111" dur="4.8s" repeatCount="indefinite"/></circle>
+      <circle cx="337" cy="303" r="3.4" fill="#52ead1"><animate attributeName="cy" values="309;286;302;274;309" dur="4.8s" repeatCount="indefinite"/></circle>
+      <circle cx="429" cy="297" r="5.5" fill="url(#turquoiseGlow)"><animate attributeName="cy" values="303;276;295;264;303" dur="4.8s" repeatCount="indefinite"/></circle>
+      <circle cx="526" cy="289" r="3" fill="#e7c16b"><animate attributeName="cy" values="295;274;289;261;295" dur="4.8s" repeatCount="indefinite"/></circle>
+    </g>
   </g>
 
   <g font-family="DejaVu Sans, Arial, sans-serif">
