@@ -22,6 +22,9 @@
     <path id="outerPetal" d="M0-44C10-45 13-53 0-63C-13-53-10-45 0-44Z"/>
     <path id="lancet" d="M0-27C10-31 14-41 0-52C-14-41-10-31 0-27Z"/>
     <clipPath id="mainCardClip"><rect x="24" y="48" width="574" height="376" rx="13"/></clipPath>
+    <clipPath id="ornamentOuterHaloClip">
+      <path d="M-80-80H80V80H-80Z M0-69A69 69 0 1 0 0 69A69 69 0 1 0 0-69Z" clip-rule="evenodd"/>
+    </clipPath>
     <radialGradient id="turquoiseGlow"><stop stop-color="#a8fff0"/><stop offset=".3" stop-color="#52ead1" stop-opacity=".9"/><stop offset="1" stop-color="#52ead1" stop-opacity="0"/></radialGradient>
     <radialGradient id="goldGlow"><stop stop-color="#fff0b0"/><stop offset=".3" stop-color="#e7c16b" stop-opacity=".85"/><stop offset="1" stop-color="#e7c16b" stop-opacity="0"/></radialGradient>
   </defs>
@@ -84,7 +87,7 @@
 
     <text x="51" y="210" fill="#f5f0e4" font-size="112" font-weight="700" letter-spacing="-7">11:42</text>
 
-    <g transform="translate(510 181)" fill="none" stroke="#ffe9aa">
+    <g transform="translate(510 181)" fill="none" stroke="#ffe9aa" clip-path="url(#ornamentOuterHaloClip)">
       <circle r="69" opacity=".62" stroke-width="5"><animate attributeName="opacity" values=".22;.82;.34;1;.22" dur="4.8s" repeatCount="indefinite"/></circle>
       <circle r="73" opacity=".38" stroke-width="4"><animate attributeName="opacity" values=".12;.54;.20;.68;.12" dur="4.8s" repeatCount="indefinite"/></circle>
       <circle r="76" opacity=".22" stroke-width="2"><animate attributeName="opacity" values=".06;.34;.11;.46;.06" dur="4.8s" repeatCount="indefinite"/></circle>
