@@ -166,8 +166,8 @@ Updates werden innerhalb der Einstellungsseite installiert:
 
 1. Die Anwendung prüft den Branch `NewClockVersion`.
 2. Ein neuer Stand wird zunächst in einem temporären Verzeichnis vorbereitet.
-3. Neue Einträge aus `requirements.txt` werden mit der aktiven Python-Umgebung
-   installiert.
+3. Neue Einträge aus `requirements.txt` werden mit der aktiven virtuellen
+   Python-Umgebung installiert.
 4. Der Python-Code wird kompiliert und der neue Stand getestet.
 5. Erst bei erfolgreicher Prüfung wird das Fast-Forward-Update übernommen.
 6. Die laufende Anwendung bleibt geöffnet und zeigt
@@ -241,11 +241,11 @@ der drei Ornamentringe. Die normale Ornamentgröße bleibt dabei unverändert:
 Der äußere Ring reagiert nur dezent, während der Impuls in Mittel- und Innenring
 deutlicher sichtbar wird. Die zusätzlichen Leuchtringe bleiben vollständig
 innerhalb der Zeichenfläche und werden auch in der Mini-Vorschau nicht
-abgeschnitten. Der Ornament-Halo wird hinter der unveränderten Ornamentbasis
-gezeichnet: Sein nach innen fallender Anteil wird dadurch abgedeckt und das
-Leuchten erscheint überwiegend direkt außerhalb des bestehenden Außenrings,
-ohne dessen Abstand oder Größe zu verändern. Der äußere Partikel-Halo ist
-gegenüber der kräftigeren Tageslichtabstimmung leicht reduziert.
+abgeschnitten. Eine geometrische Maske begrenzt den Ornament-Halo vollständig
+auf den Bereich außerhalb des unveränderten Außenrings. Dadurch kann trotz der
+leicht transparenten Ornamentbasis kein Licht in die inneren Ringe
+durchscheinen; Abstand und Größe bleiben unverändert. Der äußere Partikel-Halo
+ist gegenüber der kräftigeren Tageslichtabstimmung leicht reduziert.
 
 Die Diyanet-Quelle ist derzeit fest auf Berlin eingestellt:
 
