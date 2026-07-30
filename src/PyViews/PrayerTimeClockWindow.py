@@ -26,6 +26,7 @@ class IslamicGirihOrnament(QWidget):
         self.setAttribute(Qt.WA_TransparentForMouseEvents)
         self._layer_cache = None
         self._critical_warning = False
+        self._celebration = False
         self._animation_clock = QElapsedTimer()
         self._animation_clock.start()
         self._animation_timer = QTimer(self)
@@ -62,14 +63,21 @@ class IslamicGirihOrnament(QWidget):
         # instead of approximating the shapes from the widget radius.
         scale = min(self.width(), self.height()) / 154.0
         radius = 69.0 * scale
-        critical = self._critical_warning
-        gold = QColor(255, 121, 134, 218) if critical else QColor(226, 189, 104, 204)
-        pale_gold = QColor(255, 161, 169, 224) if critical else QColor(232, 200, 120, 204)
-        teal_fill = QColor(167, 22, 42, 112) if critical else QColor(20, 108, 103, 64)
-        deep_fill = QColor(82, 8, 20, 232) if critical else QColor(5, 33, 38, 199)
-        inner_fill = QColor(132, 14, 33, 172) if critical else QColor(13, 85, 82, 148)
-        belt_fill = QColor(184, 28, 47, 218) if critical else QColor(28, 137, 130, 190)
-        center_fill = QColor(255, 83, 102, 224) if critical else QColor(192, 139, 49, 210)
+        if self._critical_warning:
+            gold, pale_gold = QColor(255, 121, 134, 218), QColor(255, 161, 169, 224)
+            teal_fill, deep_fill = QColor(167, 22, 42, 112), QColor(82, 8, 20, 232)
+            inner_fill, belt_fill = QColor(132, 14, 33, 172), QColor(184, 28, 47, 218)
+            center_fill = QColor(255, 83, 102, 224)
+        elif self._celebration:
+            gold, pale_gold = QColor(255, 213, 106, 245), QColor(255, 255, 244, 242)
+            teal_fill, deep_fill = QColor(255, 224, 150, 94), QColor(35, 32, 22, 224)
+            inner_fill, belt_fill = QColor(255, 244, 205, 154), QColor(224, 175, 70, 224)
+            center_fill = QColor(255, 250, 221, 248)
+        else:
+            gold, pale_gold = QColor(226, 189, 104, 204), QColor(232, 200, 120, 204)
+            teal_fill, deep_fill = QColor(20, 108, 103, 64), QColor(5, 33, 38, 199)
+            inner_fill, belt_fill = QColor(13, 85, 82, 148), QColor(28, 137, 130, 190)
+            center_fill = QColor(192, 139, 49, 210)
 
         if layer == "base":
             painter.setPen(QPen(gold, 1.0 * scale))
@@ -207,6 +215,14 @@ class IslamicGirihOrnament(QWidget):
         self._layer_cache = None
         self.update()
 
+    def set_celebration(self, celebration):
+        celebration = bool(celebration)
+        if self._celebration == celebration:
+            return
+        self._celebration = celebration
+        self._layer_cache = None
+        self.update()
+
     def resizeEvent(self, event):
         self._layer_cache = None
         super().resizeEvent(event)
@@ -272,10 +288,47 @@ class IslamicPatternBackground(QWidget):
 class OrientalClockPanel(QFrame):
     """Paints a calm mihrab silhouette over the shared background lattice."""
 
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._celebration = False
+        self._particle_clock = QElapsedTimer()
+        self._particle_clock.start()
+        self._particle_timer = QTimer(self)
+        self._particle_timer.timeout.connect(self.update)
+        self._particle_timer.start(80)
+
+    def set_celebration(self, celebration):
+        self._celebration = bool(celebration)
+        self.update()
+
     def paintEvent(self, event):
         super().paintEvent(event)
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
+
+        seconds = self._particle_clock.elapsed() / 1000.0
+        count = 27 if self._celebration else 20
+        palette = (
+            (QColor(255, 255, 245), QColor(255, 210, 102))
+            if self._celebration
+            else (QColor(86, 226, 205), QColor(226, 189, 104))
+        )
+        top, bottom = 34.0, max(35.0, self.height() - 26.0)
+        height = bottom - top
+        for index in range(count):
+            phase = (index * 0.61803398875) % 1.0
+            speed = 0.012 + (index % 5) * 0.0025
+            progress = (phase + seconds * speed) % 1.0
+            x = 24.0 + ((index * 83) % max(1, self.width() - 48))
+            x += math.sin(seconds * 0.22 + index * 1.7) * (3.0 + index % 4)
+            y = bottom - progress * height
+            pulse = 0.58 + 0.42 * math.sin(seconds * 0.7 + index * 0.91)
+            radius = (1.15 + (index % 4) * 0.45) * (1.25 if self._celebration else 1.0)
+            color = QColor(palette[index % len(palette)])
+            color.setAlpha(round((115 if self._celebration else 72) * (0.65 + 0.35 * pulse)))
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(color)
+            painter.drawEllipse(QPointF(x, y), radius, radius)
 
         painter.setBrush(Qt.NoBrush)
         painter.setPen(QPen(QColor(202, 166, 91, 34), 1.2))
