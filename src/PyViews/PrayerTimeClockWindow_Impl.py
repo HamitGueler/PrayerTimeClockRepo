@@ -37,6 +37,7 @@ from PyViews.IslamicContent import (
 )
 from HelperClasses.WebScraperClass import WebScraperClass
 from HelperClasses.ApplicationUpdateService import ApplicationUpdateService
+from HelperClasses.AdhanAudioProfile import load_adhan_profiles
 from HelperClasses.PrayerTimeFreshness import fallback_horizon_text, is_critical_stale
 
 
@@ -246,6 +247,12 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.audio_player = QMediaPlayer(self)
         self.audio_player.setAudioOutput(self.audio_output)
         self.audio_player.playbackStateChanged.connect(self._on_audio_state_changed)
+        self.adhan_profiles = load_adhan_profiles(os.path.join(self.src_dir, "AudioProfiles"))
+        self.active_adhan_profile = None
+        self.adhan_visual_level = 0.0
+        self.adhan_visualizer_timer = QTimer(self)
+        self.adhan_visualizer_timer.setInterval(40)
+        self.adhan_visualizer_timer.timeout.connect(self._update_adhan_visualizer)
         self.previewing_adhan = False
         self.settings_dialog = None
         self.adhan_blink_timer = QTimer(self)
@@ -444,6 +451,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.audio_output.setVolume(dialog.volume_slider.value() / 100.0)
         self.audio_player.stop()
         self.audio_player.setSource(QUrl.fromLocalFile(self.adhan_path))
+        self._select_adhan_profile(self.adhan_path)
         self.previewing_adhan = True
         dialog.set_adhan_playing(True)
         self.audio_player.play()
@@ -772,7 +780,26 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         if os.path.exists(path):
             self.audio_player.stop()
             self.audio_player.setSource(QUrl.fromLocalFile(path))
+            self._select_adhan_profile(path)
             self.audio_player.play()
+
+    def _select_adhan_profile(self, path):
+        profile_name = os.path.splitext(os.path.basename(path))[0]
+        self.active_adhan_profile = self.adhan_profiles.get(profile_name)
+
+    def _update_adhan_visualizer(self):
+        target = (
+            self.active_adhan_profile.value_at(self.audio_player.position())
+            if self.active_adhan_profile is not None
+            else 0.0
+        )
+        factor = 0.62 if target > self.adhan_visual_level else 0.22
+        self.adhan_visual_level += (target - self.adhan_visual_level) * factor
+        if self.active_adhan_profile is None and self.adhan_visual_level < 0.005:
+            self.adhan_visual_level = 0.0
+            self.adhan_visualizer_timer.stop()
+        self.islamic_ornament.set_audio_level(self.adhan_visual_level)
+        self.clockPanel.set_audio_level(self.adhan_visual_level)
 
     @Slot()
     def _on_audio_state_changed(self, state):
@@ -783,10 +810,19 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         if state != QMediaPlayer.PlayingState:
             self.previewing_adhan = False
         if state == QMediaPlayer.PlayingState:
+            self.adhan_visualizer_timer.start()
+            self._update_adhan_visualizer()
             self.adhan_blink_visible = True
             self._apply_adhan_blink()
             self.adhan_blink_timer.start()
         else:
+            self.active_adhan_profile = None
+            if self.adhan_visual_level > 0.0:
+                self.adhan_visualizer_timer.start()
+            else:
+                self.adhan_visualizer_timer.stop()
+                self.islamic_ornament.set_audio_level(0.0)
+                self.clockPanel.set_audio_level(0.0)
             self.adhan_blink_timer.stop()
             self.adhan_blink_visible = False
             self._apply_adhan_blink()
