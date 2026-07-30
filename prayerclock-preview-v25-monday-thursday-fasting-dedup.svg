@@ -22,7 +22,7 @@
     <path id="outerPetal" d="M0-44C10-45 13-53 0-63C-13-53-10-45 0-44Z"/>
     <path id="lancet" d="M0-27C10-31 14-41 0-52C-14-41-10-31 0-27Z"/>
     <clipPath id="mainCardClip"><rect x="24" y="48" width="574" height="376" rx="13"/></clipPath>
-    <radialGradient id="turquoiseGlow"><stop stop-color="#a8fff0"/><stop offset=".3" stop-color="#52ead1" stop-opacity=".9"/><stop offset="1" stop-color="#52ead1" stop-opacity="0"/></radialGradient>
+    <radialGradient id="turquoiseGlow"><stop stop-color="#ffffff"/><stop offset=".22" stop-color="#72f5df"/><stop offset=".62" stop-color="#52ead1" stop-opacity=".78"/><stop offset="1" stop-color="#52ead1" stop-opacity="0"/></radialGradient>
     <radialGradient id="goldGlow"><stop stop-color="#fff0b0"/><stop offset=".3" stop-color="#e7c16b" stop-opacity=".85"/><stop offset="1" stop-color="#e7c16b" stop-opacity="0"/></radialGradient>
   </defs>
 
