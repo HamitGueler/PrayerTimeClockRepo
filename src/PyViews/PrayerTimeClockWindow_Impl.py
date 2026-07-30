@@ -42,7 +42,7 @@ from PyViews.IslamicContent import (
 from HelperClasses.WebScraperClass import WebScraperClass
 from HelperClasses.ApplicationUpdateService import ApplicationUpdateService
 from HelperClasses.AdhanAudioProfile import load_adhan_profiles
-from HelperClasses.PrayerTimeFreshness import fallback_horizon_text, is_critical_stale
+from HelperClasses.PrayerTimeFreshness import fallback_horizon_after_request, is_critical_stale
 
 
 class VisualEffectsPreview(QFrame):
@@ -87,9 +87,10 @@ class VisualEffectsPreview(QFrame):
     def set_adhan_level(self, level):
         self._external_level = 0.0 if level is None else max(0.0, min(1.0, float(level)))
 
-    def set_effects(self, ornament_speed, particle_speed, ornament_reaction, particle_reaction):
+    def set_effects(self, ornament_speed, particle_speed, particle_density, ornament_reaction, particle_reaction):
         self.ornament.set_animation_speed(ornament_speed / 100.0)
         self.panel.set_animation_speed(particle_speed / 100.0)
+        self.panel.set_particle_density(particle_density / 100.0)
         self.ornament.set_reaction_strength(ornament_reaction / 100.0)
         self.panel.set_reaction_strength(particle_reaction / 100.0)
 
@@ -112,6 +113,7 @@ class SettingsDialog(QDialog):
         hijri_adjustment,
         ornament_speed,
         particle_speed,
+        particle_density,
         ornament_reaction,
         particle_reaction,
         parent=None,
@@ -258,7 +260,10 @@ class SettingsDialog(QDialog):
             effects_form, "Ornament · normal", ornament_speed, "Tempo"
         )
         self.particle_speed_slider = self._effect_slider(
-            effects_form, "Partikel · normal", particle_speed, "Tempo"
+            effects_form, "Partikel · Tempo", particle_speed, "Tempo"
+        )
+        self.particle_density_slider = self._effect_slider(
+            effects_form, "Partikel · Anzahl", particle_density, "Dichte"
         )
         self.ornament_reaction_slider = self._effect_slider(
             effects_form, "Ornament · Adhān", ornament_reaction, "Stärke"
@@ -288,7 +293,12 @@ class SettingsDialog(QDialog):
 
     def _effect_slider(self, form, label, value, value_suffix):
         slider = QSlider(Qt.Horizontal)
-        slider.setRange(20 if value_suffix == "Tempo" else 0, 300)
+        if value_suffix == "Tempo":
+            slider.setRange(20, 300)
+        elif value_suffix == "Dichte":
+            slider.setRange(40, 200)
+        else:
+            slider.setRange(0, 300)
         slider.setValue(value)
         value_label = QLabel(f"{value} %")
         value_label.setObjectName("effect_value")
@@ -304,6 +314,7 @@ class SettingsDialog(QDialog):
         self.effects_preview.set_effects(
             self.ornament_speed_slider.value(),
             self.particle_speed_slider.value(),
+            self.particle_density_slider.value(),
             self.ornament_reaction_slider.value(),
             self.particle_reaction_slider.value(),
         )
@@ -364,6 +375,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.hijri_adjustment = self.settings.value("hijriAdjustment", -1, int)
         self.ornament_speed = self.settings.value("ornamentSpeed", 100, int)
         self.particle_speed = self.settings.value("particleSpeed", 100, int)
+        self.particle_density = self.settings.value("particleDensity", 100, int)
         self.ornament_reaction = self.settings.value("ornamentAdhanReaction", 100, int)
         self.particle_reaction = self.settings.value("particleAdhanReaction", 100, int)
         self.audio_output = QAudioOutput(self)
@@ -454,6 +466,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             self.hijri_adjustment,
             self.ornament_speed,
             self.particle_speed,
+            self.particle_density,
             self.ornament_reaction,
             self.particle_reaction,
             self,
@@ -486,6 +499,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.hijri_adjustment = dialog.hijri_adjustment.value()
         self.ornament_speed = dialog.ornament_speed_slider.value()
         self.particle_speed = dialog.particle_speed_slider.value()
+        self.particle_density = dialog.particle_density_slider.value()
         self.ornament_reaction = dialog.ornament_reaction_slider.value()
         self.particle_reaction = dialog.particle_reaction_slider.value()
         self.settings.setValue("volume", self.volume)
@@ -494,6 +508,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.settings.setValue("hijriAdjustment", self.hijri_adjustment)
         self.settings.setValue("ornamentSpeed", self.ornament_speed)
         self.settings.setValue("particleSpeed", self.particle_speed)
+        self.settings.setValue("particleDensity", self.particle_density)
         self.settings.setValue("ornamentAdhanReaction", self.ornament_reaction)
         self.settings.setValue("particleAdhanReaction", self.particle_reaction)
         self.settings.sync()
@@ -507,6 +522,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
     def _apply_visual_effect_settings(self):
         self.islamic_ornament.set_animation_speed(self.ornament_speed / 100.0)
         self.clockPanel.set_animation_speed(self.particle_speed / 100.0)
+        self.clockPanel.set_particle_density(self.particle_density / 100.0)
         self.islamic_ornament.set_reaction_strength(self.ornament_reaction / 100.0)
         self.clockPanel.set_reaction_strength(self.particle_reaction / 100.0)
 
@@ -757,7 +773,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                 self.tomorrows_prayers[index].setText(data["nextDayPrayers"]["prayers"][index])
             self._update_midnight()
             self._save_prayer_times_cache(data, now)
-            self._update_fallback_horizon(now.date())
+            self.fallback_horizon.clear()
+            self.fallback_horizon.hide()
             self._update_critical_stale_state(now)
         else:
             # Keep the last valid times visible. Avoid nmcli/sudo here:
@@ -774,6 +791,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                 self._set_update_status("stale")
                 self.retry_time.setText("Offline · keine gültigen Gebetszeiten verfügbar")
             self.retry_time.show()
+            self._update_fallback_horizon(now.date())
+            self.fallback_horizon.show()
             if not self.retry_timer.isActive():
                 self.retry_timer.start()
             self._update_critical_stale_state(now)
@@ -790,7 +809,6 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             self.current_prayers[index].setText(selected_data["Prayers"][index])
             self.tomorrows_prayers[index].setText(selected_data["nextDayPrayers"]["prayers"][index])
         self._update_midnight()
-        self._update_fallback_horizon(today)
         return True
 
     def _load_cached_prayer_times(self):
@@ -802,7 +820,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             today = datetime.now().date()
             self.prayer_times_cache = data
             self.last_successful_update_at = saved_at
-            self._update_fallback_horizon(today)
+            self.fallback_horizon.clear()
+            self.fallback_horizon.hide()
             selected_data = self.scraper.data_for_date(data, today)
             if selected_data is None:
                 self.prayer_times_are_current = False
@@ -819,7 +838,6 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             self._set_update_status("cached")
             self.retry_time.setText("Gespeicherte, datumsscharfe Diyanet-Daten")
             self.retry_time.show()
-            self._update_fallback_horizon(today)
             self._update_midnight()
             self._update_critical_stale_state(datetime.now())
         except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError):
@@ -856,7 +874,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
     def _update_fallback_horizon(self, today):
         source = self.prayer_times_cache or self.prayer_times
         last_date = self.scraper.last_available_date(source, today)
-        self.fallback_horizon.setText(fallback_horizon_text(last_date, today))
+        self.fallback_horizon.setText(fallback_horizon_after_request(False, last_date, today))
 
     def _save_prayer_times_cache(self, data, saved_at):
         temporary_path = f"{self.cache_path}.tmp"
