@@ -1,4 +1,5 @@
 import json
+import math
 import os
 import re
 import shutil
@@ -14,20 +15,24 @@ from PySide6.QtWidgets import (
     QDialog,
     QDialogButtonBox,
     QFormLayout,
+    QFrame,
     QHBoxLayout,
     QLabel,
     QApplication,
     QMainWindow,
     QMessageBox,
     QPushButton,
-    QScrollArea,
     QSlider,
     QSpinBox,
     QVBoxLayout,
     QWidget,
 )
 
-from PyViews.PrayerTimeClockWindow import Ui_MainWindow
+from PyViews.PrayerTimeClockWindow import (
+    IslamicGirihOrnament,
+    OrientalClockPanel,
+    Ui_MainWindow,
+)
 from PyViews.IslamicContent import (
     daily_verse,
     get_hijri_info,
@@ -41,6 +46,58 @@ from HelperClasses.AdhanAudioProfile import load_adhan_profiles
 from HelperClasses.PrayerTimeFreshness import fallback_horizon_text, is_critical_stale
 
 
+class VisualEffectsPreview(QFrame):
+    """Compact preview composed from the exact widgets used by the clock."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setObjectName("visual_effects_preview")
+        self.setMinimumHeight(178)
+        self.panel = OrientalClockPanel(self)
+        self.panel.setObjectName("preview_particle_panel")
+        self.ornament = IslamicGirihOrnament(self.panel)
+        self.ornament.setFixedSize(112, 112)
+        self.caption = QLabel("LIVE-VORSCHAU", self.panel)
+        self.caption.setObjectName("preview_caption")
+        self._clock = 0
+        self._external_level = None
+        self._timer = QTimer(self)
+        self._timer.setInterval(80)
+        self._timer.timeout.connect(self._animate)
+        self._timer.start()
+
+    def resizeEvent(self, event):
+        self.panel.setGeometry(self.rect().adjusted(1, 1, -1, -1))
+        self.ornament.move(
+            (self.panel.width() - self.ornament.width()) // 2,
+            (self.panel.height() - self.ornament.height()) // 2 + 8,
+        )
+        self.caption.adjustSize()
+        self.caption.move((self.panel.width() - self.caption.width()) // 2, 12)
+        super().resizeEvent(event)
+
+    def _animate(self):
+        self._clock += 1
+        # A calm repeating envelope makes reaction-strength changes immediately
+        # visible without pretending to analyse audio that is not playing.
+        level = (
+            self._external_level
+            if self._external_level is not None
+            else 0.18 + 0.54 * (0.5 + 0.5 * math.sin(self._clock * 0.12))
+        )
+        self.ornament.set_audio_level(level)
+        self.panel.set_audio_level(level)
+
+    def set_adhan_level(self, level):
+        self._external_level = None if level is None else max(0.0, min(1.0, float(level)))
+
+    def set_effects(self, ornament_speed, particle_speed, ornament_reaction, particle_reaction):
+        self.ornament.set_animation_speed(ornament_speed / 100.0)
+        self.panel.set_animation_speed(particle_speed / 100.0)
+        self.ornament.set_reaction_strength(ornament_reaction / 100.0)
+        self.panel.set_reaction_strength(particle_reaction / 100.0)
+
+
 class SettingsDialog(QDialog):
     test_adhan_requested = Signal()
     close_requested = Signal()
@@ -51,25 +108,28 @@ class SettingsDialog(QDialog):
     volume_changed = Signal(int)
     brightness_changed = Signal(int)
 
-    def __init__(self, volume, brightness, display_profile, hijri_adjustment, parent=None):
+    def __init__(
+        self,
+        volume,
+        brightness,
+        display_profile,
+        hijri_adjustment,
+        ornament_speed,
+        particle_speed,
+        ornament_reaction,
+        particle_reaction,
+        parent=None,
+    ):
         super().__init__(parent)
         self.setObjectName("settings_dialog")
         self.setWindowTitle("Einstellungen")
         self.setModal(True)
-        self.setMinimumWidth(520)
+        self.setMinimumSize(940, 560)
         self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
 
-        outer = QVBoxLayout(self)
-        outer.setContentsMargins(0, 0, 0, 0)
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setFrameShape(QScrollArea.NoFrame)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        content = QWidget()
-        page = QVBoxLayout(content)
-        page.setContentsMargins(32, 26, 32, 24)
-        scroll.setWidget(content)
-        outer.addWidget(scroll)
+        page = QVBoxLayout(self)
+        page.setContentsMargins(26, 18, 26, 18)
+        page.setSpacing(8)
         title = QLabel("EINSTELLUNGEN")
         title.setObjectName("settings_title")
         page.addWidget(title)
@@ -77,9 +137,19 @@ class SettingsDialog(QDialog):
         subtitle.setObjectName("settings_subtitle")
         page.addWidget(subtitle)
 
+        columns = QHBoxLayout()
+        columns.setSpacing(22)
+        left_column = QVBoxLayout()
+        left_column.setSpacing(7)
+        right_column = QVBoxLayout()
+        right_column.setSpacing(7)
+        columns.addLayout(left_column, 11)
+        columns.addLayout(right_column, 10)
+        page.addLayout(columns, 1)
+
         form = QFormLayout()
-        form.setHorizontalSpacing(26)
-        form.setVerticalSpacing(18)
+        form.setHorizontalSpacing(14)
+        form.setVerticalSpacing(8)
 
         self.volume_slider = QSlider(Qt.Horizontal)
         self.volume_slider.setRange(0, 100)
@@ -143,22 +213,22 @@ class SettingsDialog(QDialog):
         hijri_plus_button.clicked.connect(self.hijri_adjustment.stepUp)
         hijri_row.addWidget(hijri_plus_button)
         form.addRow("Hijri-Korrektur", hijri_row)
-        page.addLayout(form)
+        left_column.addLayout(form)
 
         hint = QLabel("Bei HDMI-Displays ohne Hardware-Regelung wird die Oberfläche softwareseitig abgedunkelt.")
         hint.setObjectName("settings_hint")
         hint.setWordWrap(True)
-        page.addWidget(hint)
+        left_column.addWidget(hint)
 
         self.test_adhan_button = QPushButton("Adhān abspielen")
         self.test_adhan_button.setObjectName("test_adhan_button")
-        self.test_adhan_button.setMinimumHeight(52)
+        self.test_adhan_button.setMinimumHeight(38)
         self.test_adhan_button.clicked.connect(self.test_adhan_requested)
-        page.addWidget(self.test_adhan_button)
+        left_column.addWidget(self.test_adhan_button)
 
         self.network_status = QLabel("WLAN-Status wird geprüft …")
         self.network_status.setObjectName("network_status")
-        page.addWidget(self.network_status)
+        left_column.addWidget(self.network_status)
         network_row = QHBoxLayout()
         reconnect_button = QPushButton("Neu verbinden")
         reconnect_button.clicked.connect(self.reconnect_requested)
@@ -166,11 +236,11 @@ class SettingsDialog(QDialog):
         wifi_button = QPushButton("WLAN auswählen / anmelden")
         wifi_button.clicked.connect(self.wifi_settings_requested)
         network_row.addWidget(wifi_button)
-        page.addLayout(network_row)
+        left_column.addLayout(network_row)
 
         self.update_status = QLabel("Update-Stand wird beim Prüfen ermittelt.")
         self.update_status.setObjectName("application_update_status")
-        page.addWidget(self.update_status)
+        left_column.addWidget(self.update_status)
         system_row = QHBoxLayout()
         self.check_update_button = QPushButton("Updates installieren")
         self.check_update_button.clicked.connect(self.update_requested)
@@ -178,17 +248,69 @@ class SettingsDialog(QDialog):
         restart_button = QPushButton("App neu starten")
         restart_button.clicked.connect(self.restart_requested)
         system_row.addWidget(restart_button)
-        close_button = QPushButton("App schließen")
-        close_button.clicked.connect(self.close_requested)
-        system_row.addWidget(close_button)
-        page.addLayout(system_row)
+        left_column.addLayout(system_row)
+
+        self.effects_preview = VisualEffectsPreview()
+        right_column.addWidget(self.effects_preview)
+        effect_title = QLabel("BEWEGUNG & ADHĀN-REAKTION")
+        effect_title.setObjectName("settings_section_title")
+        right_column.addWidget(effect_title)
+        effects_form = QFormLayout()
+        effects_form.setHorizontalSpacing(12)
+        effects_form.setVerticalSpacing(7)
+        self.ornament_speed_slider = self._effect_slider(
+            effects_form, "Ornament · normal", ornament_speed, "Tempo"
+        )
+        self.particle_speed_slider = self._effect_slider(
+            effects_form, "Partikel · normal", particle_speed, "Tempo"
+        )
+        self.ornament_reaction_slider = self._effect_slider(
+            effects_form, "Ornament · Adhān", ornament_reaction, "Stärke"
+        )
+        self.particle_reaction_slider = self._effect_slider(
+            effects_form, "Partikel · Adhān", particle_reaction, "Stärke"
+        )
+        right_column.addLayout(effects_form)
+        reaction_hint = QLabel(
+            "Die Reaktion folgt weiterhin dem geglätteten Verlauf des Adhāns. "
+            "Der Regler verändert nur die sichtbare Stärke."
+        )
+        reaction_hint.setObjectName("settings_hint")
+        reaction_hint.setWordWrap(True)
+        right_column.addWidget(reaction_hint)
+        self._update_effects_preview()
 
         buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
         buttons.button(QDialogButtonBox.Save).setText("Speichern")
         buttons.button(QDialogButtonBox.Cancel).setText("Abbrechen")
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
+        close_button = QPushButton("App schließen")
+        close_button.clicked.connect(self.close_requested)
+        buttons.addButton(close_button, QDialogButtonBox.ActionRole)
         page.addWidget(buttons)
+
+    def _effect_slider(self, form, label, value, value_suffix):
+        slider = QSlider(Qt.Horizontal)
+        slider.setRange(25 if value_suffix == "Tempo" else 0, 200)
+        slider.setValue(value)
+        value_label = QLabel(f"{value} %")
+        value_label.setObjectName("effect_value")
+        row = QHBoxLayout()
+        row.addWidget(slider, 1)
+        row.addWidget(value_label)
+        slider.valueChanged.connect(lambda current: value_label.setText(f"{current} %"))
+        slider.valueChanged.connect(self._update_effects_preview)
+        form.addRow(label, row)
+        return slider
+
+    def _update_effects_preview(self, _value=None):
+        self.effects_preview.set_effects(
+            self.ornament_speed_slider.value(),
+            self.particle_speed_slider.value(),
+            self.ornament_reaction_slider.value(),
+            self.particle_reaction_slider.value(),
+        )
 
     def selected_display_profile(self):
         for profile, button in self.profile_buttons.items():
@@ -203,6 +325,8 @@ class SettingsDialog(QDialog):
         self.test_adhan_button.setProperty("playing", playing)
         self.test_adhan_button.style().unpolish(self.test_adhan_button)
         self.test_adhan_button.style().polish(self.test_adhan_button)
+        if not playing:
+            self.effects_preview.set_adhan_level(None)
 
     def set_network_status(self, connected, network_name=""):
         if connected:
@@ -242,6 +366,10 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.brightness = self.settings.value("brightness", 100, int)
         self.display_profile = self.settings.value("displayProfile", "7 Zoll", str)
         self.hijri_adjustment = self.settings.value("hijriAdjustment", -1, int)
+        self.ornament_speed = self.settings.value("ornamentSpeed", 100, int)
+        self.particle_speed = self.settings.value("particleSpeed", 100, int)
+        self.ornament_reaction = self.settings.value("ornamentAdhanReaction", 100, int)
+        self.particle_reaction = self.settings.value("particleAdhanReaction", 100, int)
         self.audio_output = QAudioOutput(self)
         self.audio_output.setVolume(self.volume / 100.0)
         self.audio_player = QMediaPlayer(self)
@@ -297,6 +425,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             self.base_style_sheet = style_file.read()
         self._apply_display_profile(self.display_profile)
         self._apply_brightness(self.brightness)
+        self._apply_visual_effect_settings()
 
         self.refresh_button.clicked.connect(self.refresh_data)
         self.refresh_button.setCursor(QCursor(Qt.PointingHandCursor))
@@ -327,6 +456,10 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             self.brightness,
             self.display_profile,
             self.hijri_adjustment,
+            self.ornament_speed,
+            self.particle_speed,
+            self.ornament_reaction,
+            self.particle_reaction,
             self,
         )
         dialog.setStyleSheet(self.styleSheet())
@@ -355,16 +488,31 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.brightness = dialog.brightness_slider.value()
         self.display_profile = dialog.selected_display_profile()
         self.hijri_adjustment = dialog.hijri_adjustment.value()
+        self.ornament_speed = dialog.ornament_speed_slider.value()
+        self.particle_speed = dialog.particle_speed_slider.value()
+        self.ornament_reaction = dialog.ornament_reaction_slider.value()
+        self.particle_reaction = dialog.particle_reaction_slider.value()
         self.settings.setValue("volume", self.volume)
         self.settings.setValue("brightness", self.brightness)
         self.settings.setValue("displayProfile", self.display_profile)
         self.settings.setValue("hijriAdjustment", self.hijri_adjustment)
+        self.settings.setValue("ornamentSpeed", self.ornament_speed)
+        self.settings.setValue("particleSpeed", self.particle_speed)
+        self.settings.setValue("ornamentAdhanReaction", self.ornament_reaction)
+        self.settings.setValue("particleAdhanReaction", self.particle_reaction)
         self.settings.sync()
         self.audio_output.setVolume(self.volume / 100.0)
         self._apply_brightness(self.brightness)
         self._apply_display_profile(self.display_profile)
+        self._apply_visual_effect_settings()
         self.last_content_date = None
         self._update_islamic_content(datetime.now())
+
+    def _apply_visual_effect_settings(self):
+        self.islamic_ornament.set_animation_speed(self.ornament_speed / 100.0)
+        self.clockPanel.set_animation_speed(self.particle_speed / 100.0)
+        self.islamic_ornament.set_reaction_strength(self.ornament_reaction / 100.0)
+        self.clockPanel.set_reaction_strength(self.particle_reaction / 100.0)
 
     def _handle_update(self, dialog):
         dialog.check_update_button.setDisabled(True)
@@ -800,6 +948,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             self.adhan_visualizer_timer.stop()
         self.islamic_ornament.set_audio_level(self.adhan_visual_level)
         self.clockPanel.set_audio_level(self.adhan_visual_level)
+        if self.settings_dialog is not None and self.previewing_adhan:
+            self.settings_dialog.effects_preview.set_adhan_level(self.adhan_visual_level)
 
     @Slot()
     def _on_audio_state_changed(self, state):
