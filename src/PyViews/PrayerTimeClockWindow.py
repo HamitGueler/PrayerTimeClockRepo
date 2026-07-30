@@ -25,6 +25,7 @@ class IslamicGirihOrnament(QWidget):
         self.setFixedSize(154, 154)
         self.setAttribute(Qt.WA_TransparentForMouseEvents)
         self._layer_cache = None
+        self._critical_warning = False
         self._animation_clock = QElapsedTimer()
         self._animation_clock.start()
         self._animation_timer = QTimer(self)
@@ -61,10 +62,18 @@ class IslamicGirihOrnament(QWidget):
         # instead of approximating the shapes from the widget radius.
         scale = min(self.width(), self.height()) / 154.0
         radius = 69.0 * scale
+        critical = self._critical_warning
+        gold = QColor(255, 121, 134, 218) if critical else QColor(226, 189, 104, 204)
+        pale_gold = QColor(255, 161, 169, 224) if critical else QColor(232, 200, 120, 204)
+        teal_fill = QColor(167, 22, 42, 112) if critical else QColor(20, 108, 103, 64)
+        deep_fill = QColor(82, 8, 20, 232) if critical else QColor(5, 33, 38, 199)
+        inner_fill = QColor(132, 14, 33, 172) if critical else QColor(13, 85, 82, 148)
+        belt_fill = QColor(184, 28, 47, 218) if critical else QColor(28, 137, 130, 190)
+        center_fill = QColor(255, 83, 102, 224) if critical else QColor(192, 139, 49, 210)
 
         if layer == "base":
-            painter.setPen(QPen(QColor(217, 179, 95, 148), 1.0 * scale))
-            painter.setBrush(QColor(5, 33, 38, 199))
+            painter.setPen(QPen(gold, 1.0 * scale))
+            painter.setBrush(deep_fill)
             painter.drawEllipse(center, radius, radius)
 
         def preview_path(points):
@@ -104,16 +113,16 @@ class IslamicGirihOrnament(QWidget):
                 draw_rotated_path(
                     path,
                     index * 15,
-                    QPen(QColor(226, 189, 104, 204), 1.0 * scale),
-                    QColor(20, 108, 103, 64),
+                    QPen(gold, 1.0 * scale),
+                    teal_fill,
                 )
 
             # Exact dotted r=57 ring from the preview plus the visible outer
             # closure ring the Pi rendering previously lost.
-            painter.setPen(QPen(QColor(232, 200, 120, 204), 2.0 * scale, Qt.DotLine))
+            painter.setPen(QPen(pale_gold, 2.0 * scale, Qt.DotLine))
             painter.setBrush(Qt.NoBrush)
             painter.drawEllipse(center, 57.0 * scale, 57.0 * scale)
-            painter.setPen(QPen(QColor(226, 189, 104, 185), 1.0 * scale))
+            painter.setPen(QPen(gold, 1.0 * scale))
             painter.drawEllipse(center, radius, radius)
 
         if layer == "middle":
@@ -122,8 +131,8 @@ class IslamicGirihOrnament(QWidget):
                 draw_rotated_path(
                     path,
                     index * 30,
-                    QPen(QColor(231, 193, 109, 224), 1.0 * scale),
-                    QColor(23, 125, 118, 82),
+                    QPen(pale_gold, 1.0 * scale),
+                    teal_fill,
                 )
 
             belt_points = (
@@ -137,7 +146,7 @@ class IslamicGirihOrnament(QWidget):
             for point in belt_points[1:]:
                 belt.lineTo(center + QPointF(*point) * scale)
             belt.closeSubpath()
-            for width, color in ((9.0, QColor(2, 13, 16, 220)), (6.0, QColor(28, 137, 130, 190)), (1.35, QColor(240, 207, 125, 220))):
+            for width, color in ((9.0, deep_fill), (6.0, belt_fill), (1.35, pale_gold)):
                 painter.setPen(QPen(color, width * scale, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
                 painter.setBrush(Qt.NoBrush)
                 painter.drawPath(belt)
@@ -150,17 +159,17 @@ class IslamicGirihOrnament(QWidget):
                 painter.rotate(index * 15)
                 painter.scale(0.51, 0.51)
                 painter.translate(-center)
-                painter.setPen(QPen(QColor(230, 194, 107, 209), 0.85 * scale))
-                painter.setBrush(QColor(13, 85, 82, 148))
+                painter.setPen(QPen(gold, 0.85 * scale))
+                painter.setBrush(inner_fill)
                 painter.drawPath(path)
                 painter.restore()
             painter.setBrush(Qt.NoBrush)
-            painter.setPen(QPen(QColor(231, 193, 107, 220), 1.0 * scale))
+            painter.setPen(QPen(pale_gold, 1.0 * scale))
             painter.drawEllipse(center, 19.5 * scale, 19.5 * scale)
             painter.drawEllipse(center, 11.5 * scale, 11.5 * scale)
-            painter.setBrush(QColor(192, 139, 49, 210))
+            painter.setBrush(center_fill)
             painter.drawPolygon(self._star(center, 8.1 * scale, 5.7 * scale, points=8))
-            painter.setBrush(QColor(7, 36, 40, 235))
+            painter.setBrush(deep_fill)
             painter.drawEllipse(center, 2.4 * scale, 2.4 * scale)
         painter.end()
         return pixmap
@@ -190,6 +199,13 @@ class IslamicGirihOrnament(QWidget):
             painter.translate(-center)
             painter.drawPixmap(0, 0, self._layer_cache[layer])
             painter.restore()
+    def set_critical_warning(self, critical):
+        critical = bool(critical)
+        if self._critical_warning == critical:
+            return
+        self._critical_warning = critical
+        self._layer_cache = None
+        self.update()
 
     def resizeEvent(self, event):
         self._layer_cache = None
@@ -404,32 +420,40 @@ class Ui_MainWindow:
 
         self.update_status_panel = QWidget()
         self.update_status_panel.setObjectName("update_status_panel")
-        update_status_layout = QHBoxLayout(self.update_status_panel)
+        update_status_layout = QVBoxLayout(self.update_status_panel)
         update_status_layout.setContentsMargins(9, 3, 8, 3)
-        update_status_layout.setSpacing(6)
+        update_status_layout.setSpacing(0)
+        update_status_top = QHBoxLayout()
+        update_status_top.setSpacing(6)
+        update_status_layout.addLayout(update_status_top)
 
         self.led_sign = QLabel("●")
         self.led_sign.setObjectName("led_sign")
         self.led_sign.setToolTip("Datenverbindung")
         self.led_sign.setFixedSize(18, 24)
         self.led_sign.setAlignment(Qt.AlignCenter)
-        update_status_layout.addWidget(self.led_sign)
+        update_status_top.addWidget(self.led_sign)
 
         self.last_updated_descrition = QLabel()
         self.last_updated_descrition.setObjectName("last_updated_descrition")
         self.last_updated_descrition.setAlignment(Qt.AlignVCenter)
-        update_status_layout.addWidget(self.last_updated_descrition)
+        update_status_top.addWidget(self.last_updated_descrition)
         self.last_updated_time = QLabel()
         self.last_updated_time.setObjectName("last_updated_time")
         self.last_updated_time.setMinimumWidth(132)
         self.last_updated_time.setAlignment(Qt.AlignCenter)
-        update_status_layout.addWidget(self.last_updated_time)
+        update_status_top.addWidget(self.last_updated_time)
 
         self.wifi_status_button = QPushButton()
         self.wifi_status_button.setObjectName("wifi_status_button")
         self.wifi_status_button.setFixedSize(28, 28)
         self.wifi_status_button.setToolTip("WLAN-Status")
-        update_status_layout.addWidget(self.wifi_status_button)
+        update_status_top.addWidget(self.wifi_status_button)
+
+        self.fallback_horizon = QLabel()
+        self.fallback_horizon.setObjectName("fallback_horizon")
+        self.fallback_horizon.setAlignment(Qt.AlignCenter)
+        update_status_layout.addWidget(self.fallback_horizon)
         status_row.addWidget(self.update_status_panel)
 
         self.refresh_button = QPushButton()
