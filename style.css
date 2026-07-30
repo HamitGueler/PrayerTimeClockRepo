@@ -149,7 +149,7 @@ QLabel {
     color: #ff626f;
 }
 
-#refresh_button, #settings_button, #wifi_status_button {
+#refresh_button, #settings_button {
     color: #6debd7;
     background-color: #17343b;
     border: 1px solid #46717a;
@@ -158,30 +158,36 @@ QLabel {
     font-weight: 600;
 }
 
-#refresh_button:hover, #settings_button:hover, #wifi_status_button:hover {
+#refresh_button:hover, #settings_button:hover {
     color: #ffffff;
     background-color: #1a343b;
     border-color: #56d7c1;
 }
 
-#refresh_button:pressed, #settings_button:pressed, #wifi_status_button:pressed {
+#refresh_button:pressed, #settings_button:pressed {
     background-color: #56d7c1;
     color: #081116;
 }
 
-#refresh_button:disabled, #settings_button:disabled, #wifi_status_button:disabled {
+#refresh_button:disabled, #settings_button:disabled {
     color: #53666c;
     background-color: #101c21;
 }
 
 #wifi_status_button[connected="true"] {
-    color: #52ead1;
-    border-color: #438f84;
+    background-color: rgba(82, 234, 209, 0.10);
+    border: 1px solid rgba(82, 234, 209, 0.36);
+    border-radius: 14px;
 }
 
 #wifi_status_button[connected="false"] {
-    color: #ff626f;
-    border-color: #a84852;
+    background-color: rgba(255, 98, 111, 0.10);
+    border: 1px solid rgba(255, 98, 111, 0.40);
+    border-radius: 14px;
+}
+
+#wifi_status_button:hover {
+    background-color: rgba(255, 255, 255, 0.10);
 }
 
 #sectionTitle {
