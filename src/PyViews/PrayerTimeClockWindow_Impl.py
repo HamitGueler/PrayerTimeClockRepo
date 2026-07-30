@@ -33,6 +33,7 @@ from PyViews.IslamicContent import (
     get_hijri_info,
     special_day_statuses,
     special_day_tomorrow_notices,
+    uses_celebration_palette,
 )
 from HelperClasses.WebScraperClass import WebScraperClass
 from HelperClasses.ApplicationUpdateService import ApplicationUpdateService
@@ -841,7 +842,9 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                 )
             else:
                 self.hijri_date.setText(info["date"])
-            self.islamic_event.setTags(special_day_statuses(info["day"], info["month"]))
+            self.islamic_event.setTags(
+                special_day_statuses(info["day"], info["month"], value.weekday())
+            )
             tomorrow_info = get_hijri_info(
                 value + timedelta(days=1),
                 self.hijri_adjustment,
@@ -854,6 +857,9 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                 )
             )
             self.clockPanel.setProperty("sacredMonth", info["sacred_month"])
+            celebration = uses_celebration_palette(info["day"], info["month"])
+            self.clockPanel.set_celebration(celebration)
+            self.islamic_ornament.set_celebration(celebration)
             self.clockPanel.style().unpolish(self.clockPanel)
             self.clockPanel.style().polish(self.clockPanel)
             arabic, translation, reference = daily_verse(value.date())
