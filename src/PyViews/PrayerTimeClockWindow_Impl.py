@@ -36,6 +36,7 @@ from PyViews.IslamicContent import (
 )
 from HelperClasses.WebScraperClass import WebScraperClass
 from HelperClasses.ApplicationUpdateService import ApplicationUpdateService
+from HelperClasses.PrayerTimeFreshness import fallback_horizon_text, is_critical_stale
 
 
 class SettingsDialog(QDialog):
@@ -218,6 +219,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
     ACTUAL_PRAYER_INDICES = (0, 2, 3, 4, 5)
     PRAYER_NAMES = ("FAJR", "SHURŪQ", "DHUHR", "ASR", "MAGHRIB", "ISHA")
     DISPLAY_SCALES = {"7 Zoll": 1.0, "10 Zoll": 1.14, "14 Zoll": 1.28}
+    CRITICAL_STALE_AFTER = timedelta(days=7)
 
     def __init__(self):
         super().__init__()
@@ -253,7 +255,9 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
 
         self.scraper = WebScraperClass()
         self.prayer_times = {}
+        self.prayer_times_cache = {}
         self.prayer_times_are_current = False
+        self.last_successful_update_at = None
         self.fetch_in_progress = False
         self.last_fetch_date = None
         self.last_daily_refresh_attempt_date = datetime.now().date()
@@ -264,7 +268,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.brightness_overlay.setObjectName("brightness_overlay")
         self.brightness_overlay.hide()
         self.network_timer = QTimer(self)
-        self.network_timer.setInterval(15000)
+        self.network_timer.setInterval(60000)
         self.network_timer.timeout.connect(self._refresh_network_status)
 
         self.current_prayers = [
@@ -587,7 +591,9 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             and self.scraper.has_expected_dates(data, now.date())
         ):
             self.prayer_times = data
+            self.prayer_times_cache = data
             self.prayer_times_are_current = True
+            self.last_successful_update_at = now
             self.last_fetch_date = now.date()
             self.retry_timer.stop()
             self.retry_time.hide()
@@ -598,9 +604,12 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                 self.tomorrows_prayers[index].setText(data["nextDayPrayers"]["prayers"][index])
             self._update_midnight()
             self._save_prayer_times_cache(data, now)
+            self._update_fallback_horizon(now.date())
+            self._update_critical_stale_state(now)
         else:
             # Keep the last valid times visible. Avoid nmcli/sudo here:
             # they can trigger desktop authentication or connection dialogs.
+            self._activate_cached_date(now.date())
             data_date = self.scraper.prayer_data_date(self.prayer_times)
             if self.prayer_times and self.prayer_times_are_current:
                 self._set_update_status("cached")
@@ -614,6 +623,22 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             self.retry_time.show()
             if not self.retry_timer.isActive():
                 self.retry_timer.start()
+            self._update_critical_stale_state(now)
+
+    def _activate_cached_date(self, today):
+        selected_data = self.scraper.data_for_date(self.prayer_times_cache, today)
+        if selected_data is None:
+            self.prayer_times_are_current = False
+            return False
+        self.prayer_times = selected_data
+        self.prayer_times_are_current = True
+        self.last_fetch_date = today
+        for index in range(6):
+            self.current_prayers[index].setText(selected_data["Prayers"][index])
+            self.tomorrows_prayers[index].setText(selected_data["nextDayPrayers"]["prayers"][index])
+        self._update_midnight()
+        self._update_fallback_horizon(today)
+        return True
 
     def _load_cached_prayer_times(self):
         try:
@@ -621,26 +646,29 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                 cached = json.load(cache_file)
             data = cached["data"]
             saved_at = datetime.fromisoformat(cached["savedAt"])
-            data_date = self.scraper.prayer_data_date(data)
             today = datetime.now().date()
-            if (
-                not self.scraper.has_valid_prayer_times(data)
-                or data_date is None
-                or data_date > today
-            ):
+            self.prayer_times_cache = data
+            self.last_successful_update_at = saved_at
+            self._update_fallback_horizon(today)
+            selected_data = self.scraper.data_for_date(data, today)
+            if selected_data is None:
+                self.prayer_times_are_current = False
+                self._set_update_status("stale")
+                self._update_critical_stale_state(datetime.now())
                 return
-            self.prayer_times = data
-            self.prayer_times_are_current = data_date == today
-            self.last_fetch_date = data_date
+            self.prayer_times = selected_data
+            self.prayer_times_are_current = True
+            self.last_fetch_date = today
             for index in range(6):
-                self.current_prayers[index].setText(data["Prayers"][index])
-                self.tomorrows_prayers[index].setText(data["nextDayPrayers"]["prayers"][index])
+                self.current_prayers[index].setText(selected_data["Prayers"][index])
+                self.tomorrows_prayers[index].setText(selected_data["nextDayPrayers"]["prayers"][index])
             self.last_updated_time.setText(saved_at.strftime("%d.%m.%Y · %H:%M"))
-            self._set_update_status("cached" if self.prayer_times_are_current else "stale")
-            if not self.prayer_times_are_current:
-                self.retry_time.setText(self._stale_warning(data_date, today))
-                self.retry_time.show()
+            self._set_update_status("cached")
+            self.retry_time.setText("Gespeicherte, datumsscharfe Diyanet-Daten")
+            self.retry_time.show()
+            self._update_fallback_horizon(today)
             self._update_midnight()
+            self._update_critical_stale_state(datetime.now())
         except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError):
             return
 
@@ -662,6 +690,20 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         age = (today - data_date).days
         day_label = "1 Tag" if age == 1 else f"{age} Tage"
         return f"Warnung · Gebetszeiten {day_label} alt · neuer Versuch in 5 Minuten"
+
+    def _update_critical_stale_state(self, now):
+        critical = is_critical_stale(
+            self.last_successful_update_at,
+            now,
+            self.prayer_times_are_current,
+            self.CRITICAL_STALE_AFTER,
+        )
+        self.islamic_ornament.set_critical_warning(critical)
+
+    def _update_fallback_horizon(self, today):
+        source = self.prayer_times_cache or self.prayer_times
+        last_date = self.scraper.last_available_date(source, today)
+        self.fallback_horizon.setText(fallback_horizon_text(last_date, today))
 
     def _save_prayer_times_cache(self, data, saved_at):
         temporary_path = f"{self.cache_path}.tmp"
