@@ -203,7 +203,10 @@ class IslamicGirihOrnament(QWidget):
             # Keep the approved resting geometry at its original size. The
             # middle and inner artwork already has enough transparent margin
             # inside the layer pixmap to pulse without being clipped.
-            ("outer", seconds * self._speed_multiplier * 360.0 / 126.0, 0.025),
+            # Match prayerclock-adhan-state-preview.svg exactly: the outer
+            # artwork only rotates; the middle and inner layers carry the
+            # visible scale pulse.
+            ("outer", seconds * self._speed_multiplier * 360.0 / 126.0, 0.0),
             ("middle", -seconds * self._speed_multiplier * 360.0 / 148.0, 0.14),
             ("inner", seconds * self._speed_multiplier * 360.0 / 109.0, 0.24),
         )
@@ -219,9 +222,12 @@ class IslamicGirihOrnament(QWidget):
             outer_halo_area.setFillRule(Qt.OddEvenFill)
             painter.save()
             painter.setClipPath(outer_halo_area)
-            for offset, alpha, width in ((0.0, 112, 5.2), (3.5, 72, 4.0), (6.0, 40, 2.8)):
-                glow = QColor(255, 224, 151, min(255, round(alpha * level)))
-                painter.setPen(QPen(glow, width + 2.6 * level))
+            # Same three outward rings as the SVG reference (r=69/73/76,
+            # widths 5/4/2). Their alpha is deliberately a little stronger,
+            # while remaining transparent and fully excluded from the inside.
+            for offset, alpha, width in ((0.0, 126, 5.0), (4.0, 82, 4.0), (7.0, 50, 2.0)):
+                glow = QColor(255, 233, 170, min(255, round(alpha * level)))
+                painter.setPen(QPen(glow, width))
                 painter.setBrush(Qt.NoBrush)
                 painter.drawEllipse(center, ornament_radius + offset, ornament_radius + offset)
             painter.restore()
