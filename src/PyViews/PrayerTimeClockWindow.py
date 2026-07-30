@@ -424,6 +424,12 @@ class Ui_MainWindow:
         self.last_updated_time.setMinimumWidth(132)
         self.last_updated_time.setAlignment(Qt.AlignCenter)
         update_status_layout.addWidget(self.last_updated_time)
+
+        self.wifi_status_button = QPushButton()
+        self.wifi_status_button.setObjectName("wifi_status_button")
+        self.wifi_status_button.setFixedSize(28, 28)
+        self.wifi_status_button.setToolTip("WLAN-Status")
+        update_status_layout.addWidget(self.wifi_status_button)
         status_row.addWidget(self.update_status_panel)
 
         self.refresh_button = QPushButton()
@@ -435,11 +441,6 @@ class Ui_MainWindow:
         self.settings_button.setFixedSize(34, 34)
         self.settings_button.setToolTip("Einstellungen öffnen")
         status_row.addWidget(self.settings_button)
-        self.wifi_status_button = QPushButton()
-        self.wifi_status_button.setObjectName("wifi_status_button")
-        self.wifi_status_button.setFixedSize(34, 34)
-        self.wifi_status_button.setToolTip("WLAN-Status")
-        status_row.addWidget(self.wifi_status_button)
         status_row.setSpacing(7)
         layout.addLayout(status_row)
 
@@ -608,7 +609,7 @@ class Ui_MainWindow:
         self.last_updated_time.setText("04.02.2025 · 23:35")
         self.refresh_button.setText("↻")
         self.settings_button.setText("⚙")
-        self.wifi_status_button.setText("◉")
+        self.wifi_status_button.setText("")
         self.rest_time_description.setText("NÄCHSTES GEBET · FAJR")
         self.rest_time.setText("06:08:18")
         self.midnight_label.setText("ISLAMISCHE MITTERNACHT")
