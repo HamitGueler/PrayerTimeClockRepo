@@ -97,9 +97,11 @@ def _voluntary_fasting_indicator_allowed(day, month):
     return month != 9 and (month, day) not in {(10, 1), (12, 10), (12, 11), (12, 12), (12, 13)}
 
 
-def special_day_statuses(day, month):
+def special_day_statuses(day, month, weekday=None):
     """Return all matching current-day tag texts, ordered by importance."""
     statuses = []
+    if weekday == 4:
+        statuses.append("JUMUʿAH")
     if month == 1 and day == 9:
         statuses.append("TĀSŪʿĀʾ · FASTEN EMPFOHLEN")
     if month == 1 and day == 10:
@@ -123,9 +125,18 @@ def special_day_statuses(day, month):
     return _deduplicate_fasting_recommendation(statuses)
 
 
-def special_day_status(day, month):
+def uses_celebration_palette(day, month):
+    """Return whether the day should use the rare gold-and-white visual state."""
+    return (
+        (month, day) in {(1, 10), (9, 1), (10, 1), (12, 9), (12, 10)}
+        or (month == 9 and day in (21, 23, 25, 27, 29))
+        or (month == 12 and 1 <= day <= 10)
+    )
+
+
+def special_day_status(day, month, weekday=None):
     """Return one shared heading followed by every matching current-day tag."""
-    statuses = special_day_statuses(day, month)
+    statuses = special_day_statuses(day, month, weekday)
     return f"HEUTE · | {' | | '.join(statuses)} |" if statuses else ""
 
 
@@ -137,6 +148,8 @@ def special_day_tomorrow_notices(day, month, weekday=None):
         notices.append("MONTAG · FASTEN EMPFOHLEN")
     elif weekday == 3 and voluntary_fasting_allowed:
         notices.append("DONNERSTAG · FASTEN EMPFOHLEN")
+    elif weekday == 4:
+        notices.append("JUMUʿAH")
     if month == 1 and day == 9:
         notices.append("TĀSŪʿĀʾ · FASTEN EINPLANEN")
     if month == 1 and day == 10:
