@@ -48,8 +48,10 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
 
         self.scraper = WebScraperClass()
         self.prayer_times = {}
+        self.prayer_times_are_current = False
         self.fetch_in_progress = False
         self.last_fetch_date = None
+        self.last_daily_refresh_attempt_date = datetime.now().date()
         self.last_adhan_key = None
         self.last_content_date = None
 
@@ -90,6 +92,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
     def refresh_data(self):
         if self.fetch_in_progress:
             return
+        self.last_daily_refresh_attempt_date = datetime.now().date()
         self.fetch_in_progress = True
         self.refresh_button.setDisabled(True)
         try:
@@ -101,12 +104,17 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
     @Slot(dict)
     def _apply_prayer_times(self, data):
         now = datetime.now()
-        if data.get("requestSuccess", [False])[0] and self.scraper.has_valid_prayer_times(data):
+        if (
+            data.get("requestSuccess", [False])[0]
+            and self.scraper.has_valid_prayer_times(data)
+            and self.scraper.has_expected_dates(data, now.date())
+        ):
             self.prayer_times = data
+            self.prayer_times_are_current = True
             self.last_fetch_date = now.date()
             self.retry_timer.stop()
             self.retry_time.hide()
-            self.led_sign.setProperty("online", True)
+            self._set_update_status("current")
             self.last_updated_time.setText(now.strftime("%d.%m.%Y · %H:%M"))
             for index in range(6):
                 self.current_prayers[index].setText(data["Prayers"][index])
@@ -116,13 +124,19 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         else:
             # Keep the last valid times visible. Avoid nmcli/sudo here:
             # they can trigger desktop authentication or connection dialogs.
-            self.led_sign.setProperty("online", False)
-            self.retry_time.setText("Offline · erneuter Versuch in 5 Minuten")
+            data_date = self.scraper.prayer_data_date(self.prayer_times)
+            if self.prayer_times and self.prayer_times_are_current:
+                self._set_update_status("cached")
+                self.retry_time.setText("Offline · gespeicherte Daten · neuer Versuch in 5 Minuten")
+            elif self.prayer_times and data_date is not None:
+                self._set_update_status("stale")
+                self.retry_time.setText(self._stale_warning(data_date, now.date()))
+            else:
+                self._set_update_status("stale")
+                self.retry_time.setText("Offline · keine gültigen Gebetszeiten verfügbar")
             self.retry_time.show()
             if not self.retry_timer.isActive():
                 self.retry_timer.start()
-        self.led_sign.style().unpolish(self.led_sign)
-        self.led_sign.style().polish(self.led_sign)
 
     def _load_cached_prayer_times(self):
         try:
@@ -130,17 +144,47 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                 cached = json.load(cache_file)
             data = cached["data"]
             saved_at = datetime.fromisoformat(cached["savedAt"])
-            if saved_at.date() != datetime.now().date() or not self.scraper.has_valid_prayer_times(data):
+            data_date = self.scraper.prayer_data_date(data)
+            today = datetime.now().date()
+            if (
+                not self.scraper.has_valid_prayer_times(data)
+                or data_date is None
+                or data_date > today
+            ):
                 return
             self.prayer_times = data
-            self.last_fetch_date = saved_at.date()
+            self.prayer_times_are_current = data_date == today
+            self.last_fetch_date = data_date
             for index in range(6):
                 self.current_prayers[index].setText(data["Prayers"][index])
                 self.tomorrows_prayers[index].setText(data["nextDayPrayers"]["prayers"][index])
             self.last_updated_time.setText(saved_at.strftime("%d.%m.%Y · %H:%M"))
+            self._set_update_status("cached" if self.prayer_times_are_current else "stale")
+            if not self.prayer_times_are_current:
+                self.retry_time.setText(self._stale_warning(data_date, today))
+                self.retry_time.show()
             self._update_midnight()
         except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError):
             return
+
+    def _set_update_status(self, status):
+        labels = {
+            "current": "AKTUELL",
+            "cached": "GESPEICHERT",
+            "stale": "VERALTET",
+        }
+        self.last_updated_descrition.setText(labels[status])
+        self.led_sign.setProperty("status", status)
+        self.retry_time.setProperty("status", status)
+        for widget in (self.led_sign, self.retry_time):
+            widget.style().unpolish(widget)
+            widget.style().polish(widget)
+
+    @staticmethod
+    def _stale_warning(data_date, today):
+        age = (today - data_date).days
+        day_label = "1 Tag" if age == 1 else f"{age} Tage"
+        return f"Warnung · Gebetszeiten {day_label} alt · neuer Versuch in 5 Minuten"
 
     def _save_prayer_times_cache(self, data, saved_at):
         temporary_path = f"{self.cache_path}.tmp"
@@ -161,10 +205,13 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.current_date.setText(self._german_date(now))
         self._update_islamic_content(now)
 
-        if self.last_fetch_date is not None and now.date() != self.last_fetch_date:
+        if self.last_daily_refresh_attempt_date != now.date():
             self.refresh_data()
-        if self.prayer_times:
+        if self.prayer_times and self.prayer_times_are_current:
             self._update_prayer_state(now)
+        elif self.prayer_times:
+            self.rest_time_description.setText("NÄCHSTES GEBET")
+            self.rest_time.setText("--:--:--")
 
     def _update_prayer_state(self, now):
         today = now.date()
