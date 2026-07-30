@@ -91,7 +91,7 @@ der Anwendung dynamisch erzeugt.
 | Exakt datierter Cache | `GESPEICHERT` und tatsächlich verbleibende Fallback-Reichweite | [SVG öffnen](prayerclock-cached-state-preview.svg) |
 | Kein gültiger Fallback | `VERALTET`, rote Statusfarben und echtes rotes Ornament | [SVG öffnen](prayerclock-fallback-warning-preview.svg) |
 | Besonderer islamischer Höhepunkt | deutlich kräftigere Gold-/Weiß-Partikel und Festtagspalette | [SVG öffnen](prayerclock-celebration-state-preview.svg) |
-| Laufender Adhān | aufnahme-synchrone Ringausdehnung sowie intensiveres Partikelglühen | [SVG öffnen](prayerclock-adhan-state-preview.svg) |
+| Laufender Adhān | aufnahme-synchrone Ringausdehnung wie in der SVG: Außenring bleibt formstabil, Mittel- und Innenring pulsieren; transparenter Halo ausschließlich nach außen | [SVG öffnen](prayerclock-adhan-state-preview.svg) |
 | Touch-Einstellungen | Display-, Audio-, Helligkeits-, WLAN- und Updateoptionen | [SVG öffnen](prayerclock-settings-preview.svg) |
 
 ### Partikel und besondere islamische Tage
