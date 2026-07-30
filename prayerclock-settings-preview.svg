@@ -70,23 +70,25 @@
 
   <text x="478" y="335" fill="#f1c867" font-family="Arial" font-size="13" font-weight="800" letter-spacing="1">BEWEGUNG &amp; ADHĀN-REAKTION</text>
   <g font-family="Arial" font-size="14">
-    <text x="478" y="372" fill="white">Ornament · normal</text>
-    <text x="478" y="414" fill="white">Partikel · normal</text>
-    <text x="478" y="456" fill="white">Ornament · Adhān</text>
-    <text x="478" y="498" fill="white">Partikel · Adhān</text>
+    <text x="478" y="364" fill="white">Ornament · normal</text>
+    <text x="478" y="396" fill="white">Partikel · Tempo</text>
+    <text x="478" y="428" fill="white">Partikel · Anzahl</text>
+    <text x="478" y="460" fill="white">Ornament · Adhān</text>
+    <text x="478" y="492" fill="white">Partikel · Adhān</text>
     <g fill="#173941">
-      <rect x="636" y="361" width="245" height="7" rx="4"/><rect x="636" y="403" width="245" height="7" rx="4"/>
-      <rect x="636" y="445" width="245" height="7" rx="4"/><rect x="636" y="487" width="245" height="7" rx="4"/>
+      <rect x="636" y="353" width="245" height="7" rx="4"/><rect x="636" y="385" width="245" height="7" rx="4"/>
+      <rect x="636" y="417" width="245" height="7" rx="4"/><rect x="636" y="449" width="245" height="7" rx="4"/>
+      <rect x="636" y="481" width="245" height="7" rx="4"/>
     </g>
     <g fill="#50d9c4">
-      <rect x="636" y="361" width="122" height="7" rx="4"/><rect x="636" y="403" width="122" height="7" rx="4"/>
-      <rect x="636" y="445" width="122" height="7" rx="4"/><rect x="636" y="487" width="122" height="7" rx="4"/>
+      <rect x="636" y="353" width="122" height="7" rx="4"/><rect x="636" y="385" width="122" height="7" rx="4"/>
+      <rect x="636" y="417" width="122" height="7" rx="4"/><rect x="636" y="449" width="122" height="7" rx="4"/>
+      <rect x="636" y="481" width="122" height="7" rx="4"/>
     </g>
-    <g fill="#f0c765"><circle cx="758" cy="364.5" r="9"/><circle cx="758" cy="406.5" r="9"/><circle cx="758" cy="448.5" r="9"/><circle cx="758" cy="490.5" r="9"/></g>
-    <g fill="white" font-size="13"><text x="897" y="369">100 %</text><text x="897" y="411">100 %</text><text x="897" y="453">100 %</text><text x="897" y="495">100 %</text></g>
-    <g fill="#8baeb3" font-size="10"><text x="615" y="385">20</text><text x="862" y="385">300 %</text><text x="615" y="511">0</text><text x="862" y="511">300 %</text></g>
+    <g fill="#f0c765"><circle cx="758" cy="356.5" r="8"/><circle cx="758" cy="388.5" r="8"/><circle cx="758" cy="420.5" r="8"/><circle cx="758" cy="452.5" r="8"/><circle cx="758" cy="484.5" r="8"/></g>
+    <g fill="white" font-size="13"><text x="897" y="361">100 %</text><text x="897" y="393">100 %</text><text x="897" y="425">100 %</text><text x="897" y="457">100 %</text><text x="897" y="489">100 %</text></g>
   </g>
-  <text x="478" y="525" fill="#b8cdd1" font-family="Arial" font-size="12">Reaktion bleibt geglättet und folgt weiterhin dem echten Adhān-Verlauf.</text>
+  <text x="478" y="516" fill="#b8cdd1" font-family="Arial" font-size="11">Tempo und Anzahl sind getrennt; Adhān-Reaktion folgt dem echten Verlauf.</text>
   <g font-family="Arial" font-size="13" text-anchor="middle">
     <rect x="661" y="539" width="105" height="32" rx="7" fill="#19454b" stroke="#5b8c8d"/><text x="713" y="560" fill="#b8cdd1">App schließen</text>
     <rect x="775" y="539" width="83" height="32" rx="7" fill="#19454b" stroke="#5b8c8d"/><text x="816" y="560" fill="white">Abbrechen</text>
