@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="600" viewBox="0 0 1024 600">
+  <defs>
+    <radialGradient id="bg"><stop stop-color="#16343b"/><stop offset="1" stop-color="#061116"/></radialGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="1024" height="600" fill="url(#bg)"/>
+  <g opacity=".11" stroke="#55d9c5" fill="none">
+    <path d="M0 80L130 0l130 80 130-80 130 80 130-80 130 80 130-80 130 80M0 520l130 80 130-80 130 80 130-80 130 80 130-80 130 80"/>
+    <circle cx="70" cy="165" r="85"/><circle cx="954" cy="420" r="110"/>
+  </g>
+  <rect x="176" y="28" width="672" height="544" rx="20" fill="#0b1f25" stroke="#d7b35f" stroke-width="2"/>
+  <text x="214" y="78" fill="#f1c867" font-family="Arial" font-size="27" font-weight="800" letter-spacing="2">EINSTELLUNGEN</text>
+  <text x="214" y="106" fill="#b8cdd1" font-family="Arial" font-size="14">Änderungen werden nach dem Speichern dauerhaft übernommen.</text>
+  <text x="214" y="145" fill="white" font-family="Arial" font-size="16">Adhān-Lautstärke</text>
+  <rect x="410" y="133" width="300" height="9" rx="5" fill="#173941"/><rect x="410" y="133" width="216" height="9" rx="5" fill="#50d9c4"/>
+  <circle cx="626" cy="137.5" r="12" fill="#f0c765"/><text x="731" y="144" fill="white" font-family="Arial" font-size="16">72 %</text>
+  <rect x="410" y="154" width="337" height="38" rx="8" fill="#173b38" stroke="#438f84"/>
+  <text x="578" y="179" fill="#52ead1" font-family="Arial" font-size="15" font-weight="700" text-anchor="middle">▶  ADHĀN ABSPIELEN</text>
+  <text x="214" y="222" fill="white" font-family="Arial" font-size="16">Bildschirmhelligkeit</text>
+  <rect x="410" y="210" width="300" height="9" rx="5" fill="#173941"/><rect x="410" y="210" width="240" height="9" rx="5" fill="#50d9c4"/>
+  <circle cx="650" cy="214.5" r="12" fill="#f0c765"/><text x="731" y="221" fill="white" font-family="Arial" font-size="16">80 %</text>
+  <text x="214" y="275" fill="white" font-family="Arial" font-size="16">Displayprofil</text>
+  <g font-family="Arial" font-size="17" font-weight="700" text-anchor="middle">
+    <rect x="410" y="246" width="105" height="48" rx="8" fill="#19454b" stroke="#5b8c8d"/><text x="462" y="276" fill="white">7 Zoll</text>
+    <rect x="526" y="246" width="105" height="48" rx="8" fill="#f0c765" stroke="#ffe19a"/><text x="578" y="276" fill="#071217">10 Zoll</text>
+    <rect x="642" y="246" width="105" height="48" rx="8" fill="#19454b" stroke="#5b8c8d"/><text x="694" y="276" fill="white">14 Zoll</text>
+  </g>
+  <text x="214" y="336" fill="white" font-family="Arial" font-size="16">Hijri-Korrektur</text>
+  <g font-family="Arial" font-size="20" font-weight="700" text-anchor="middle">
+    <rect x="410" y="309" width="58" height="42" rx="8" fill="#19454b" stroke="#5b8c8d"/><text x="439" y="337" fill="white">−</text>
+    <rect x="479" y="309" width="199" height="42" rx="8" fill="#15353d" stroke="#47767c"/><text x="578" y="336" fill="white" font-size="17">−1 Tag</text>
+    <rect x="689" y="309" width="58" height="42" rx="8" fill="#19454b" stroke="#5b8c8d"/><text x="718" y="337" fill="white">+</text>
+  </g>
+  <rect x="214" y="369" width="533" height="48" rx="9" fill="#173b38" stroke="#438f84"/>
+  <g transform="translate(237 383)" fill="none" stroke="#52ead1" stroke-width="3" stroke-linecap="round" filter="url(#glow)">
+    <path d="M0 8Q12-2 24 8"/><path d="M5 14q7-6 14 0"/><circle cx="12" cy="20" r="2" fill="#52ead1"/>
+  </g>
+  <text x="278" y="399" fill="#52ead1" font-family="Arial" font-size="17" font-weight="700">WLAN VERBUNDEN · Home-WLAN</text>
+  <g font-family="Arial" font-size="15" text-anchor="middle">
+    <rect x="214" y="430" width="255" height="42" rx="8" fill="#19454b" stroke="#5b8c8d"/><text x="342" y="457" fill="white">Neu verbinden</text>
+    <rect x="480" y="430" width="267" height="42" rx="8" fill="#19454b" stroke="#5b8c8d"/><text x="614" y="457" fill="white">WLAN auswählen / anmelden</text>
+  </g>
+  <text x="214" y="498" fill="#b8cdd1" font-family="Arial" font-size="14">Die Anwendung ist aktuell.</text>
+  <g font-family="Arial" font-size="14" text-anchor="middle">
+    <rect x="214" y="511" width="170" height="42" rx="8" fill="#19454b" stroke="#5b8c8d"/><text x="299" y="537" fill="white">Updates installieren</text>
+    <rect x="395" y="511" width="155" height="42" rx="8" fill="#19454b" stroke="#5b8c8d"/><text x="472" y="537" fill="white">App neu starten</text>
+    <rect x="561" y="511" width="130" height="42" rx="8" fill="#19454b" stroke="#5b8c8d"/><text x="626" y="537" fill="white">Speichern</text>
+    <rect x="702" y="511" width="45" height="42" rx="8" fill="#15353d" stroke="#47767c"/><text x="724" y="537" fill="#b8cdd1">×</text>
+  </g>
+</svg>
