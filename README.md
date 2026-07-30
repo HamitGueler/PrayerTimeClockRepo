@@ -38,6 +38,15 @@ Diyanet-Ausfällen mit einem datumsscharfen 7-Tage-Fallback weiter.
 - Normaler Adhān für Dhuhr, ʿAṣr, Maghrib und ʿIschāʾ
 - Keine Audioausgabe für Schurūq
 - Blinkende Markierung des Gebets während der Wiedergabe
+- Das Ornament reagiert synchron auf den tatsächlichen Lautstärkeverlauf der
+  jeweiligen Adhān-Aufnahme: ruhige Passagen bewegen die Ringe sanft,
+  kräftige Passagen vergrößern und erhellen sie stärker
+- Die Partikel folgen demselben geglätteten Profil: kräftige Passagen lassen
+  sie stärker auf und ab glühen und blenden behutsam zusätzliche Lichtpunkte
+  ein; in ruhigen Passagen kehren sie weich zum Standardzustand zurück
+- Vorab geglättete 100-ms-Profile für normalen und Fajr-Adhān verhindern
+  willkürliche oder hektische Ausschläge und entlasten den Raspberry Pi
+- Fehlt ein Analyseprofil, läuft sicher die normale Ornamentanimation weiter
 - Einstellbare Lautstärke mit sofort hörbarer Änderung
 - Testfunktion „Adhān abspielen“, die während der Wiedergabe zu
   „Adhān stoppen“ wechselt
@@ -72,6 +81,7 @@ der Anwendung dynamisch erzeugt.
 | Exakt datierter Cache | `GESPEICHERT` und tatsächlich verbleibende Fallback-Reichweite | [SVG öffnen](prayerclock-cached-state-preview.svg) |
 | Kein gültiger Fallback | `VERALTET`, rote Statusfarben und echtes rotes Ornament | [SVG öffnen](prayerclock-fallback-warning-preview.svg) |
 | Besonderer islamischer Höhepunkt | deutlich kräftigere Gold-/Weiß-Partikel und Festtagspalette | [SVG öffnen](prayerclock-celebration-state-preview.svg) |
+| Laufender Adhān | aufnahme-synchrone Ringausdehnung sowie intensiveres Partikelglühen | [SVG öffnen](prayerclock-adhan-state-preview.svg) |
 | Touch-Einstellungen | Display-, Audio-, Helligkeits-, WLAN- und Updateoptionen | [SVG öffnen](prayerclock-settings-preview.svg) |
 
 ### Partikel und besondere islamische Tage
