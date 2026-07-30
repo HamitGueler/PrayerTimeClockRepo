@@ -21,3 +21,10 @@ def fallback_horizon_text(last_available_date, today):
     if days == 1:
         return "Fallback noch 1 Tag verfügbar"
     return f"Fallback noch {days} Tage verfügbar"
+
+
+def fallback_horizon_after_request(request_succeeded, last_available_date, today):
+    """Return fallback reach only for a failed refresh attempt."""
+    if request_succeeded:
+        return ""
+    return fallback_horizon_text(last_available_date, today)
