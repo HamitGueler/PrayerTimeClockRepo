@@ -10,7 +10,7 @@ from PySide6.QtCore import QSettings, QTimer, Qt, QUrl, Signal, Slot
 from PySide6.QtGui import QCursor
 from PySide6.QtMultimedia import QAudioOutput, QMediaPlayer
 from PySide6.QtWidgets import (
-    QComboBox,
+    QButtonGroup,
     QDialog,
     QDialogButtonBox,
     QFormLayout,
@@ -20,9 +20,11 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QPushButton,
+    QScrollArea,
     QSlider,
     QSpinBox,
     QVBoxLayout,
+    QWidget,
 )
 
 from PyViews.PrayerTimeClockWindow import Ui_MainWindow
@@ -41,6 +43,10 @@ class SettingsDialog(QDialog):
     close_requested = Signal()
     restart_requested = Signal()
     update_requested = Signal()
+    reconnect_requested = Signal()
+    wifi_settings_requested = Signal()
+    volume_changed = Signal(int)
+    brightness_changed = Signal(int)
 
     def __init__(self, volume, brightness, display_profile, hijri_adjustment, parent=None):
         super().__init__(parent)
@@ -50,8 +56,17 @@ class SettingsDialog(QDialog):
         self.setMinimumWidth(520)
         self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
 
-        page = QVBoxLayout(self)
+        outer = QVBoxLayout(self)
+        outer.setContentsMargins(0, 0, 0, 0)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QScrollArea.NoFrame)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        content = QWidget()
+        page = QVBoxLayout(content)
         page.setContentsMargins(32, 26, 32, 24)
+        scroll.setWidget(content)
+        outer.addWidget(scroll)
         title = QLabel("EINSTELLUNGEN")
         title.setObjectName("settings_title")
         page.addWidget(title)
@@ -70,6 +85,7 @@ class SettingsDialog(QDialog):
         self.volume_slider.valueChanged.connect(
             lambda value: self.volume_value.setText(f"{value} %")
         )
+        self.volume_slider.valueChanged.connect(self.volume_changed)
         self.volume_value.setText(f"{volume} %")
         volume_row = QHBoxLayout()
         volume_row.addWidget(self.volume_slider, 1)
@@ -83,16 +99,27 @@ class SettingsDialog(QDialog):
         self.brightness_slider.valueChanged.connect(
             lambda value: self.brightness_value.setText(f"{value} %")
         )
+        self.brightness_slider.valueChanged.connect(self.brightness_changed)
         self.brightness_value.setText(f"{brightness} %")
         brightness_row = QHBoxLayout()
         brightness_row.addWidget(self.brightness_slider, 1)
         brightness_row.addWidget(self.brightness_value)
         form.addRow("Bildschirmhelligkeit", brightness_row)
 
-        self.display_profile = QComboBox()
-        self.display_profile.addItems(("7 Zoll", "10 Zoll", "14 Zoll"))
-        self.display_profile.setCurrentText(display_profile)
-        form.addRow("Displayprofil", self.display_profile)
+        profile_row = QHBoxLayout()
+        self.profile_group = QButtonGroup(self)
+        self.profile_group.setExclusive(True)
+        self.profile_buttons = {}
+        for profile in ("7 Zoll", "10 Zoll", "14 Zoll"):
+            button = QPushButton(profile)
+            button.setCheckable(True)
+            button.setProperty("profileButton", True)
+            button.setMinimumHeight(48)
+            button.setChecked(profile == display_profile)
+            self.profile_group.addButton(button)
+            self.profile_buttons[profile] = button
+            profile_row.addWidget(button)
+        form.addRow("Displayprofil", profile_row)
 
         self.hijri_adjustment = QSpinBox()
         self.hijri_adjustment.setRange(-2, 2)
@@ -101,10 +128,7 @@ class SettingsDialog(QDialog):
         form.addRow("Hijri-Korrektur", self.hijri_adjustment)
         page.addLayout(form)
 
-        hint = QLabel(
-            "Die Helligkeitssteuerung funktioniert, wenn der angeschlossene "
-            "Bildschirm sie dem Raspberry Pi zur Verfügung stellt."
-        )
+        hint = QLabel("Bei HDMI-Displays ohne Hardware-Regelung wird die Oberfläche softwareseitig abgedunkelt.")
         hint.setObjectName("settings_hint")
         hint.setWordWrap(True)
         page.addWidget(hint)
@@ -113,6 +137,18 @@ class SettingsDialog(QDialog):
         test_button.setObjectName("test_adhan_button")
         test_button.clicked.connect(self.test_adhan_requested)
         page.addWidget(test_button)
+
+        self.network_status = QLabel("WLAN-Status wird geprüft …")
+        self.network_status.setObjectName("network_status")
+        page.addWidget(self.network_status)
+        network_row = QHBoxLayout()
+        reconnect_button = QPushButton("Neu verbinden")
+        reconnect_button.clicked.connect(self.reconnect_requested)
+        network_row.addWidget(reconnect_button)
+        wifi_button = QPushButton("WLAN auswählen / anmelden")
+        wifi_button.clicked.connect(self.wifi_settings_requested)
+        network_row.addWidget(wifi_button)
+        page.addLayout(network_row)
 
         self.update_status = QLabel("Update-Stand wird beim Prüfen ermittelt.")
         self.update_status.setObjectName("application_update_status")
@@ -135,6 +171,23 @@ class SettingsDialog(QDialog):
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
         page.addWidget(buttons)
+
+    def selected_display_profile(self):
+        for profile, button in self.profile_buttons.items():
+            if button.isChecked():
+                return profile
+        return "7 Zoll"
+
+    def set_network_status(self, connected, network_name=""):
+        if connected:
+            suffix = f" · {network_name}" if network_name else ""
+            self.network_status.setText(f"● WLAN verbunden{suffix}")
+            self.network_status.setProperty("connected", True)
+        else:
+            self.network_status.setText("● WLAN nicht verbunden")
+            self.network_status.setProperty("connected", False)
+        self.network_status.style().unpolish(self.network_status)
+        self.network_status.style().polish(self.network_status)
 
 
 class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
@@ -181,6 +234,13 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.last_daily_refresh_attempt_date = datetime.now().date()
         self.last_adhan_key = None
         self.last_content_date = None
+        self.brightness_overlay = QWidget(self.centralwidget)
+        self.brightness_overlay.setAttribute(Qt.WA_TransparentForMouseEvents)
+        self.brightness_overlay.setObjectName("brightness_overlay")
+        self.brightness_overlay.hide()
+        self.network_timer = QTimer(self)
+        self.network_timer.setInterval(15000)
+        self.network_timer.timeout.connect(self._refresh_network_status)
 
         self.current_prayers = [
             self.current_day_fajr_time, self.current_day_shroq_time, self.current_day_zohr_time,
@@ -205,6 +265,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.refresh_button.setCursor(QCursor(Qt.PointingHandCursor))
         self.settings_button.clicked.connect(self.open_settings)
         self.settings_button.setCursor(QCursor(Qt.PointingHandCursor))
+        self.wifi_status_button.clicked.connect(self.open_settings)
+        self.wifi_status_button.setCursor(QCursor(Qt.PointingHandCursor))
 
         self.clock_timer = QTimer(self)
         self.clock_timer.timeout.connect(self.update_clock)
@@ -214,6 +276,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.retry_timer.setInterval(5 * 60 * 1000)
         self.retry_timer.timeout.connect(self.refresh_data)
         self.retry_time.hide()
+        self.network_timer.start()
+        self._refresh_network_status()
 
         self.update_clock()
         self._load_cached_prayer_times()
@@ -232,17 +296,22 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         dialog.test_adhan_requested.connect(
             lambda: self._preview_adhan(dialog.volume_slider.value())
         )
+        dialog.volume_changed.connect(lambda value: self.audio_output.setVolume(value / 100.0))
+        dialog.brightness_changed.connect(self._apply_brightness)
+        dialog.reconnect_requested.connect(lambda: self._reconnect_wifi(dialog))
+        dialog.wifi_settings_requested.connect(lambda: self._open_wifi_settings(dialog))
         dialog.update_requested.connect(lambda: self._handle_update(dialog))
         dialog.restart_requested.connect(lambda: self._restart_application(dialog, True))
         dialog.close_requested.connect(lambda: self._close_application(dialog))
         QTimer.singleShot(0, lambda: self._check_update_status(dialog))
+        self._update_dialog_network_status(dialog)
         if dialog.exec() != QDialog.Accepted:
             self.audio_player.stop()
             self.audio_output.setVolume(self.volume / 100.0)
             return
         self.volume = dialog.volume_slider.value()
         self.brightness = dialog.brightness_slider.value()
-        self.display_profile = dialog.display_profile.currentText()
+        self.display_profile = dialog.selected_display_profile()
         self.hijri_adjustment = dialog.hijri_adjustment.value()
         self.settings.setValue("volume", self.volume)
         self.settings.setValue("brightness", self.brightness)
@@ -337,8 +406,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         ornament_size = round(154 * scale)
         self.islamic_ornament.setFixedSize(ornament_size, ornament_size)
 
-    @staticmethod
-    def _apply_brightness(value):
+    def _apply_brightness(self, value):
         if shutil.which("brightnessctl"):
             result = subprocess.run(
                 ["brightnessctl", "set", f"{value}%"],
@@ -347,6 +415,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                 timeout=3,
             )
             if result.returncode == 0:
+                self.brightness_overlay.hide()
                 return True
         backlight_root = "/sys/class/backlight"
         if os.path.isdir(backlight_root):
@@ -358,10 +427,74 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                     brightness_path = os.path.join(device_path, "brightness")
                     with open(brightness_path, "w", encoding="utf-8") as file:
                         file.write(str(max(1, round(maximum * value / 100))))
+                    self.brightness_overlay.hide()
                     return True
                 except (OSError, ValueError):
                     continue
+        opacity = max(0, min(0.82, (100 - value) / 100))
+        self.brightness_overlay.setStyleSheet(
+            f"background-color: rgba(0, 0, 0, {round(opacity * 255)});"
+        )
+        self.brightness_overlay.setGeometry(self.centralwidget.rect())
+        self.brightness_overlay.setVisible(opacity > 0)
+        self.brightness_overlay.raise_()
         return False
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if hasattr(self, "brightness_overlay"):
+            self.brightness_overlay.setGeometry(self.centralwidget.rect())
+
+    @staticmethod
+    def _network_info():
+        if shutil.which("nmcli"):
+            result = subprocess.run(
+                ["nmcli", "-t", "-f", "TYPE,STATE,CONNECTION", "device"],
+                check=False, capture_output=True, text=True, timeout=4,
+            )
+            for line in result.stdout.splitlines():
+                parts = line.split(":", 2)
+                if len(parts) == 3 and parts[0] == "wifi" and parts[1] == "connected":
+                    return True, parts[2].replace("\\:", ":")
+        return False, ""
+
+    def _refresh_network_status(self):
+        connected, name = self._network_info()
+        self.wifi_status_button.setText("◉" if connected else "⊘")
+        self.wifi_status_button.setToolTip(
+            f"WLAN verbunden · {name}" if connected and name else
+            "WLAN verbunden" if connected else "WLAN nicht verbunden"
+        )
+        self.wifi_status_button.setProperty("connected", connected)
+        self.wifi_status_button.style().unpolish(self.wifi_status_button)
+        self.wifi_status_button.style().polish(self.wifi_status_button)
+
+    def _update_dialog_network_status(self, dialog):
+        connected, name = self._network_info()
+        dialog.set_network_status(connected, name)
+
+    def _reconnect_wifi(self, dialog):
+        if not shutil.which("nmcli"):
+            QMessageBox.warning(dialog, "WLAN", "NetworkManager ist nicht verfügbar.")
+            return
+        subprocess.run(["nmcli", "radio", "wifi", "on"], check=False, timeout=5)
+        subprocess.run(["nmcli", "device", "connect", "wlan0"], check=False, timeout=12)
+        self._refresh_network_status()
+        self._update_dialog_network_status(dialog)
+
+    def _open_wifi_settings(self, dialog):
+        commands = (
+            ["gnome-control-center", "wifi"],
+            ["nm-connection-editor"],
+        )
+        for command in commands:
+            if shutil.which(command[0]):
+                subprocess.Popen(command, start_new_session=True)
+                return
+        QMessageBox.information(
+            dialog, "WLAN auswählen",
+            "Öffne in Ubuntu die Systemeinstellungen und wähle dort „WLAN“.",
+        )
 
     @Slot()
     def refresh_data(self):

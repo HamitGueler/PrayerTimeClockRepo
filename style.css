@@ -149,7 +149,7 @@ QLabel {
     color: #ff626f;
 }
 
-#refresh_button, #settings_button {
+#refresh_button, #settings_button, #wifi_status_button {
     color: #6debd7;
     background-color: #17343b;
     border: 1px solid #46717a;
@@ -158,20 +158,30 @@ QLabel {
     font-weight: 600;
 }
 
-#refresh_button:hover, #settings_button:hover {
+#refresh_button:hover, #settings_button:hover, #wifi_status_button:hover {
     color: #ffffff;
     background-color: #1a343b;
     border-color: #56d7c1;
 }
 
-#refresh_button:pressed, #settings_button:pressed {
+#refresh_button:pressed, #settings_button:pressed, #wifi_status_button:pressed {
     background-color: #56d7c1;
     color: #081116;
 }
 
-#refresh_button:disabled, #settings_button:disabled {
+#refresh_button:disabled, #settings_button:disabled, #wifi_status_button:disabled {
     color: #53666c;
     background-color: #101c21;
+}
+
+#wifi_status_button[connected="true"] {
+    color: #52ead1;
+    border-color: #438f84;
+}
+
+#wifi_status_button[connected="false"] {
+    color: #ff626f;
+    border-color: #a84852;
 }
 
 #sectionTitle {
@@ -327,4 +337,27 @@ QGroupBox[sunrise="true"] {
 #settings_dialog QPushButton:hover {
     background-color: #246059;
     border-color: #70dfca;
+}
+
+#settings_dialog QPushButton[profileButton="true"]:checked {
+    color: #071217;
+    background-color: #f0c765;
+    border-color: #ffe19a;
+}
+
+#network_status {
+    font-size: 17px;
+    font-weight: 700;
+    padding: 9px 12px;
+    border-radius: 8px;
+}
+
+#network_status[connected="true"] {
+    color: #52ead1;
+    background-color: rgba(44, 112, 99, 0.28);
+}
+
+#network_status[connected="false"] {
+    color: #ff626f;
+    background-color: rgba(133, 47, 57, 0.28);
 }
