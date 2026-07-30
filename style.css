@@ -130,6 +130,12 @@ QLabel {
     font-weight: 650;
 }
 
+#fallback_horizon {
+    color: #bad4cf;
+    font-size: 12px;
+    font-weight: 650;
+}
+
 #led_sign {
     color: #52ead1;
     font-size: 17px;
