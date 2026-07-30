@@ -85,8 +85,9 @@
     <text x="51" y="210" fill="#f5f0e4" font-size="112" font-weight="700" letter-spacing="-7">11:42</text>
 
     <g transform="translate(510 181)" fill="none" stroke="#ffe9aa">
-      <circle r="64" opacity=".62" stroke-width="4"><animate attributeName="r" values="62;66;63;68;62" dur="4.8s" repeatCount="indefinite"/><animate attributeName="opacity" values=".28;.85;.38;1;.28" dur="4.8s" repeatCount="indefinite"/></circle>
-      <circle r="70" opacity=".36" stroke-width="3"><animate attributeName="r" values="68;72;69;74;68" dur="4.8s" repeatCount="indefinite"/><animate attributeName="opacity" values=".14;.58;.22;.72;.14" dur="4.8s" repeatCount="indefinite"/></circle>
+      <circle r="69" opacity=".62" stroke-width="5"><animate attributeName="opacity" values=".22;.82;.34;1;.22" dur="4.8s" repeatCount="indefinite"/></circle>
+      <circle r="73" opacity=".38" stroke-width="4"><animate attributeName="opacity" values=".12;.54;.20;.68;.12" dur="4.8s" repeatCount="indefinite"/></circle>
+      <circle r="76" opacity=".22" stroke-width="2"><animate attributeName="opacity" values=".06;.34;.11;.46;.06" dur="4.8s" repeatCount="indefinite"/></circle>
     </g>
     <g transform="translate(510 181)" fill="none">
       <circle r="69" fill="#052126" fill-opacity=".91" stroke="#e2bd68" stroke-opacity=".86"/>
