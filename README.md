@@ -21,6 +21,10 @@ Diyanet-Ausfällen mit einem datumsscharfen 7-Tage-Fallback weiter.
   an den weißen Tagen
 - Zusammenführung überschneidender Hinweise: „Fasten empfohlen“ erscheint
   nicht doppelt
+- Jumuʿah wird freitags im Heute-Bereich und bereits donnerstags im
+  Morgen-Bereich angekündigt
+- Ruhige Türkis-/Gold-Partikel bewegen sich ausschließlich im linken
+  Hauptbereich hinter den Texten
 - Animiertes islamisches Ornament
 - Datum und Uhrzeit der letzten erfolgreichen Datenaktualisierung
 - WLAN-Symbol in der Hauptansicht: grün verbunden, rot und durchgestrichen
@@ -55,6 +59,38 @@ Weitere Hinweise zu den Audiodateien stehen in [AUDIO_SETUP.md](AUDIO_SETUP.md).
 Die Helligkeitssteuerung verwendet zuerst `brightnessctl`, danach ein
 vorhandenes Linux-Backlight-Gerät. Unterstützt ein HDMI-Display keine
 Hardwaresteuerung, dimmt die Anwendung die Oberfläche softwareseitig ab.
+
+## Visuelle Zustände
+
+Für jeden relevanten Anwendungszustand gibt es eine eigene SVG-Vorschau. Die
+Grafiken sind Beispiele; Datum, Uhrzeit, Gebetszeiten und Hinweise werden in
+der Anwendung dynamisch erzeugt.
+
+| Zustand | Darstellung | Vorschau |
+| --- | --- | --- |
+| Aktuelle Online-Daten | `AKTUELL`, Türkis-/Gold-Partikel und Standardornament | [SVG öffnen](prayerclock-preview-v25-monday-thursday-fasting-dedup.svg) |
+| Exakt datierter Cache | `GESPEICHERT` und tatsächlich verbleibende Fallback-Reichweite | [SVG öffnen](prayerclock-cached-state-preview.svg) |
+| Kein gültiger Fallback | `VERALTET`, rote Statusfarben und echtes rotes Ornament | [SVG öffnen](prayerclock-fallback-warning-preview.svg) |
+| Besonderer islamischer Höhepunkt | deutlich kräftigere Gold-/Weiß-Partikel und Festtagspalette | [SVG öffnen](prayerclock-celebration-state-preview.svg) |
+| Touch-Einstellungen | Display-, Audio-, Helligkeits-, WLAN- und Updateoptionen | [SVG öffnen](prayerclock-settings-preview.svg) |
+
+### Partikel und besondere islamische Tage
+
+Die Standardpartikel verwenden die ruhige Türkis-/Gold-Palette des Designs.
+An seltenen, besonders hervorgehobenen Tagen und Nächten wird automatisch eine
+hellere Gold-/Weiß-Palette mit mehr und stärker leuchtenden Partikeln
+verwendet. Aktuell gilt dies für:
+
+- ʿĪd al-Fiṭr und ʿĪd al-Aḍḥā
+- ʿArafah und ʿĀschūrāʾ
+- den Beginn Ramaḍāns
+- die ungeraden Nächte der letzten zehn Ramaḍān-Nächte
+- die ersten zehn Tage von Dhū l-Ḥiddscha
+
+Jumuʿah und andere wichtige Hinweise werden sichtbar gekennzeichnet, lösen
+aber nicht automatisch den seltenen Festtagslook aus. Ein kritischer
+Fallback-Zustand hat immer Vorrang: Das rote Ornament wird auch an einem
+Festtag niemals durch Gold und Weiß überdeckt.
 
 ## Datenstatus und 7-Tage-Fallback
 
@@ -183,6 +219,8 @@ Die Tests sichern unter anderem ab:
 - Hijri-Korrektur und islamische Tageshinweise
 - Deduplizierung überschneidender Fastenempfehlungen
 - Unterdrückung freiwilliger Fastenhinweise an ʿĪd- und Taschrīq-Tagen
+- Jumuʿah-Hinweise für heute und morgen
+- Auswahl der Gold-/Weiß-Festtagspalette
 
 ## Projektstruktur
 
