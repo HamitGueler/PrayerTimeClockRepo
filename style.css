@@ -304,12 +304,12 @@ QGroupBox[sunrise="true"] {
 
 #settings_subtitle, #settings_hint {
     color: #b8cdd1;
-    font-size: 15px;
+    font-size: 13px;
 }
 
 #settings_dialog QLabel, #settings_dialog QSpinBox,
 #settings_dialog QComboBox, #settings_dialog QPushButton {
-    font-size: 17px;
+    font-size: 15px;
 }
 
 #settings_dialog QComboBox, #settings_dialog QSpinBox {
@@ -343,7 +343,7 @@ QGroupBox[sunrise="true"] {
     background-color: #19454b;
     border: 1px solid #5b8c8d;
     border-radius: 8px;
-    padding: 9px 18px;
+    padding: 6px 12px;
 }
 
 #settings_dialog QPushButton:hover {
@@ -358,10 +358,36 @@ QGroupBox[sunrise="true"] {
 }
 
 #network_status {
-    font-size: 17px;
+    font-size: 15px;
     font-weight: 700;
-    padding: 9px 12px;
+    padding: 6px 10px;
     border-radius: 8px;
+}
+
+#visual_effects_preview {
+    background-color: rgba(7, 18, 23, 0.82);
+    border: 1px solid rgba(215, 179, 95, 0.58);
+    border-radius: 12px;
+}
+
+#preview_particle_panel {
+    background-color: rgba(13, 31, 37, 0.72);
+    border: 0;
+    border-radius: 11px;
+}
+
+#preview_caption, #settings_section_title {
+    color: #f1c867;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+#effect_value {
+    color: #fff5dd;
+    min-width: 48px;
+    font-size: 13px;
+    font-weight: 700;
 }
 
 #network_status[connected="true"] {
