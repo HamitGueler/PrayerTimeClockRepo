@@ -125,7 +125,21 @@ class SettingsDialog(QDialog):
         self.hijri_adjustment.setRange(-2, 2)
         self.hijri_adjustment.setValue(hijri_adjustment)
         self.hijri_adjustment.setSuffix(" Tage")
-        form.addRow("Hijri-Korrektur", self.hijri_adjustment)
+        self.hijri_adjustment.setButtonSymbols(QSpinBox.NoButtons)
+        self.hijri_adjustment.setAlignment(Qt.AlignCenter)
+        hijri_row = QHBoxLayout()
+        hijri_minus_button = QPushButton("−")
+        hijri_minus_button.setObjectName("hijri_adjustment_button")
+        hijri_minus_button.setMinimumSize(56, 48)
+        hijri_minus_button.clicked.connect(self.hijri_adjustment.stepDown)
+        hijri_row.addWidget(hijri_minus_button)
+        hijri_row.addWidget(self.hijri_adjustment, 1)
+        hijri_plus_button = QPushButton("+")
+        hijri_plus_button.setObjectName("hijri_adjustment_button")
+        hijri_plus_button.setMinimumSize(56, 48)
+        hijri_plus_button.clicked.connect(self.hijri_adjustment.stepUp)
+        hijri_row.addWidget(hijri_plus_button)
+        form.addRow("Hijri-Korrektur", hijri_row)
         page.addLayout(form)
 
         hint = QLabel("Bei HDMI-Displays ohne Hardware-Regelung wird die Oberfläche softwareseitig abgedunkelt.")
@@ -133,10 +147,11 @@ class SettingsDialog(QDialog):
         hint.setWordWrap(True)
         page.addWidget(hint)
 
-        test_button = QPushButton("Adhān testen")
-        test_button.setObjectName("test_adhan_button")
-        test_button.clicked.connect(self.test_adhan_requested)
-        page.addWidget(test_button)
+        self.test_adhan_button = QPushButton("Adhān abspielen")
+        self.test_adhan_button.setObjectName("test_adhan_button")
+        self.test_adhan_button.setMinimumHeight(52)
+        self.test_adhan_button.clicked.connect(self.test_adhan_requested)
+        page.addWidget(self.test_adhan_button)
 
         self.network_status = QLabel("WLAN-Status wird geprüft …")
         self.network_status.setObjectName("network_status")
@@ -177,6 +192,14 @@ class SettingsDialog(QDialog):
             if button.isChecked():
                 return profile
         return "7 Zoll"
+
+    def set_adhan_playing(self, playing):
+        self.test_adhan_button.setText(
+            "Adhān stoppen" if playing else "Adhān abspielen"
+        )
+        self.test_adhan_button.setProperty("playing", playing)
+        self.test_adhan_button.style().unpolish(self.test_adhan_button)
+        self.test_adhan_button.style().polish(self.test_adhan_button)
 
     def set_network_status(self, connected, network_name=""):
         if connected:
@@ -220,6 +243,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.audio_player = QMediaPlayer(self)
         self.audio_player.setAudioOutput(self.audio_output)
         self.audio_player.playbackStateChanged.connect(self._on_audio_state_changed)
+        self.previewing_adhan = False
+        self.settings_dialog = None
         self.adhan_blink_timer = QTimer(self)
         self.adhan_blink_timer.setInterval(450)
         self.adhan_blink_timer.timeout.connect(self._toggle_adhan_blink)
@@ -294,7 +319,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         )
         dialog.setStyleSheet(self.styleSheet())
         dialog.test_adhan_requested.connect(
-            lambda: self._preview_adhan(dialog.volume_slider.value())
+            lambda: self._toggle_adhan_preview(dialog)
         )
         dialog.volume_changed.connect(lambda value: self.audio_output.setVolume(value / 100.0))
         dialog.brightness_changed.connect(self._apply_brightness)
@@ -305,8 +330,13 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         dialog.close_requested.connect(lambda: self._close_application(dialog))
         QTimer.singleShot(0, lambda: self._check_update_status(dialog))
         self._update_dialog_network_status(dialog)
-        if dialog.exec() != QDialog.Accepted:
+        self.settings_dialog = dialog
+        result = dialog.exec()
+        self.settings_dialog = None
+        if self.previewing_adhan:
             self.audio_player.stop()
+            self.previewing_adhan = False
+        if result != QDialog.Accepted:
             self.audio_output.setVolume(self.volume / 100.0)
             return
         self.volume = dialog.volume_slider.value()
@@ -340,7 +370,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                 dialog,
                 "Update installieren",
                 "Der neue Stand wird zuerst getestet. Erst bei Erfolg wird die "
-                "Anwendung aktualisiert und neu gestartet.",
+                "Anwendung aktualisiert. Danach kannst du sie über „App neu "
+                "starten“ anwenden.",
             )
             if answer != QMessageBox.Yes:
                 return
@@ -349,8 +380,14 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             success, message = self.update_service.install_and_validate()
             dialog.update_status.setText(message)
             if success:
-                QMessageBox.information(dialog, "Update erfolgreich", f"{message}\nDie App startet jetzt neu.")
-                self._restart_application(dialog, False)
+                restart_message = (
+                    f"{message}\n\nDie laufende Anwendung bleibt geöffnet. "
+                    "Starte sie neu, um das Update zu sehen."
+                )
+                dialog.update_status.setText(
+                    "Update installiert · Neustart erforderlich"
+                )
+                QMessageBox.information(dialog, "Update erfolgreich", restart_message)
             else:
                 QMessageBox.warning(dialog, "Update nicht übernommen", message)
         except (OSError, RuntimeError, subprocess.SubprocessError, ValueError) as error:
@@ -390,9 +427,21 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             start_new_session=True,
         )
 
-    def _preview_adhan(self, volume):
-        self.audio_output.setVolume(volume / 100.0)
-        self._play_audio(self.adhan_path)
+    def _toggle_adhan_preview(self, dialog):
+        if self.previewing_adhan:
+            self.audio_player.stop()
+            self.previewing_adhan = False
+            dialog.set_adhan_playing(False)
+            return
+        if not os.path.exists(self.adhan_path):
+            dialog.set_adhan_playing(False)
+            return
+        self.audio_output.setVolume(dialog.volume_slider.value() / 100.0)
+        self.audio_player.stop()
+        self.audio_player.setSource(QUrl.fromLocalFile(self.adhan_path))
+        self.previewing_adhan = True
+        dialog.set_adhan_playing(True)
+        self.audio_player.play()
 
     def _apply_display_profile(self, profile):
         scale = self.DISPLAY_SCALES.get(profile, 1.0)
@@ -664,6 +713,12 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
 
     @Slot()
     def _on_audio_state_changed(self, state):
+        if self.settings_dialog is not None and self.previewing_adhan:
+            self.settings_dialog.set_adhan_playing(
+                state == QMediaPlayer.PlayingState
+            )
+        if state != QMediaPlayer.PlayingState:
+            self.previewing_adhan = False
         if state == QMediaPlayer.PlayingState:
             self.adhan_blink_visible = True
             self._apply_adhan_blink()
