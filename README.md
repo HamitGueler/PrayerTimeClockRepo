@@ -59,8 +59,14 @@ Weitere Hinweise zu den Audiodateien stehen in [AUDIO_SETUP.md](AUDIO_SETUP.md).
 
 - Große Touch-Schaltflächen für die Displayprofile 7, 10 und 14 Zoll
 - Live-Regler für Adhān-Lautstärke und Bildschirmhelligkeit
+- Kompaktes Zwei-Spalten-Layout ohne notwendiges Scrollen auf dem
+  1024×600-Display
+- Mini-Live-Vorschau aus exakt demselben Ornament und derselben
+  Partikelkomponente wie in der Hauptansicht
+- Getrennte Regler für normales Ornamenttempo und normales Partikeltempo
+- Getrennte Regler für die sichtbare Adhān-Reaktionsstärke von Ornament und
+  Partikeln; der geglättete, aufnahmesynchrone Verlauf bleibt erhalten
 - Hijri-Korrektur von −2 bis +2 Tagen über separate `−`- und `+`-Tasten
-- Scrollbare Einstellungsseite für kleinere Displays
 - WLAN-Status einschließlich Name des verbundenen Netzes
 - „Neu verbinden“ und „WLAN auswählen / anmelden“
 - Updateprüfung, Installation, App-Neustart und App-Beenden
@@ -202,6 +208,10 @@ nächsten Start wieder geladen:
 - Helligkeit
 - Displayprofil
 - Hijri-Korrektur
+- Ornamentgeschwindigkeit
+- Partikelgeschwindigkeit
+- Adhān-Reaktionsstärke des Ornaments
+- Adhān-Reaktionsstärke der Partikel
 
 Die Diyanet-Quelle ist derzeit fest auf Berlin eingestellt:
 
