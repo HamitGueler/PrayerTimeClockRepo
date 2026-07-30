@@ -66,3 +66,17 @@ class WebScraperClass:
             )
         except (KeyError, TypeError):
             return False
+
+    @staticmethod
+    def prayer_data_date(data):
+        try:
+            today = datetime.strptime(data["requestSuccess"][1], "%d.%m.%Y").date()
+            tomorrow = datetime.strptime(data["nextDayPrayers"]["date"], "%d.%m.%Y").date()
+            return today if tomorrow == today + timedelta(days=1) else None
+        except (IndexError, KeyError, TypeError, ValueError):
+            return None
+
+    @classmethod
+    def has_expected_dates(cls, data, expected_date=None):
+        expected_date = expected_date or datetime.now().date()
+        return cls.prayer_data_date(data) == expected_date
