@@ -21,6 +21,9 @@
     </pattern>
     <path id="outerPetal" d="M0-44C10-45 13-53 0-63C-13-53-10-45 0-44Z"/>
     <path id="lancet" d="M0-27C10-31 14-41 0-52C-14-41-10-31 0-27Z"/>
+    <clipPath id="mainCardClip"><rect x="24" y="48" width="574" height="376" rx="13"/></clipPath>
+    <radialGradient id="warningGlow"><stop stop-color="#ffd0d4"/><stop offset=".3" stop-color="#ff626f" stop-opacity=".8"/><stop offset="1" stop-color="#ff626f" stop-opacity="0"/></radialGradient>
+    <radialGradient id="warningGoldGlow"><stop stop-color="#ffe7a3"/><stop offset=".3" stop-color="#d1aa5d" stop-opacity=".65"/><stop offset="1" stop-color="#d1aa5d" stop-opacity="0"/></radialGradient>
   </defs>
 
   <rect width="1024" height="600" fill="url(#bg)"/>
@@ -36,6 +39,21 @@
     <rect x="622.5" y="52.5" width="373" height="367" rx="10"/>
     <rect x="28.5" y="444.5" width="967" height="129" rx="10"/>
     <path d="M632 68q2-6 8-8q6 2 8 8q-6-2-8 8q-2-10-8-8M986 68q-2-6-8-8q-6 2-8 8q6-2 8 8q2-10 8-8M38 460q2-6 8-8q6 2 8 8q-6-2-8 8q-2-10-8-8M986 460q-2-6-8-8q-6 2-8 8q6-2 8 8q2-10 8-8"/>
+  </g>
+
+  <g clip-path="url(#mainCardClip)" opacity=".48">
+    <circle cx="72" cy="148" r="10" fill="url(#warningGlow)"><animate attributeName="cy" values="148;132;148" dur="10s" repeatCount="indefinite"/></circle>
+    <circle cx="111" cy="388" r="3" fill="#d1aa5d"><animate attributeName="cy" values="388;369;388" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="166" cy="123" r="4" fill="#ff626f"><animate attributeName="cy" values="123;108;123" dur="9s" repeatCount="indefinite"/></circle>
+    <circle cx="205" cy="349" r="7" fill="url(#warningGoldGlow)"><animate attributeName="cy" values="349;331;349" dur="11s" repeatCount="indefinite"/></circle>
+    <circle cx="261" cy="145" r="2.7" fill="#d1aa5d"><animate attributeName="cy" values="145;130;145" dur="8.5s" repeatCount="indefinite"/></circle>
+    <circle cx="306" cy="378" r="9" fill="url(#warningGlow)"><animate attributeName="cy" values="378;357;378" dur="13s" repeatCount="indefinite"/></circle>
+    <circle cx="357" cy="132" r="3.4" fill="#ff7986"><animate attributeName="cy" values="132;116;132" dur="10.5s" repeatCount="indefinite"/></circle>
+    <circle cx="403" cy="366" r="3.8" fill="#d1aa5d"><animate attributeName="cy" values="366;348;366" dur="9.5s" repeatCount="indefinite"/></circle>
+    <circle cx="451" cy="122" r="7" fill="url(#warningGoldGlow)"><animate attributeName="cy" values="122;106;122" dur="11.5s" repeatCount="indefinite"/></circle>
+    <circle cx="493" cy="390" r="3.1" fill="#ff626f"><animate attributeName="cy" values="390;371;390" dur="10s" repeatCount="indefinite"/></circle>
+    <circle cx="548" cy="143" r="9" fill="url(#warningGlow)"><animate attributeName="cy" values="143;126;143" dur="12.5s" repeatCount="indefinite"/></circle>
+    <circle cx="575" cy="345" r="2.8" fill="#d1aa5d"><animate attributeName="cy" values="345;329;345" dur="9s" repeatCount="indefinite"/></circle>
   </g>
 
   <g font-family="DejaVu Sans, Arial, sans-serif">
