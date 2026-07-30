@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="600" viewBox="0 0 1024 600">
   <defs>
     <radialGradient id="bg"><stop stop-color="#16343b"/><stop offset="1" stop-color="#061116"/></radialGradient>
-    <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
     <g id="ornamentPetal"><path d="M0-48C9-48 13-57 0-67C-13-57-9-48 0-48Z"/></g>
   </defs>
   <rect width="1024" height="600" fill="url(#bg)"/>
@@ -49,14 +49,14 @@
   <rect x="478" y="97" width="480" height="210" rx="12" fill="#071217" stroke="#d7b35f" stroke-opacity=".58"/>
   <text x="718" y="120" fill="#f1c867" font-family="Arial" font-size="12" font-weight="800" text-anchor="middle" letter-spacing="1">LIVE-VORSCHAU</text>
   <g opacity=".8">
-    <circle cx="525" cy="167" r="2" fill="#56e2cd" filter="url(#glow)"><animate attributeName="cy" values="167;149;167" dur="3.2s" repeatCount="indefinite"/></circle>
-    <circle cx="561" cy="255" r="2.5" fill="#e2bd68" filter="url(#glow)"><animate attributeName="cy" values="255;231;255" dur="4s" repeatCount="indefinite"/></circle>
-    <circle cx="887" cy="184" r="2" fill="#56e2cd"><animate attributeName="cy" values="184;160;184" dur="3.6s" repeatCount="indefinite"/></circle>
-    <circle cx="916" cy="260" r="3" fill="#e2bd68" filter="url(#glow)"><animate attributeName="cy" values="260;224;260" dur="4.4s" repeatCount="indefinite"/></circle>
-    <circle cx="829" cy="148" r="1.8" fill="#56e2cd"/><circle cx="604" cy="205" r="2" fill="#e2bd68"/>
+    <circle cx="525" cy="167" r="3.2" fill="#72f5df" filter="url(#glow)"><animate attributeName="cy" values="167;149;167" dur="3.2s" repeatCount="indefinite"/></circle>
+    <circle cx="561" cy="255" r="3.7" fill="#ffcf5c" filter="url(#glow)"><animate attributeName="cy" values="255;231;255" dur="4s" repeatCount="indefinite"/></circle>
+    <circle cx="887" cy="184" r="3.1" fill="#72f5df" filter="url(#glow)"><animate attributeName="cy" values="184;160;184" dur="3.6s" repeatCount="indefinite"/></circle>
+    <circle cx="916" cy="260" r="4.2" fill="#ffcf5c" filter="url(#glow)"><animate attributeName="cy" values="260;224;260" dur="4.4s" repeatCount="indefinite"/></circle>
+    <circle cx="829" cy="148" r="2.8" fill="#72f5df" filter="url(#glow)"/><circle cx="604" cy="205" r="3" fill="#ffcf5c" filter="url(#glow)"/>
   </g>
-  <g transform="translate(718 211)" fill="#0d5552" stroke="#e2bd68" filter="url(#glow)">
-    <circle r="72" fill="#052126" stroke-width="1.2"/>
+  <g transform="translate(718 211)" fill="#117e77" stroke="#ffcf5c" filter="url(#glow)">
+    <circle r="72" fill="#042b30" stroke-width="1.6"/>
     <g>
       <use href="#ornamentPetal"/><use href="#ornamentPetal" transform="rotate(30)"/><use href="#ornamentPetal" transform="rotate(60)"/>
       <use href="#ornamentPetal" transform="rotate(90)"/><use href="#ornamentPetal" transform="rotate(120)"/><use href="#ornamentPetal" transform="rotate(150)"/>
@@ -84,6 +84,7 @@
     </g>
     <g fill="#f0c765"><circle cx="758" cy="364.5" r="9"/><circle cx="758" cy="406.5" r="9"/><circle cx="758" cy="448.5" r="9"/><circle cx="758" cy="490.5" r="9"/></g>
     <g fill="white" font-size="13"><text x="897" y="369">100 %</text><text x="897" y="411">100 %</text><text x="897" y="453">100 %</text><text x="897" y="495">100 %</text></g>
+    <g fill="#8baeb3" font-size="10"><text x="615" y="385">20</text><text x="862" y="385">300 %</text><text x="615" y="511">0</text><text x="862" y="511">300 %</text></g>
   </g>
   <text x="478" y="525" fill="#b8cdd1" font-family="Arial" font-size="12">Reaktion bleibt geglättet und folgt weiterhin dem echten Adhān-Verlauf.</text>
   <g font-family="Arial" font-size="13" text-anchor="middle">
