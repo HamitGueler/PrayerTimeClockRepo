@@ -26,6 +26,7 @@
       <stop offset=".32" stop-color="#f4cf72" stop-opacity=".9"/>
       <stop offset="1" stop-color="#f4cf72" stop-opacity="0"/>
     </radialGradient>
+    <clipPath id="mainCardClip"><rect x="24" y="48" width="574" height="376" rx="13"/></clipPath>
   </defs>
 
   <rect width="1024" height="600" fill="url(#bg)"/>
@@ -43,7 +44,7 @@
     <path d="M632 68q2-6 8-8q6 2 8 8q-6-2-8 8q-2-10-8-8M986 68q-2-6-8-8q-6 2-8 8q6-2 8 8q2-10 8-8M38 460q2-6 8-8q6 2 8 8q-6-2-8 8q-2-10-8-8M986 460q-2-6-8-8q-6 2-8 8q6-2 8 8q2-10 8-8"/>
   </g>
 
-  <g opacity=".78">
+  <g clip-path="url(#mainCardClip)" opacity=".82">
     <circle cx="84" cy="130" r="16" fill="url(#festivalGlow)"><animate attributeName="cy" values="130;116;130" dur="7s" repeatCount="indefinite"/></circle>
     <circle cx="151" cy="376" r="5" fill="#fffdf4"><animate attributeName="cy" values="376;359;376" dur="9s" repeatCount="indefinite"/></circle>
     <circle cx="239" cy="115" r="11" fill="url(#festivalGlow)"><animate attributeName="cy" values="115;101;115" dur="8s" repeatCount="indefinite"/></circle>
