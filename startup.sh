@@ -26,9 +26,7 @@ for i in {1..60}; do
     sleep 1
 done
 
-if "$online"; then
-    git pull --ff-only || echo "Git Pull fehlgeschlagen – vorhandenen Stand starten"
-else
+if ! "$online"; then
     echo "Keine Internetverbindung – starte mit lokalem Tages-Cache"
 fi
 

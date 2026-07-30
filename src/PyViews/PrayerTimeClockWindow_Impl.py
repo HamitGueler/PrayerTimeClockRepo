@@ -3,6 +3,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 from datetime import datetime, timedelta
 
 from PySide6.QtCore import QSettings, QTimer, Qt, QUrl, Signal, Slot
@@ -15,7 +16,9 @@ from PySide6.QtWidgets import (
     QFormLayout,
     QHBoxLayout,
     QLabel,
+    QApplication,
     QMainWindow,
+    QMessageBox,
     QPushButton,
     QSlider,
     QSpinBox,
@@ -30,10 +33,14 @@ from PyViews.IslamicContent import (
     special_day_tomorrow_notices,
 )
 from HelperClasses.WebScraperClass import WebScraperClass
+from HelperClasses.ApplicationUpdateService import ApplicationUpdateService
 
 
 class SettingsDialog(QDialog):
     test_adhan_requested = Signal()
+    close_requested = Signal()
+    restart_requested = Signal()
+    update_requested = Signal()
 
     def __init__(self, volume, brightness, display_profile, hijri_adjustment, parent=None):
         super().__init__(parent)
@@ -107,6 +114,21 @@ class SettingsDialog(QDialog):
         test_button.clicked.connect(self.test_adhan_requested)
         page.addWidget(test_button)
 
+        self.update_status = QLabel("Update-Stand wird beim Prüfen ermittelt.")
+        self.update_status.setObjectName("application_update_status")
+        page.addWidget(self.update_status)
+        system_row = QHBoxLayout()
+        self.check_update_button = QPushButton("Updates installieren")
+        self.check_update_button.clicked.connect(self.update_requested)
+        system_row.addWidget(self.check_update_button)
+        restart_button = QPushButton("App neu starten")
+        restart_button.clicked.connect(self.restart_requested)
+        system_row.addWidget(restart_button)
+        close_button = QPushButton("App schließen")
+        close_button.clicked.connect(self.close_requested)
+        system_row.addWidget(close_button)
+        page.addLayout(system_row)
+
         buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
         buttons.button(QDialogButtonBox.Save).setText("Speichern")
         buttons.button(QDialogButtonBox.Cancel).setText("Abbrechen")
@@ -130,6 +152,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
 
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
         self.project_root = os.path.abspath(os.path.join(self.current_dir, "..", ".."))
+        self.update_service = ApplicationUpdateService(self.project_root)
         self.src_dir = os.path.abspath(os.path.join(self.current_dir, ".."))
         self.cache_path = os.path.join(self.src_dir, "prayer_times_cache.json")
         self.fajr_adhan_path = os.path.join(self.src_dir, "AudioFiles", "fajr_adhan.mp3")
@@ -209,6 +232,10 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         dialog.test_adhan_requested.connect(
             lambda: self._preview_adhan(dialog.volume_slider.value())
         )
+        dialog.update_requested.connect(lambda: self._handle_update(dialog))
+        dialog.restart_requested.connect(lambda: self._restart_application(dialog, True))
+        dialog.close_requested.connect(lambda: self._close_application(dialog))
+        QTimer.singleShot(0, lambda: self._check_update_status(dialog))
         if dialog.exec() != QDialog.Accepted:
             self.audio_player.stop()
             self.audio_output.setVolume(self.volume / 100.0)
@@ -227,6 +254,72 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self._apply_display_profile(self.display_profile)
         self.last_content_date = None
         self._update_islamic_content(datetime.now())
+
+    def _handle_update(self, dialog):
+        dialog.check_update_button.setDisabled(True)
+        dialog.update_status.setText("Suche nach Updates …")
+        QApplication.processEvents()
+        try:
+            count = self.update_service.available_commits()
+            if count == 0:
+                dialog.update_status.setText("Die Anwendung ist aktuell.")
+                return
+            dialog.update_status.setText(
+                f"{count} Update{'s' if count != 1 else ''} verfügbar."
+            )
+            answer = QMessageBox.question(
+                dialog,
+                "Update installieren",
+                "Der neue Stand wird zuerst getestet. Erst bei Erfolg wird die "
+                "Anwendung aktualisiert und neu gestartet.",
+            )
+            if answer != QMessageBox.Yes:
+                return
+            dialog.update_status.setText("Update wird geprüft und vorbereitet …")
+            QApplication.processEvents()
+            success, message = self.update_service.install_and_validate()
+            dialog.update_status.setText(message)
+            if success:
+                QMessageBox.information(dialog, "Update erfolgreich", f"{message}\nDie App startet jetzt neu.")
+                self._restart_application(dialog, False)
+            else:
+                QMessageBox.warning(dialog, "Update nicht übernommen", message)
+        except (OSError, RuntimeError, subprocess.SubprocessError, ValueError) as error:
+            dialog.update_status.setText(str(error))
+            QMessageBox.warning(dialog, "Update fehlgeschlagen", str(error))
+        finally:
+            dialog.check_update_button.setDisabled(False)
+
+    def _check_update_status(self, dialog):
+        dialog.update_status.setText("Update-Stand wird geprüft …")
+        QApplication.processEvents()
+        try:
+            count = self.update_service.available_commits()
+            dialog.update_status.setText(
+                "Die Anwendung ist aktuell."
+                if count == 0
+                else f"{count} Update{'s' if count != 1 else ''} verfügbar."
+            )
+        except (OSError, RuntimeError, subprocess.SubprocessError, ValueError):
+            dialog.update_status.setText("Update-Stand derzeit nicht verfügbar.")
+
+    @staticmethod
+    def _close_application(dialog):
+        if QMessageBox.question(dialog, "App schließen", "Anwendung wirklich schließen?") == QMessageBox.Yes:
+            dialog.accept()
+            QApplication.quit()
+
+    def _restart_application(self, dialog, ask_for_confirmation):
+        if ask_for_confirmation:
+            if QMessageBox.question(dialog, "App neu starten", "Anwendung jetzt neu starten?") != QMessageBox.Yes:
+                return
+        dialog.accept()
+        QApplication.quit()
+        subprocess.Popen(
+            [sys.executable, os.path.join(self.src_dir, "PrayerTimeClock.py")],
+            cwd=self.project_root,
+            start_new_session=True,
+        )
 
     def _preview_adhan(self, volume):
         self.audio_output.setVolume(volume / 100.0)
