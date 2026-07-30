@@ -1,5 +1,4 @@
 import json
-import math
 import os
 import re
 import shutil
@@ -60,7 +59,7 @@ class VisualEffectsPreview(QFrame):
         self.caption = QLabel("LIVE-VORSCHAU", self.panel)
         self.caption.setObjectName("preview_caption")
         self._clock = 0
-        self._external_level = None
+        self._external_level = 0.0
         self._timer = QTimer(self)
         self._timer.setInterval(80)
         self._timer.timeout.connect(self._animate)
@@ -78,18 +77,15 @@ class VisualEffectsPreview(QFrame):
 
     def _animate(self):
         self._clock += 1
-        # A calm repeating envelope makes reaction-strength changes immediately
-        # visible without pretending to analyse audio that is not playing.
-        level = (
-            self._external_level
-            if self._external_level is not None
-            else 0.18 + 0.54 * (0.5 + 0.5 * math.sin(self._clock * 0.12))
-        )
+        # Normal mode shows only the two standard-speed settings. The actual
+        # Adhan profile takes over during the test playback, so reaction settings
+        # can no longer be confused with an unrelated synthetic pulse.
+        level = self._external_level
         self.ornament.set_audio_level(level)
         self.panel.set_audio_level(level)
 
     def set_adhan_level(self, level):
-        self._external_level = None if level is None else max(0.0, min(1.0, float(level)))
+        self._external_level = 0.0 if level is None else max(0.0, min(1.0, float(level)))
 
     def set_effects(self, ornament_speed, particle_speed, ornament_reaction, particle_reaction):
         self.ornament.set_animation_speed(ornament_speed / 100.0)
@@ -292,7 +288,7 @@ class SettingsDialog(QDialog):
 
     def _effect_slider(self, form, label, value, value_suffix):
         slider = QSlider(Qt.Horizontal)
-        slider.setRange(25 if value_suffix == "Tempo" else 0, 200)
+        slider.setRange(20 if value_suffix == "Tempo" else 0, 300)
         slider.setValue(value)
         value_label = QLabel(f"{value} %")
         value_label.setObjectName("effect_value")
