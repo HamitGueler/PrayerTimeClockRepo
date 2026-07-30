@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="600" viewBox="0 0 1024 600">
+  <defs>
+    <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#0b1718"/><stop offset="1" stop-color="#070e10"/></linearGradient>
+    <radialGradient id="gold"><stop stop-color="#fff7d6"/><stop offset=".35" stop-color="#f4cf72" stop-opacity=".9"/><stop offset="1" stop-color="#f4cf72" stop-opacity="0"/></radialGradient>
+    <style>.p{animation:float 4s ease-in-out infinite alternate}@keyframes float{to{transform:translateY(-13px)}}</style>
+  </defs>
+  <rect width="1024" height="600" fill="url(#bg)"/>
+  <g fill="#101f20" stroke="#e3c36f" stroke-opacity=".65"><rect x="24" y="48" width="574" height="376" rx="13"/><rect x="618" y="48" width="382" height="376" rx="13"/><rect x="24" y="440" width="976" height="138" rx="13"/></g>
+  <g class="p"><circle cx="88" cy="144" r="18" fill="url(#gold)"/><circle cx="152" cy="362" r="11" fill="#fff7d6" opacity=".75"/><circle cx="232" cy="120" r="14" fill="url(#gold)"/><circle cx="308" cy="386" r="9" fill="#f4cf72"/><circle cx="393" cy="136" r="12" fill="#fff" opacity=".8"/><circle cx="466" cy="352" r="17" fill="url(#gold)"/><circle cx="548" cy="112" r="10" fill="#f4cf72"/></g>
+  <g font-family="DejaVu Sans,Arial,sans-serif">
+    <text x="48" y="82" fill="#f4cf72" font-size="17" font-weight="700" letter-spacing="3">BERLIN</text>
+    <rect x="274" y="51" width="268" height="47" rx="8" fill="#3b321e" stroke="#fff2b8" stroke-opacity=".8"/>
+    <circle cx="289" cy="66" r="4" fill="#fff"/>
+    <text x="299" y="70" fill="#fff2b8" font-size="10" font-weight="700">AKTUELL</text>
+    <text x="354" y="70" fill="#fff" font-size="10.5">30.07.2026 · 14:20</text>
+    <text x="408" y="91" text-anchor="middle" fill="#f4cf72" font-size="10.5" font-weight="700">Fallback noch 7 Tage verfügbar</text>
+    <text x="51" y="210" fill="#fffdf4" font-size="112" font-weight="700">11:42</text>
+    <text x="51" y="243" fill="#fff2b8" font-size="14" font-weight="600">9. DHŪ L-ḤIDDSCHA 1447 AH</text>
+    <rect x="48" y="261" width="330" height="27" rx="8" fill="#d1aa5d" fill-opacity=".22" stroke="#fff2b8"/>
+    <text x="213" y="279" text-anchor="middle" fill="#fff7d6" font-size="11" font-weight="800">HEUTE · ʿARAFAH · FASTEN EMPFOHLEN</text>
+    <text x="51" y="320" fill="#d8cba9" font-size="11" font-weight="700">NÄCHSTES GEBET · DHUHR</text>
+    <text x="49" y="366" fill="#fff2b8" font-size="40" font-weight="700">01:21:18</text>
+    <g transform="translate(510 181)"><circle r="72" fill="#3a2b10" stroke="#fff2b8" stroke-width="2"/><circle r="59" fill="none" stroke="#fff" stroke-width="8" stroke-dasharray="3 8"/><circle r="41" fill="none" stroke="#f4cf72" stroke-width="7" stroke-dasharray="2 6"/><path d="M0-34 9-11 34 0 9 11 0 34-9 11-34 0-9-11Z" fill="#d1aa5d" stroke="#fff"/><circle r="8" fill="#fff7d6"/></g>
+    <text x="640" y="78" fill="#f4cf72" font-size="11" font-weight="700">HEUTIGE GEBETSZEITEN</text>
+    <g fill="#172725" stroke="#705f35"><rect x="635" y="91" width="348" height="46" rx="7"/><rect x="635" y="143" width="348" height="46" rx="7"/><rect x="635" y="195" width="348" height="46" rx="7"/><rect x="635" y="247" width="348" height="46" rx="7"/><rect x="635" y="299" width="348" height="46" rx="7"/><rect x="635" y="351" width="348" height="46" rx="7"/></g>
+    <g fill="#fffdf4" font-size="18"><text x="653" y="121">FAJR</text><text x="653" y="173">SHURŪQ</text><text x="653" y="225">DHUHR</text><text x="653" y="277">ASR</text><text x="653" y="329">MAGHRIB</text><text x="653" y="381">ISHA</text></g>
+    <text x="47" y="474" fill="#f4cf72" font-size="16" font-weight="800">MORGEN · ʿĪD AL-AḌḤĀ</text>
+    <text x="512" y="530" text-anchor="middle" fill="#fffdf4" font-size="24">03:23     05:22     13:03     17:18     21:02     22:49</text>
+  </g>
+</svg>
