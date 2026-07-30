@@ -1,6 +1,6 @@
 /* PrayerTimeClock – optimized for a 1024×600 Raspberry Pi display */
 QWidget {
-    background-color: #071217;
+    background-color: #06161b;
     color: #ffffff;
     font-family: "DejaVu Sans", "Noto Sans", sans-serif;
 }
@@ -10,13 +10,13 @@ QLabel {
 }
 
 #clockPanel {
-    background-color: rgba(13, 31, 37, 0.82);
+    background-color: rgba(10, 38, 43, 0.94);
     border: 0;
     border-radius: 13px;
 }
 
 #todayPanel, #next_day_prayers_box {
-    background-color: rgba(13, 29, 34, 0.50);
+    background-color: rgba(10, 34, 39, 0.82);
     border: 0;
     border-radius: 13px;
 }
@@ -29,20 +29,20 @@ QLabel {
 }
 
 #current_location {
-    color: #e7b84f;
+    color: #ffd064;
     font-size: 23px;
     font-weight: 700;
     letter-spacing: 2px;
 }
 
 #current_date {
-    color: #c9d7db;
+    color: #eef7f8;
     font-size: 24px;
     padding-bottom: 2px;
 }
 
 #hijri_date {
-    color: #64ddcc;
+    color: #72f5df;
     font-size: 20px;
     font-weight: 650;
     padding-bottom: 6px;
@@ -77,7 +77,7 @@ QLabel {
 }
 
 #quran_arabic {
-    color: #f1dfb2;
+    color: #fff0c7;
     font-family: "Noto Naskh Arabic", "Noto Sans Arabic", serif;
     font-size: 28px;
     font-weight: 600;
@@ -85,7 +85,7 @@ QLabel {
 }
 
 #quran_translation {
-    color: #c2d0d3;
+    color: #e0ecee;
     font-size: 17px;
     font-weight: 500;
     font-style: italic;
@@ -100,7 +100,7 @@ QLabel {
 
 #rest_time_description, #midnight_label, #sectionTitle,
 #next_day_description, #last_updated_descrition {
-    color: #c5d6da;
+    color: #e3f0f2;
     font-size: 17px;
     font-weight: 700;
     letter-spacing: 1px;
@@ -201,8 +201,8 @@ QLabel {
 }
 
 #fajr_box, #shroq_box, #zohr_box, #asr_box, #magrb_box, #isha_box {
-    background-color: rgba(16, 38, 44, 0.76);
-    border: 1px solid rgba(71, 116, 112, 0.72);
+    background-color: rgba(13, 49, 55, 0.94);
+    border: 1px solid rgba(83, 181, 169, 0.90);
     border-radius: 10px 10px 5px 5px;
 }
 
@@ -254,8 +254,8 @@ QGroupBox[sunrise="true"] {
 
 #next_day_fajr_box, #next_day_shroq_box, #next_day_zohr_box,
 #next_day_asr_box, #next_day_magrb_box, #next_day_isha_box {
-    background-color: rgba(14, 33, 39, 0.74);
-    border: 1px solid rgba(98, 143, 132, 0.76);
+    background-color: rgba(12, 43, 49, 0.94);
+    border: 1px solid rgba(100, 184, 169, 0.90);
     border-radius: 12px 12px 4px 4px;
 }
 
@@ -267,7 +267,7 @@ QGroupBox[sunrise="true"] {
 
 #next_day_fajr, #next_day_shroq, #next_day_zohr,
 #next_day_asr, #next_day_magrb, #next_day_isha {
-    color: #c2d2d6;
+    color: #e6f1f3;
     font-size: 16px;
     font-weight: 800;
 }
