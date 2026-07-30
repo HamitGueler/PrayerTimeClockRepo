@@ -137,12 +137,16 @@ QLabel {
     margin: 0;
 }
 
-#led_sign[online="true"] {
+#led_sign[status="current"] {
     color: #52ead1;
 }
 
-#led_sign[online="false"] {
+#led_sign[status="cached"] {
     color: #ffb86b;
+}
+
+#led_sign[status="stale"] {
+    color: #ff626f;
 }
 
 #refresh_button {
@@ -256,4 +260,9 @@ QGroupBox[sunrise="true"] {
 #retry_time {
     color: #ffb86b;
     font-size: 14px;
+}
+
+#retry_time[status="stale"] {
+    color: #ff7a84;
+    font-weight: 700;
 }
