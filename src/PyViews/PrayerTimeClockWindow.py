@@ -201,24 +201,27 @@ class IslamicGirihOrnament(QWidget):
         # Calm, but a little more perceptible than before. The approved ring
         # geometry stays unchanged; only the duration of each revolution changes.
         rotations = (
-            ("outer", seconds * self._speed_multiplier * 360.0 / 126.0, 0.16, 0.82),
-            ("middle", -seconds * self._speed_multiplier * 360.0 / 148.0, 0.21, 0.79),
-            ("inner", seconds * self._speed_multiplier * 360.0 / 109.0, 0.27, 0.75),
+            # Keep the approved resting geometry at its original size. The
+            # middle and inner artwork already has enough transparent margin
+            # inside the layer pixmap to pulse without being clipped.
+            ("outer", seconds * self._speed_multiplier * 360.0 / 126.0, 0.025),
+            ("middle", -seconds * self._speed_multiplier * 360.0 / 148.0, 0.14),
+            ("inner", seconds * self._speed_multiplier * 360.0 / 109.0, 0.24),
         )
         center = QPointF(self.width() / 2, self.height() / 2)
         if level > 0.001:
-            for offset, alpha, width in ((0.0, 105, 4.8), (4.5, 64, 3.2), (8.0, 34, 2.0)):
+            # Keep every glow ring inside the widget on both the full clock and
+            # the smaller settings preview.
+            for offset, alpha, width in ((0.0, 105, 4.8), (3.5, 64, 3.2), (6.5, 34, 2.0)):
                 glow = QColor(255, 224, 151, min(255, round(alpha * level)))
                 painter.setPen(QPen(glow, width + 2.6 * level))
                 painter.setBrush(Qt.NoBrush)
-                glow_radius = min(self.width(), self.height()) * (0.45 + 0.04 * level) + offset
+                glow_radius = min(self.width(), self.height()) * (0.38 + 0.02 * level) + offset
                 painter.drawEllipse(center, glow_radius, glow_radius)
-        for layer, angle, response, resting_scale in rotations:
+        for layer, angle, response in rotations:
             painter.save()
             painter.translate(center)
-            # Leave room for the audio-driven expansion inside the fixed widget.
-            # Starting at full size made most of the old reaction get clipped.
-            reactive_scale = min(1.06, resting_scale + level * response)
+            reactive_scale = 1.0 + level * response
             painter.scale(reactive_scale, reactive_scale)
             painter.rotate(angle)
             painter.translate(-center)
@@ -399,7 +402,7 @@ class OrientalClockPanel(QFrame):
             outer_halo = QColor(color)
             outer_halo.setAlpha(max(18, round(color.alpha() * (0.18 + 0.09 * breath + 0.08 * level))))
             painter.setBrush(outer_halo)
-            painter.drawEllipse(QPointF(x, y), radius * (4.1 + 0.8 * level), radius * (4.1 + 0.8 * level))
+            painter.drawEllipse(QPointF(x, y), radius * (3.94 + 0.77 * level), radius * (3.94 + 0.77 * level))
             inner_halo = QColor(color)
             inner_halo.setAlpha(max(30, round(color.alpha() * (0.34 + 0.12 * breath + 0.1 * level))))
             painter.setBrush(inner_halo)
