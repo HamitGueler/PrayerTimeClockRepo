@@ -195,7 +195,6 @@ class IslamicGirihOrnament(QWidget):
             }
         painter = QPainter(self)
         painter.setRenderHint(QPainter.SmoothPixmapTransform)
-        painter.drawPixmap(0, 0, self._layer_cache["base"])
         level = min(1.8, (self._audio_level ** 0.72) * self._reaction_strength)
         seconds = self._animation_clock.elapsed() / 1000.0
         # Calm, but a little more perceptible than before. The approved ring
@@ -210,14 +209,16 @@ class IslamicGirihOrnament(QWidget):
         )
         center = QPointF(self.width() / 2, self.height() / 2)
         if level > 0.001:
-            # Keep every glow ring inside the widget on both the full clock and
-            # the smaller settings preview.
-            for offset, alpha, width in ((0.0, 105, 4.8), (3.5, 64, 3.2), (6.5, 34, 2.0)):
+            # Draw the halo behind the opaque ornament base. The base masks the
+            # inward half of the strokes, so the approved ring geometry stays
+            # unchanged while most of the visible light falls outside it.
+            ornament_radius = min(self.width(), self.height()) * (69.0 / 154.0)
+            for offset, alpha, width in ((0.0, 112, 5.2), (3.5, 72, 4.0), (6.0, 40, 2.8)):
                 glow = QColor(255, 224, 151, min(255, round(alpha * level)))
                 painter.setPen(QPen(glow, width + 2.6 * level))
                 painter.setBrush(Qt.NoBrush)
-                glow_radius = min(self.width(), self.height()) * (0.38 + 0.02 * level) + offset
-                painter.drawEllipse(center, glow_radius, glow_radius)
+                painter.drawEllipse(center, ornament_radius + offset, ornament_radius + offset)
+        painter.drawPixmap(0, 0, self._layer_cache["base"])
         for layer, angle, response in rotations:
             painter.save()
             painter.translate(center)
