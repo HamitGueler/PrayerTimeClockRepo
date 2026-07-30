@@ -28,6 +28,8 @@ class IslamicGirihOrnament(QWidget):
         self._critical_warning = False
         self._celebration = False
         self._audio_level = 0.0
+        self._speed_multiplier = 1.0
+        self._reaction_strength = 1.0
         self._animation_clock = QElapsedTimer()
         self._animation_clock.start()
         self._animation_timer = QTimer(self)
@@ -192,14 +194,14 @@ class IslamicGirihOrnament(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.SmoothPixmapTransform)
         painter.drawPixmap(0, 0, self._layer_cache["base"])
-        level = self._audio_level
+        level = min(1.35, self._audio_level * self._reaction_strength)
         seconds = self._animation_clock.elapsed() / 1000.0
         # Calm, but a little more perceptible than before. The approved ring
         # geometry stays unchanged; only the duration of each revolution changes.
         rotations = (
-            ("outer", seconds * 360.0 / 126.0, 0.050),
-            ("middle", -seconds * 360.0 / 148.0, 0.036),
-            ("inner", seconds * 360.0 / 109.0, 0.024),
+            ("outer", seconds * self._speed_multiplier * 360.0 / 126.0, 0.050),
+            ("middle", -seconds * self._speed_multiplier * 360.0 / 148.0, 0.036),
+            ("inner", seconds * self._speed_multiplier * 360.0 / 109.0, 0.024),
         )
         center = QPointF(self.width() / 2, self.height() / 2)
         if level > 0.001:
@@ -225,6 +227,15 @@ class IslamicGirihOrnament(QWidget):
             return
         self._audio_level = level
         self.update()
+
+    def set_animation_speed(self, multiplier):
+        self._speed_multiplier = max(0.1, min(2.5, float(multiplier)))
+        self.update()
+
+    def set_reaction_strength(self, multiplier):
+        self._reaction_strength = max(0.0, min(2.5, float(multiplier)))
+        self.update()
+
     def set_critical_warning(self, critical):
         critical = bool(critical)
         if self._critical_warning == critical:
@@ -310,6 +321,8 @@ class OrientalClockPanel(QFrame):
         super().__init__(parent)
         self._celebration = False
         self._audio_level = 0.0
+        self._speed_multiplier = 1.0
+        self._reaction_strength = 1.0
         self._particle_clock = QElapsedTimer()
         self._particle_clock.start()
         self._particle_timer = QTimer(self)
@@ -327,13 +340,21 @@ class OrientalClockPanel(QFrame):
         self._audio_level = level
         self.update()
 
+    def set_animation_speed(self, multiplier):
+        self._speed_multiplier = max(0.1, min(2.5, float(multiplier)))
+        self.update()
+
+    def set_reaction_strength(self, multiplier):
+        self._reaction_strength = max(0.0, min(2.5, float(multiplier)))
+        self.update()
+
     def paintEvent(self, event):
         super().paintEvent(event)
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
 
         seconds = self._particle_clock.elapsed() / 1000.0
-        level = self._audio_level
+        level = min(1.35, self._audio_level * self._reaction_strength)
         base_count = 27 if self._celebration else 20
         # Additional particles fade in progressively with the analysed Adhan
         # envelope instead of appearing abruptly on every short peak.
@@ -349,7 +370,7 @@ class OrientalClockPanel(QFrame):
         for index in range(count):
             phase = (index * 0.61803398875) % 1.0
             speed = 0.012 + (index % 5) * 0.0025
-            progress = (phase + seconds * speed) % 1.0
+            progress = (phase + seconds * speed * self._speed_multiplier) % 1.0
             x = 24.0 + ((index * 83) % max(1, self.width() - 48))
             x += math.sin(seconds * 0.22 + index * 1.7) * (3.0 + index % 4)
             audio_float = math.sin(seconds * (0.75 + level * 0.9) + index * 0.91)
