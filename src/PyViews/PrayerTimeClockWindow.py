@@ -209,15 +209,22 @@ class IslamicGirihOrnament(QWidget):
         )
         center = QPointF(self.width() / 2, self.height() / 2)
         if level > 0.001:
-            # Draw the halo behind the opaque ornament base. The base masks the
-            # inward half of the strokes, so the approved ring geometry stays
-            # unchanged while most of the visible light falls outside it.
+            # Clip the halo to the area outside the ornament. The base is
+            # intentionally translucent, so drawing behind it alone would
+            # still let light bleed into the inner rings.
             ornament_radius = min(self.width(), self.height()) * (69.0 / 154.0)
+            outer_halo_area = QPainterPath()
+            outer_halo_area.addRect(QRectF(self.rect()))
+            outer_halo_area.addEllipse(center, ornament_radius, ornament_radius)
+            outer_halo_area.setFillRule(Qt.OddEvenFill)
+            painter.save()
+            painter.setClipPath(outer_halo_area)
             for offset, alpha, width in ((0.0, 112, 5.2), (3.5, 72, 4.0), (6.0, 40, 2.8)):
                 glow = QColor(255, 224, 151, min(255, round(alpha * level)))
                 painter.setPen(QPen(glow, width + 2.6 * level))
                 painter.setBrush(Qt.NoBrush)
                 painter.drawEllipse(center, ornament_radius + offset, ornament_radius + offset)
+            painter.restore()
         painter.drawPixmap(0, 0, self._layer_cache["base"])
         for layer, angle, response in rotations:
             painter.save()
