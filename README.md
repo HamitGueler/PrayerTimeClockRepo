@@ -5,7 +5,7 @@ Gebetszeiten für Berlin im Vollbild, lädt die Daten von Diyanet, spielt zum
 Gebetseintritt den passenden Adhān und arbeitet bei Netz- oder
 Diyanet-Ausfällen mit einem datumsscharfen 7-Tage-Fallback weiter.
 
-![Aktuelle Hauptansicht der PrayerTimeClock](prayerclock-preview-v25-monday-thursday-fasting-dedup.svg)
+![Aktuelle normale Hauptansicht der PrayerTimeClock](prayerclock-preview-v25-monday-thursday-fasting-dedup.svg)
 
 ## Funktionsumfang
 
@@ -82,6 +82,8 @@ gültige heutige Zeiten wechselt das Ornament auf eine eigene rote Farbpalette.
 Es handelt sich nicht um einen transparenten Rotfilter: Konturen, Flächen,
 Gürtel und Mittelpunkt werden im Warnzustand neu gerendert. Die
 Fallback-Reichweite bleibt kompakt in der oberen Aktualisierungsleiste.
+
+![Aktuelle Hauptansicht ohne verfügbaren Fallback](prayerclock-fallback-warning-preview.svg)
 
 ### Verhalten bei Fehlern
 
