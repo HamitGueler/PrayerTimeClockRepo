@@ -5,8 +5,10 @@ from unittest.mock import patch
 from src.PyViews.IslamicContent import (
     get_hijri_info,
     special_day_status,
+    special_day_statuses,
     special_day_tomorrow_notice,
     special_day_tomorrow_notices,
+    uses_celebration_palette,
 )
 
 
@@ -65,6 +67,22 @@ class SpecialDayStatusTests(unittest.TestCase):
             ["DONNERSTAG", "FASTEN EMPFOHLEN"],
             special_day_tomorrow_notices(8, 2, weekday=3),
         )
+
+    def test_jumuah_is_shown_today_and_in_tomorrow_panel(self):
+        self.assertEqual(["JUMUʿAH"], special_day_statuses(8, 2, weekday=4))
+        self.assertEqual(["JUMUʿAH"], special_day_tomorrow_notices(8, 2, weekday=4))
+
+    def test_jumuah_keeps_other_matching_events(self):
+        statuses = special_day_statuses(27, 9, weekday=4)
+        self.assertIn("JUMUʿAH", statuses)
+        self.assertIn("27. NACHT · LAYLAT AL-QADR SUCHEN", statuses)
+        self.assertIn("LETZTE ZEHN NÄCHTE RAMAḌĀN", statuses)
+
+    def test_rare_highlights_use_celebration_palette(self):
+        for month, day in ((1, 10), (9, 1), (9, 27), (10, 1), (12, 9), (12, 10)):
+            with self.subTest(month=month, day=day):
+                self.assertTrue(uses_celebration_palette(day, month))
+        self.assertFalse(uses_celebration_palette(8, 2))
 
     def test_overlapping_fasting_reasons_show_recommendation_once(self):
         notices = special_day_tomorrow_notices(14, 2, weekday=0)
