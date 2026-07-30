@@ -86,8 +86,8 @@
     <text x="51" y="210" fill="#f5f0e4" font-size="112" font-weight="700" letter-spacing="-7">11:42</text>
 
     <g transform="translate(510 181)" fill="none" stroke="#ffe9aa">
-      <circle r="77" opacity=".48"><animate attributeName="r" values="73;79;75;82;73" dur="4.8s" repeatCount="indefinite"/><animate attributeName="opacity" values=".2;.62;.28;.72;.2" dur="4.8s" repeatCount="indefinite"/></circle>
-      <circle r="84" opacity=".22"><animate attributeName="r" values="80;87;82;90;80" dur="4.8s" repeatCount="indefinite"/><animate attributeName="opacity" values=".08;.35;.14;.42;.08" dur="4.8s" repeatCount="indefinite"/></circle>
+      <circle r="77" opacity=".62" stroke-width="4"><animate attributeName="r" values="73;84;76;89;73" dur="4.8s" repeatCount="indefinite"/><animate attributeName="opacity" values=".28;.85;.38;1;.28" dur="4.8s" repeatCount="indefinite"/></circle>
+      <circle r="84" opacity=".36" stroke-width="3"><animate attributeName="r" values="80;92;83;98;80" dur="4.8s" repeatCount="indefinite"/><animate attributeName="opacity" values=".14;.58;.22;.72;.14" dur="4.8s" repeatCount="indefinite"/></circle>
     </g>
     <g transform="translate(510 181) scale(1.11)" fill="none">
       <animateTransform attributeName="transform" additive="sum" type="scale" values="1;1.035;1.012;1.05;1" dur="4.8s" repeatCount="indefinite"/>
