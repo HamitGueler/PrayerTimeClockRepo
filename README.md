@@ -66,6 +66,9 @@ Weitere Hinweise zu den Audiodateien stehen in [AUDIO_SETUP.md](AUDIO_SETUP.md).
 - Getrennte Regler für normales Ornamenttempo und normales Partikeltempo
 - Getrennte Regler für die sichtbare Adhān-Reaktionsstärke von Ornament und
   Partikeln; der geglättete, aufnahmesynchrone Verlauf bleibt erhalten
+- Tempo- und Reaktionsregler besitzen einen klar sichtbaren Bereich von 20–300 %
+- Die Mini-Vorschau zeigt im Ruhezustand ausschließlich das normale Tempo.
+  Die Reaktionsregler werden beim Test-Adhān mit dessen echtem Profil sichtbar.
 - Hijri-Korrektur von −2 bis +2 Tagen über separate `−`- und `+`-Tasten
 - WLAN-Status einschließlich Name des verbundenen Netzes
 - „Neu verbinden“ und „WLAN auswählen / anmelden“
@@ -212,6 +215,19 @@ nächsten Start wieder geladen:
 - Partikelgeschwindigkeit
 - Adhān-Reaktionsstärke des Ornaments
 - Adhān-Reaktionsstärke der Partikel
+
+Die vier Animationswerte wirken nicht nur in der Vorschau: Nach „Speichern“
+werden sie unmittelbar an Ornament und Partikel der Hauptansicht übergeben und
+beim nächsten Start wieder aus `QSettings` geladen. Der Bereich bis 300 % dient
+bewusst auch der Kontrolle auf dem echten Display; 100 % bleibt die ruhige
+Standardabstimmung.
+
+Für bessere Ablesbarkeit bei Tageslicht verwendet die Hauptansicht höhere
+Flächenkontraste sowie kräftigere Türkis-, Gold- und Weißtöne. Die Partikel
+werden mit einem eigenen halbtransparenten Leuchthof gezeichnet. Während des
+Adhāns steuert das Analyseprofil zusätzlich stufenlos Anzahl, Größe,
+Auf-/Abbewegung, Deckkraft und Glow der Partikel sowie Ausdehnung und Leuchten
+der drei Ornamentringe.
 
 Die Diyanet-Quelle ist derzeit fest auf Berlin eingestellt:
 
