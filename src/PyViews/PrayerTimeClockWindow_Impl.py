@@ -6,8 +6,8 @@ import subprocess
 import sys
 from datetime import datetime, timedelta
 
-from PySide6.QtCore import QSettings, QTimer, Qt, QUrl, Signal, Slot
-from PySide6.QtGui import QCursor
+from PySide6.QtCore import QSize, QSettings, QTimer, Qt, QUrl, Signal, Slot
+from PySide6.QtGui import QColor, QCursor, QIcon, QPainter, QPen, QPixmap
 from PySide6.QtMultimedia import QAudioOutput, QMediaPlayer
 from PySide6.QtWidgets import (
     QButtonGroup,
@@ -509,7 +509,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
 
     def _refresh_network_status(self):
         connected, name = self._network_info()
-        self.wifi_status_button.setText("◉" if connected else "⊘")
+        self.wifi_status_button.setIcon(self._wifi_icon(connected))
+        self.wifi_status_button.setIconSize(QSize(20, 20))
         self.wifi_status_button.setToolTip(
             f"WLAN verbunden · {name}" if connected and name else
             "WLAN verbunden" if connected else "WLAN nicht verbunden"
@@ -517,6 +518,25 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.wifi_status_button.setProperty("connected", connected)
         self.wifi_status_button.style().unpolish(self.wifi_status_button)
         self.wifi_status_button.style().polish(self.wifi_status_button)
+
+    @staticmethod
+    def _wifi_icon(connected):
+        pixmap = QPixmap(24, 24)
+        pixmap.fill(Qt.transparent)
+        painter = QPainter(pixmap)
+        painter.setRenderHint(QPainter.Antialiasing)
+        color = QColor("#52ead1" if connected else "#ff626f")
+        painter.setPen(QPen(color, 2.2, Qt.SolidLine, Qt.RoundCap))
+        painter.drawArc(3, 3, 18, 15, 35 * 16, 110 * 16)
+        painter.drawArc(7, 8, 10, 9, 35 * 16, 110 * 16)
+        painter.setBrush(color)
+        painter.setPen(Qt.NoPen)
+        painter.drawEllipse(10, 18, 4, 4)
+        if not connected:
+            painter.setPen(QPen(color, 2.5, Qt.SolidLine, Qt.RoundCap))
+            painter.drawLine(4, 4, 20, 20)
+        painter.end()
+        return QIcon(pixmap)
 
     def _update_dialog_network_status(self, dialog):
         connected, name = self._network_info()
