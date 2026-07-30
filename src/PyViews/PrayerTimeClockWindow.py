@@ -201,9 +201,9 @@ class IslamicGirihOrnament(QWidget):
         # Calm, but a little more perceptible than before. The approved ring
         # geometry stays unchanged; only the duration of each revolution changes.
         rotations = (
-            ("outer", seconds * self._speed_multiplier * 360.0 / 126.0, 0.105),
-            ("middle", -seconds * self._speed_multiplier * 360.0 / 148.0, 0.078),
-            ("inner", seconds * self._speed_multiplier * 360.0 / 109.0, 0.058),
+            ("outer", seconds * self._speed_multiplier * 360.0 / 126.0, 0.16, 0.82),
+            ("middle", -seconds * self._speed_multiplier * 360.0 / 148.0, 0.21, 0.79),
+            ("inner", seconds * self._speed_multiplier * 360.0 / 109.0, 0.27, 0.75),
         )
         center = QPointF(self.width() / 2, self.height() / 2)
         if level > 0.001:
@@ -213,10 +213,12 @@ class IslamicGirihOrnament(QWidget):
                 painter.setBrush(Qt.NoBrush)
                 glow_radius = min(self.width(), self.height()) * (0.45 + 0.04 * level) + offset
                 painter.drawEllipse(center, glow_radius, glow_radius)
-        for layer, angle, response in rotations:
+        for layer, angle, response, resting_scale in rotations:
             painter.save()
             painter.translate(center)
-            reactive_scale = 1.0 + level * response
+            # Leave room for the audio-driven expansion inside the fixed widget.
+            # Starting at full size made most of the old reaction get clipped.
+            reactive_scale = min(1.06, resting_scale + level * response)
             painter.scale(reactive_scale, reactive_scale)
             painter.rotate(angle)
             painter.translate(-center)
@@ -326,6 +328,7 @@ class OrientalClockPanel(QFrame):
         self._audio_level = 0.0
         self._speed_multiplier = 1.0
         self._reaction_strength = 1.0
+        self._density_multiplier = 1.0
         self._particle_clock = QElapsedTimer()
         self._particle_clock.start()
         self._particle_timer = QTimer(self)
@@ -351,6 +354,10 @@ class OrientalClockPanel(QFrame):
         self._reaction_strength = max(0.0, min(2.5, float(multiplier)))
         self.update()
 
+    def set_particle_density(self, multiplier):
+        self._density_multiplier = max(0.4, min(2.0, float(multiplier)))
+        self.update()
+
     def paintEvent(self, event):
         super().paintEvent(event)
         painter = QPainter(self)
@@ -358,7 +365,7 @@ class OrientalClockPanel(QFrame):
 
         seconds = self._particle_clock.elapsed() / 1000.0
         level = min(1.8, (self._audio_level ** 0.72) * self._reaction_strength)
-        base_count = 31 if self._celebration else 25
+        base_count = round((31 if self._celebration else 25) * self._density_multiplier)
         # Additional particles fade in progressively with the analysed Adhan
         # envelope instead of appearing abruptly on every short peak.
         extra_count = round(level * (14 if self._celebration else 12))
@@ -378,21 +385,25 @@ class OrientalClockPanel(QFrame):
             x += math.sin(seconds * 0.22 + index * 1.7) * (3.0 + index % 4)
             audio_float = math.sin(seconds * (0.75 + level * 0.9) + index * 0.91)
             y = bottom - progress * height - audio_float * level * (2.5 + index % 4)
-            pulse = 0.58 + 0.42 * math.sin(seconds * 0.7 + index * 0.91)
+            breath = 0.5 + 0.5 * math.sin(seconds * 1.05 + index * 0.91)
+            pulse_scale = 0.78 + 0.52 * breath
             radius = (1.45 + (index % 4) * 0.52) * (1.28 if self._celebration else 1.0)
-            radius *= 1.0 + level * (0.36 + 0.16 * max(0.0, audio_float))
+            radius *= pulse_scale * (1.0 + level * (0.62 + 0.28 * max(0.0, audio_float)))
             color = QColor(palette[index % len(palette)])
-            base_alpha = 188 if self._celebration else 142
+            base_alpha = 214 if self._celebration else 184
             if index >= base_count:
                 base_alpha *= level
-            glow = 0.72 + 0.28 * pulse + level * (0.42 + 0.24 * max(0.0, audio_float))
+            glow = 0.62 + 0.38 * breath + level * (0.52 + 0.32 * max(0.0, audio_float))
             color.setAlpha(min(255, round(base_alpha * glow)))
             painter.setPen(Qt.NoPen)
-            halo = QColor(color)
-            halo.setAlpha(max(14, round(color.alpha() * (0.26 + 0.12 * level))))
-            painter.setBrush(halo)
-            halo_radius = radius * (2.5 + 0.45 * level)
-            painter.drawEllipse(QPointF(x, y), halo_radius, halo_radius)
+            outer_halo = QColor(color)
+            outer_halo.setAlpha(max(18, round(color.alpha() * (0.18 + 0.09 * breath + 0.08 * level))))
+            painter.setBrush(outer_halo)
+            painter.drawEllipse(QPointF(x, y), radius * (4.1 + 0.8 * level), radius * (4.1 + 0.8 * level))
+            inner_halo = QColor(color)
+            inner_halo.setAlpha(max(30, round(color.alpha() * (0.34 + 0.12 * breath + 0.1 * level))))
+            painter.setBrush(inner_halo)
+            painter.drawEllipse(QPointF(x, y), radius * (2.35 + 0.45 * level), radius * (2.35 + 0.45 * level))
             painter.setBrush(color)
             painter.drawEllipse(QPointF(x, y), radius, radius)
 
@@ -572,6 +583,7 @@ class Ui_MainWindow:
         self.fallback_horizon = QLabel()
         self.fallback_horizon.setObjectName("fallback_horizon")
         self.fallback_horizon.setAlignment(Qt.AlignCenter)
+        self.fallback_horizon.hide()
         update_status_layout.addWidget(self.fallback_horizon)
         status_row.addWidget(self.update_status_panel)
 
