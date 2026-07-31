@@ -625,8 +625,15 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         box = QMessageBox(QMessageBox.Question, title, text, parent=parent)
         box.setTextFormat(Qt.PlainText)
         yes_button = box.addButton("Ja", QMessageBox.YesRole)
-        box.addButton("Nein", QMessageBox.NoRole)
+        no_button = box.addButton("Nein", QMessageBox.NoRole)
         box.setDefaultButton(yes_button)
+        # On the Raspberry Pi touch display the first tap otherwise only moves
+        # keyboard focus to a QMessageBox button.  These are touch actions, not
+        # keyboard controls, so activate them without an intermediate focus step.
+        for button in (yes_button, no_button):
+            button.setAutoDefault(False)
+            button.setDefault(False)
+            button.setFocusPolicy(Qt.NoFocus)
         for label in box.findChildren(QLabel):
             label.setWordWrap(True)
             label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
@@ -680,26 +687,26 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         scaled_style = re.sub(r"(\d+(?:\.\d+)?)px", scale_pixels, self.base_style_sheet)
         if profile == "10 Zoll":
             scaled_style += """
-                #current_time { font-size: 164px; }
-                #current_location { font-size: 40px; }
-                #current_date { font-size: 44px; }
-                #hijri_date { font-size: 42px; padding-bottom: 8px; }
+                #current_time { font-size: 198px; }
+                #current_location { font-size: 42px; }
+                #current_date { font-size: 50px; }
+                #hijri_date { font-size: 46px; padding-bottom: 8px; }
                 #islamic_event #eventHeading,
                 #islamic_event #eventTag,
-                #tomorrow_islamic_notice #eventTag { font-size: 20px; padding: 6px 11px; }
-                #quran_arabic { font-size: 54px; padding-top: 8px; }
-                #quran_translation { font-size: 30px; }
-                #rest_time { font-size: 78px; }
-                #midnight_time { font-size: 48px; }
+                #tomorrow_islamic_notice #eventTag { font-size: 28px; padding: 8px 15px; }
+                #quran_arabic { font-size: 60px; padding-top: 8px; }
+                #quran_translation { font-size: 33px; }
+                #rest_time { font-size: 86px; }
+                #midnight_time { font-size: 52px; }
                 #sectionTitle, #rest_time_description, #midnight_label,
-                #last_updated_descrition { font-size: 28px; }
-                #last_updated_time { font-size: 23px; }
-                #fallback_horizon { font-size: 20px; }
-                #led_sign { font-size: 26px; }
-                #todayPanel QGroupBox QLabel { font-size: 42px; }
+                #last_updated_descrition { font-size: 25px; }
+                #last_updated_time { font-size: 21px; }
+                #fallback_horizon { font-size: 18px; }
+                #led_sign { font-size: 24px; }
+                #todayPanel QGroupBox QLabel { font-size: 46px; }
                 #current_day_fajr_time, #current_day_shroq_time, #current_day_zohr_time,
                 #current_day_asr_time, #current_day_magrb_time, #current_day_isha_time {
-                    font-size: 62px;
+                    font-size: 64px;
                 }
                 #next_day_description { font-size: 44px; }
                 #next_day_date { font-size: 40px; }
@@ -737,20 +744,20 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             """
         self.setStyleSheet(scaled_style)
         is_ten_inch = profile == "10 Zoll"
-        ornament_size = 285 if is_ten_inch else round(154 * scale)
+        ornament_size = 340 if is_ten_inch else round(154 * scale)
         self.islamic_ornament.setFixedSize(ornament_size, ornament_size)
         self.clockPanel.set_particle_size(1.55 if is_ten_inch else 1.0)
         if is_ten_inch:
-            self.time_row.setStretch(0, 11)
+            self.time_row.setStretch(0, 12)
             self.time_row.setStretch(1, 9)
             self.ornament_column.setContentsMargins(0, 6, 0, 0)
 
-        control_size = 68 if is_ten_inch else 34
+        control_size = 60 if is_ten_inch else 34
         self.refresh_button.setFixedSize(control_size, control_size)
         self.settings_button.setFixedSize(control_size, control_size)
-        self.wifi_status_button.setFixedSize(54 if is_ten_inch else 28, 54 if is_ten_inch else 28)
-        self.led_sign.setFixedSize(36 if is_ten_inch else 18, 48 if is_ten_inch else 24)
-        self.last_updated_time.setMinimumWidth(255 if is_ten_inch else 132)
+        self.wifi_status_button.setFixedSize(58 if is_ten_inch else 28, 58 if is_ten_inch else 28)
+        self.led_sign.setFixedSize(32 if is_ten_inch else 18, 42 if is_ten_inch else 24)
+        self.last_updated_time.setMinimumWidth(220 if is_ten_inch else 132)
 
         # Font scaling alone leaves most of a 1920 x 1200 panel unused because
         # Qt keeps the tomorrow panel and prayer cards at their compact size
