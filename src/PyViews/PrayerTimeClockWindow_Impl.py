@@ -648,28 +648,31 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         scaled_style = re.sub(r"(\d+(?:\.\d+)?)px", scale_pixels, self.base_style_sheet)
         if profile == "10 Zoll":
             scaled_style += """
-                #current_time { font-size: 184px; }
-                #current_location { font-size: 31px; }
-                #current_date { font-size: 34px; }
-                #hijri_date { font-size: 29px; }
-                #quran_arabic { font-size: 43px; padding-top: 8px; }
-                #quran_translation { font-size: 24px; }
-                #rest_time { font-size: 70px; }
-                #midnight_time { font-size: 46px; }
+                #current_time { font-size: 220px; }
+                #current_location { font-size: 34px; }
+                #current_date { font-size: 42px; }
+                #hijri_date { font-size: 38px; padding-bottom: 10px; }
+                #islamic_event #eventHeading,
+                #islamic_event #eventTag,
+                #tomorrow_islamic_notice #eventTag { font-size: 17px; padding: 5px 10px; }
+                #quran_arabic { font-size: 50px; padding-top: 10px; }
+                #quran_translation { font-size: 29px; }
+                #rest_time { font-size: 78px; }
+                #midnight_time { font-size: 52px; }
                 #sectionTitle, #rest_time_description, #midnight_label,
-                #last_updated_descrition { font-size: 23px; }
-                #todayPanel QGroupBox QLabel { font-size: 32px; }
+                #last_updated_descrition { font-size: 26px; }
+                #todayPanel QGroupBox QLabel { font-size: 38px; }
                 #current_day_fajr_time, #current_day_shroq_time, #current_day_zohr_time,
                 #current_day_asr_time, #current_day_magrb_time, #current_day_isha_time {
-                    font-size: 45px;
+                    font-size: 52px;
                 }
-                #next_day_description { font-size: 28px; }
-                #next_day_date { font-size: 25px; }
+                #next_day_description { font-size: 34px; }
+                #next_day_date { font-size: 30px; }
                 #next_day_fajr, #next_day_shroq, #next_day_zohr,
-                #next_day_asr, #next_day_magrb, #next_day_isha { font-size: 22px; }
+                #next_day_asr, #next_day_magrb, #next_day_isha { font-size: 27px; }
                 #next_day_fajr_time, #next_day_shroq_time, #next_day_zohr_time,
                 #next_day_asr_time, #next_day_magrb_time, #next_day_isha_time {
-                    font-size: 39px;
+                    font-size: 46px;
                 }
                 #settings_dialog QPushButton, #settings_dialog QSpinBox {
                     min-height: 54px;
@@ -690,8 +693,23 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                 }
             """
         self.setStyleSheet(scaled_style)
-        ornament_size = 225 if profile == "10 Zoll" else round(154 * scale)
+        is_ten_inch = profile == "10 Zoll"
+        ornament_size = 330 if is_ten_inch else round(154 * scale)
         self.islamic_ornament.setFixedSize(ornament_size, ornament_size)
+
+        # Font scaling alone leaves most of a 1920 x 1200 panel unused because
+        # Qt keeps the tomorrow panel and prayer cards at their compact size
+        # hints. Give the 10-inch profile a real large-screen geometry while
+        # keeping the 7- and 14-inch layouts unchanged.
+        self.next_day_prayers_box.setMinimumHeight(235 if is_ten_inch else 0)
+        self.next_day_prayers_box.setMaximumHeight(255 if is_ten_inch else 16777215)
+        for box in self.prayer_boxes:
+            box.setMinimumHeight(126 if is_ten_inch else 0)
+        for box in (
+            self.next_day_fajr_box, self.next_day_shroq_box, self.next_day_zohr_box,
+            self.next_day_asr_box, self.next_day_magrb_box, self.next_day_isha_box,
+        ):
+            box.setMinimumHeight(132 if is_ten_inch else 0)
 
     def _apply_brightness(self, value):
         if shutil.which("brightnessctl"):
