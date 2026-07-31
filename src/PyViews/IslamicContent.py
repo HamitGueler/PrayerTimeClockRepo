@@ -16,27 +16,27 @@ DAILY_VERSES = (
     (
         "إِنَّ مَعَ الْعُسْرِ يُسْرًا",
         "Gewiss, mit der Erschwernis ist Erleichterung.",
-        "94:6",
+        "Asch-Scharḥ · 94:6",
     ),
     (
         "فَاذْكُرُونِي أَذْكُرْكُمْ",
         "Gedenkt Meiner, so gedenke Ich eurer.",
-        "2:152",
+        "Al-Baqarah · 2:152",
     ),
     (
         "إِنَّ اللَّهَ مَعَ الصَّابِرِينَ",
         "Gewiss, Allah ist mit den Standhaften.",
-        "2:153",
+        "Al-Baqarah · 2:153",
     ),
     (
         "وَقُل رَّبِّ زِدْنِي عِلْمًا",
         "Und sag: Mein Herr, lasse mich an Wissen zunehmen.",
-        "20:114",
+        "Ṭā-Hā · 20:114",
     ),
     (
         "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
         "Sicherlich, im Gedenken Allahs finden die Herzen Ruhe.",
-        "13:28",
+        "Ar-Raʿd · 13:28",
     ),
 )
 
