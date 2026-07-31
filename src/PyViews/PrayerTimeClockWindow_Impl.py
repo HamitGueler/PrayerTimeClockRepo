@@ -21,6 +21,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QPushButton,
+    QScrollArea,
     QSlider,
     QSpinBox,
     QVBoxLayout,
@@ -123,12 +124,28 @@ class SettingsDialog(QDialog):
         self.setWindowTitle("Einstellungen")
         self.setModal(True)
         if display_profile == "10 Zoll":
-            self.setMinimumSize(1160, 700)
+            screen = QApplication.primaryScreen()
+            available = screen.availableGeometry() if screen else None
+            width = min(1680, round(available.width() * 0.92)) if available else 1680
+            height = min(1060, round(available.height() * 0.92)) if available else 1060
+            self.resize(width, height)
+            self.setMinimumSize(min(1180, width), min(720, height))
         else:
             self.setMinimumSize(940, 560)
         self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
 
-        page = QVBoxLayout(self)
+        dialog_layout = QVBoxLayout(self)
+        dialog_layout.setContentsMargins(0, 0, 0, 0)
+        scroll_area = QScrollArea()
+        scroll_area.setObjectName("settings_scroll_area")
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setFrameShape(QFrame.NoFrame)
+        settings_content = QWidget()
+        settings_content.setObjectName("settings_content")
+        scroll_area.setWidget(settings_content)
+        dialog_layout.addWidget(scroll_area)
+
+        page = QVBoxLayout(settings_content)
         page.setContentsMargins(26, 18, 26, 18)
         page.setSpacing(8)
         title = QLabel("EINSTELLUNGEN")
@@ -649,34 +666,44 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         if profile == "10 Zoll":
             scaled_style += """
                 #current_time { font-size: 220px; }
-                #current_location { font-size: 34px; }
-                #current_date { font-size: 42px; }
-                #hijri_date { font-size: 38px; padding-bottom: 10px; }
+                #current_location { font-size: 38px; }
+                #current_date { font-size: 48px; }
+                #hijri_date { font-size: 43px; padding-bottom: 10px; }
                 #islamic_event #eventHeading,
                 #islamic_event #eventTag,
                 #tomorrow_islamic_notice #eventTag { font-size: 17px; padding: 5px 10px; }
-                #quran_arabic { font-size: 50px; padding-top: 10px; }
-                #quran_translation { font-size: 29px; }
-                #rest_time { font-size: 78px; }
-                #midnight_time { font-size: 52px; }
+                #quran_arabic { font-size: 60px; padding-top: 12px; }
+                #quran_translation { font-size: 34px; }
+                #rest_time { font-size: 92px; }
+                #midnight_time { font-size: 60px; }
                 #sectionTitle, #rest_time_description, #midnight_label,
-                #last_updated_descrition { font-size: 26px; }
-                #todayPanel QGroupBox QLabel { font-size: 38px; }
+                #last_updated_descrition { font-size: 30px; }
+                #last_updated_time { font-size: 23px; }
+                #fallback_horizon { font-size: 19px; }
+                #led_sign { font-size: 25px; }
+                #todayPanel QGroupBox QLabel { font-size: 44px; }
                 #current_day_fajr_time, #current_day_shroq_time, #current_day_zohr_time,
                 #current_day_asr_time, #current_day_magrb_time, #current_day_isha_time {
-                    font-size: 52px;
+                    font-size: 64px;
                 }
-                #next_day_description { font-size: 34px; }
-                #next_day_date { font-size: 30px; }
+                #next_day_description { font-size: 38px; }
+                #next_day_date { font-size: 34px; }
                 #next_day_fajr, #next_day_shroq, #next_day_zohr,
-                #next_day_asr, #next_day_magrb, #next_day_isha { font-size: 27px; }
+                #next_day_asr, #next_day_magrb, #next_day_isha { font-size: 31px; }
                 #next_day_fajr_time, #next_day_shroq_time, #next_day_zohr_time,
                 #next_day_asr_time, #next_day_magrb_time, #next_day_isha_time {
-                    font-size: 46px;
+                    font-size: 54px;
                 }
+                #refresh_button, #settings_button { font-size: 31px; border-radius: 27px; }
+                #wifi_status_button { border-radius: 22px; }
+                #settings_title { font-size: 38px; }
+                #settings_subtitle, #settings_hint { font-size: 19px; }
+                #settings_dialog QLabel, #settings_dialog QSpinBox,
+                #settings_dialog QComboBox, #settings_dialog QPushButton { font-size: 21px; }
+                #preview_caption, #settings_section_title { font-size: 19px; }
+                #network_status, #effect_value { font-size: 20px; }
                 #settings_dialog QPushButton, #settings_dialog QSpinBox {
-                    min-height: 54px;
-                    font-size: 20px;
+                    min-height: 62px;
                 }
                 #settings_dialog QSlider::groove:horizontal { height: 13px; }
                 #settings_dialog QSlider::handle:horizontal {
@@ -684,32 +711,39 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                     margin: -11px 0;
                     border-radius: 17px;
                 }
-                QMessageBox { min-width: 660px; }
-                QMessageBox QLabel { min-width: 520px; font-size: 22px; }
+                QMessageBox { min-width: 760px; }
+                QMessageBox QLabel { min-width: 610px; font-size: 27px; }
                 QMessageBox QPushButton {
-                    min-width: 170px;
-                    min-height: 62px;
-                    font-size: 22px;
+                    min-width: 210px;
+                    min-height: 76px;
+                    font-size: 27px;
                 }
             """
         self.setStyleSheet(scaled_style)
         is_ten_inch = profile == "10 Zoll"
-        ornament_size = 330 if is_ten_inch else round(154 * scale)
+        ornament_size = 370 if is_ten_inch else round(154 * scale)
         self.islamic_ornament.setFixedSize(ornament_size, ornament_size)
+
+        control_size = 54 if is_ten_inch else 34
+        self.refresh_button.setFixedSize(control_size, control_size)
+        self.settings_button.setFixedSize(control_size, control_size)
+        self.wifi_status_button.setFixedSize(44 if is_ten_inch else 28, 44 if is_ten_inch else 28)
+        self.led_sign.setFixedSize(30 if is_ten_inch else 18, 40 if is_ten_inch else 24)
+        self.last_updated_time.setMinimumWidth(210 if is_ten_inch else 132)
 
         # Font scaling alone leaves most of a 1920 x 1200 panel unused because
         # Qt keeps the tomorrow panel and prayer cards at their compact size
         # hints. Give the 10-inch profile a real large-screen geometry while
         # keeping the 7- and 14-inch layouts unchanged.
-        self.next_day_prayers_box.setMinimumHeight(235 if is_ten_inch else 0)
-        self.next_day_prayers_box.setMaximumHeight(255 if is_ten_inch else 16777215)
+        self.next_day_prayers_box.setMinimumHeight(270 if is_ten_inch else 0)
+        self.next_day_prayers_box.setMaximumHeight(290 if is_ten_inch else 16777215)
         for box in self.prayer_boxes:
-            box.setMinimumHeight(126 if is_ten_inch else 0)
+            box.setMinimumHeight(136 if is_ten_inch else 0)
         for box in (
             self.next_day_fajr_box, self.next_day_shroq_box, self.next_day_zohr_box,
             self.next_day_asr_box, self.next_day_magrb_box, self.next_day_isha_box,
         ):
-            box.setMinimumHeight(132 if is_ten_inch else 0)
+            box.setMinimumHeight(148 if is_ten_inch else 0)
 
     def _apply_brightness(self, value):
         if shutil.which("brightnessctl"):
