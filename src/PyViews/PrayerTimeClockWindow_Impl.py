@@ -49,14 +49,16 @@ from HelperClasses.PrayerTimeFreshness import fallback_horizon_after_request, is
 class VisualEffectsPreview(QFrame):
     """Compact preview composed from the exact widgets used by the clock."""
 
-    def __init__(self, parent=None):
+    def __init__(self, touch_mode=False, parent=None):
         super().__init__(parent)
         self.setObjectName("visual_effects_preview")
-        self.setMinimumHeight(178)
+        self.setMinimumHeight(270 if touch_mode else 178)
         self.panel = OrientalClockPanel(self)
         self.panel.setObjectName("preview_particle_panel")
+        self.panel.set_particle_size(1.45 if touch_mode else 1.0)
         self.ornament = IslamicGirihOrnament(self.panel)
-        self.ornament.setFixedSize(112, 112)
+        preview_ornament_size = 180 if touch_mode else 112
+        self.ornament.setFixedSize(preview_ornament_size, preview_ornament_size)
         self.caption = QLabel("LIVE-VORSCHAU", self.panel)
         self.caption.setObjectName("preview_caption")
         self._clock = 0
@@ -123,7 +125,8 @@ class SettingsDialog(QDialog):
         self.setObjectName("settings_dialog")
         self.setWindowTitle("Einstellungen")
         self.setModal(True)
-        if display_profile == "10 Zoll":
+        touch_mode = display_profile == "10 Zoll"
+        if touch_mode:
             screen = QApplication.primaryScreen()
             available = screen.availableGeometry() if screen else None
             width = min(1680, round(available.width() * 0.92)) if available else 1680
@@ -168,6 +171,9 @@ class SettingsDialog(QDialog):
         form = QFormLayout()
         form.setHorizontalSpacing(14)
         form.setVerticalSpacing(8)
+        form.setLabelAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        form.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
+        form.setRowWrapPolicy(QFormLayout.WrapLongRows)
 
         self.volume_slider = QSlider(Qt.Horizontal)
         self.volume_slider.setRange(0, 100)
@@ -268,7 +274,7 @@ class SettingsDialog(QDialog):
         system_row.addWidget(restart_button)
         left_column.addLayout(system_row)
 
-        self.effects_preview = VisualEffectsPreview()
+        self.effects_preview = VisualEffectsPreview(touch_mode=touch_mode)
         right_column.addWidget(self.effects_preview)
         effect_title = QLabel("BEWEGUNG & ADHĀN-REAKTION")
         effect_title.setObjectName("settings_section_title")
@@ -276,6 +282,9 @@ class SettingsDialog(QDialog):
         effects_form = QFormLayout()
         effects_form.setHorizontalSpacing(12)
         effects_form.setVerticalSpacing(7)
+        effects_form.setLabelAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        effects_form.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
+        effects_form.setRowWrapPolicy(QFormLayout.WrapLongRows)
         self.ornament_speed_slider = self._effect_slider(
             effects_form, "Ornament · normal", ornament_speed, "Tempo"
         )
@@ -614,9 +623,15 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
     @staticmethod
     def _ask_confirmation(parent, title, text):
         box = QMessageBox(QMessageBox.Question, title, text, parent=parent)
+        box.setTextFormat(Qt.PlainText)
         yes_button = box.addButton("Ja", QMessageBox.YesRole)
         box.addButton("Nein", QMessageBox.NoRole)
         box.setDefaultButton(yes_button)
+        for label in box.findChildren(QLabel):
+            label.setWordWrap(True)
+            label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            label.setMinimumWidth(0)
+            label.setMaximumWidth(720)
         box.exec()
         return box.clickedButton() is yes_button
 
@@ -665,26 +680,26 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         scaled_style = re.sub(r"(\d+(?:\.\d+)?)px", scale_pixels, self.base_style_sheet)
         if profile == "10 Zoll":
             scaled_style += """
-                #current_time { font-size: 252px; }
-                #current_location { font-size: 46px; }
-                #current_date { font-size: 58px; }
-                #hijri_date { font-size: 52px; padding-bottom: 12px; }
+                #current_time { font-size: 164px; }
+                #current_location { font-size: 40px; }
+                #current_date { font-size: 44px; }
+                #hijri_date { font-size: 42px; padding-bottom: 8px; }
                 #islamic_event #eventHeading,
                 #islamic_event #eventTag,
-                #tomorrow_islamic_notice #eventTag { font-size: 21px; padding: 7px 13px; }
-                #quran_arabic { font-size: 74px; padding-top: 14px; }
-                #quran_translation { font-size: 40px; }
-                #rest_time { font-size: 108px; }
-                #midnight_time { font-size: 70px; }
+                #tomorrow_islamic_notice #eventTag { font-size: 20px; padding: 6px 11px; }
+                #quran_arabic { font-size: 54px; padding-top: 8px; }
+                #quran_translation { font-size: 30px; }
+                #rest_time { font-size: 78px; }
+                #midnight_time { font-size: 48px; }
                 #sectionTitle, #rest_time_description, #midnight_label,
-                #last_updated_descrition { font-size: 35px; }
-                #last_updated_time { font-size: 28px; }
-                #fallback_horizon { font-size: 23px; }
-                #led_sign { font-size: 29px; }
-                #todayPanel QGroupBox QLabel { font-size: 50px; }
+                #last_updated_descrition { font-size: 28px; }
+                #last_updated_time { font-size: 23px; }
+                #fallback_horizon { font-size: 20px; }
+                #led_sign { font-size: 26px; }
+                #todayPanel QGroupBox QLabel { font-size: 42px; }
                 #current_day_fajr_time, #current_day_shroq_time, #current_day_zohr_time,
                 #current_day_asr_time, #current_day_magrb_time, #current_day_isha_time {
-                    font-size: 76px;
+                    font-size: 62px;
                 }
                 #next_day_description { font-size: 44px; }
                 #next_day_date { font-size: 40px; }
@@ -696,20 +711,21 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                 }
                 #refresh_button, #settings_button { font-size: 38px; border-radius: 34px; }
                 #wifi_status_button { border-radius: 22px; }
-                #settings_title { font-size: 38px; }
-                #settings_subtitle, #settings_hint { font-size: 19px; }
+                #settings_title { font-size: 42px; }
+                #settings_subtitle, #settings_hint { font-size: 23px; }
                 #settings_dialog QLabel, #settings_dialog QSpinBox,
-                #settings_dialog QComboBox, #settings_dialog QPushButton { font-size: 21px; }
-                #preview_caption, #settings_section_title { font-size: 19px; }
-                #network_status, #effect_value { font-size: 20px; }
+                #settings_dialog QComboBox, #settings_dialog QPushButton { font-size: 25px; }
+                #preview_caption, #settings_section_title { font-size: 23px; }
+                #network_status, #effect_value { font-size: 24px; }
                 #settings_dialog QPushButton, #settings_dialog QSpinBox {
-                    min-height: 62px;
+                    min-height: 70px;
                 }
-                #settings_dialog QSlider::groove:horizontal { height: 13px; }
+                #settings_dialog QSlider { min-height: 58px; }
+                #settings_dialog QSlider::groove:horizontal { height: 18px; }
                 #settings_dialog QSlider::handle:horizontal {
-                    width: 34px;
-                    margin: -11px 0;
-                    border-radius: 17px;
+                    width: 44px;
+                    margin: -14px 0;
+                    border-radius: 22px;
                 }
                 QMessageBox { min-width: 760px; }
                 QMessageBox QLabel { min-width: 610px; font-size: 27px; }
@@ -721,8 +737,13 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             """
         self.setStyleSheet(scaled_style)
         is_ten_inch = profile == "10 Zoll"
-        ornament_size = 440 if is_ten_inch else round(154 * scale)
+        ornament_size = 285 if is_ten_inch else round(154 * scale)
         self.islamic_ornament.setFixedSize(ornament_size, ornament_size)
+        self.clockPanel.set_particle_size(1.55 if is_ten_inch else 1.0)
+        if is_ten_inch:
+            self.time_row.setStretch(0, 11)
+            self.time_row.setStretch(1, 9)
+            self.ornament_column.setContentsMargins(0, 6, 0, 0)
 
         control_size = 68 if is_ten_inch else 34
         self.refresh_button.setFixedSize(control_size, control_size)
