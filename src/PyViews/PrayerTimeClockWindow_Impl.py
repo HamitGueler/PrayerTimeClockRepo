@@ -122,7 +122,10 @@ class SettingsDialog(QDialog):
         self.setObjectName("settings_dialog")
         self.setWindowTitle("Einstellungen")
         self.setModal(True)
-        self.setMinimumSize(940, 560)
+        if display_profile == "10 Zoll":
+            self.setMinimumSize(1160, 700)
+        else:
+            self.setMinimumSize(940, 560)
         self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
 
         page = QVBoxLayout(self)
@@ -351,7 +354,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
     # Diyanet order: Fajr/Imsak, sunrise, Dhuhr, Asr, Maghrib, Isha.
     ACTUAL_PRAYER_INDICES = (0, 2, 3, 4, 5)
     PRAYER_NAMES = ("FAJR", "SHURŪQ", "DHUHR", "ASR", "MAGHRIB", "ISHA")
-    DISPLAY_SCALES = {"7 Zoll": 1.0, "10 Zoll": 1.25, "14 Zoll": 1.28}
+    DISPLAY_SCALES = {"7 Zoll": 1.0, "10 Zoll": 1.42, "14 Zoll": 1.28}
     CRITICAL_STALE_AFTER = timedelta(days=7)
 
     def __init__(self):
@@ -427,6 +430,16 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             self.fajr_box, self.shroq_box, self.zohr_box,
             self.asr_box, self.magrb_box, self.isha_box,
         ]
+
+        # The large display has enough horizontal room to show the prayer
+        # names in both languages without making the time column narrower.
+        arabic_prayer_names = ("الفجر", "الشروق", "الظهر", "العصر", "المغرب", "العشاء")
+        current_prayer_labels = (
+            self.current_day_fajr, self.current_day_shroq, self.current_day_zohr,
+            self.current_day_asr, self.current_day_magrb, self.current_day_isha,
+        )
+        for label, arabic_name in zip(current_prayer_labels, arabic_prayer_names):
+            label.setText(f"{label.text()}  {arabic_name}")
 
         style_path = os.path.join(self.project_root, "style.css")
         with open(style_path, encoding="utf-8") as style_file:
@@ -538,14 +551,14 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             dialog.update_status.setText(
                 f"{count} Update{'s' if count != 1 else ''} verfügbar."
             )
-            answer = QMessageBox.question(
+            confirmed = self._ask_confirmation(
                 dialog,
                 "Update installieren",
                 "Der neue Stand wird zuerst getestet. Erst bei Erfolg wird die "
                 "Anwendung aktualisiert. Danach kannst du sie über „App neu "
                 "starten“ anwenden.",
             )
-            if answer != QMessageBox.Yes:
+            if not confirmed:
                 return
             dialog.update_status.setText("Update wird geprüft und vorbereitet …")
             QApplication.processEvents()
@@ -582,14 +595,23 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             dialog.update_status.setText("Update-Stand derzeit nicht verfügbar.")
 
     @staticmethod
+    def _ask_confirmation(parent, title, text):
+        box = QMessageBox(QMessageBox.Question, title, text, parent=parent)
+        yes_button = box.addButton("Ja", QMessageBox.YesRole)
+        box.addButton("Nein", QMessageBox.NoRole)
+        box.setDefaultButton(yes_button)
+        box.exec()
+        return box.clickedButton() is yes_button
+
+    @staticmethod
     def _close_application(dialog):
-        if QMessageBox.question(dialog, "App schließen", "Anwendung wirklich schließen?") == QMessageBox.Yes:
+        if PrayerTimeClockWindow._ask_confirmation(dialog, "App schließen", "Anwendung wirklich schließen?"):
             dialog.accept()
             QApplication.quit()
 
     def _restart_application(self, dialog, ask_for_confirmation):
         if ask_for_confirmation:
-            if QMessageBox.question(dialog, "App neu starten", "Anwendung jetzt neu starten?") != QMessageBox.Yes:
+            if not self._ask_confirmation(dialog, "App neu starten", "Anwendung jetzt neu starten?"):
                 return
         dialog.accept()
         QApplication.quit()
@@ -624,8 +646,51 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             return f"{max(1, round(value * scale))}px"
 
         scaled_style = re.sub(r"(\d+(?:\.\d+)?)px", scale_pixels, self.base_style_sheet)
+        if profile == "10 Zoll":
+            scaled_style += """
+                #current_time { font-size: 184px; }
+                #current_location { font-size: 31px; }
+                #current_date { font-size: 34px; }
+                #hijri_date { font-size: 29px; }
+                #quran_arabic { font-size: 43px; padding-top: 8px; }
+                #quran_translation { font-size: 24px; }
+                #rest_time { font-size: 70px; }
+                #midnight_time { font-size: 46px; }
+                #sectionTitle, #rest_time_description, #midnight_label,
+                #last_updated_descrition { font-size: 23px; }
+                #todayPanel QGroupBox QLabel { font-size: 32px; }
+                #current_day_fajr_time, #current_day_shroq_time, #current_day_zohr_time,
+                #current_day_asr_time, #current_day_magrb_time, #current_day_isha_time {
+                    font-size: 45px;
+                }
+                #next_day_description { font-size: 28px; }
+                #next_day_date { font-size: 25px; }
+                #next_day_fajr, #next_day_shroq, #next_day_zohr,
+                #next_day_asr, #next_day_magrb, #next_day_isha { font-size: 22px; }
+                #next_day_fajr_time, #next_day_shroq_time, #next_day_zohr_time,
+                #next_day_asr_time, #next_day_magrb_time, #next_day_isha_time {
+                    font-size: 39px;
+                }
+                #settings_dialog QPushButton, #settings_dialog QSpinBox {
+                    min-height: 54px;
+                    font-size: 20px;
+                }
+                #settings_dialog QSlider::groove:horizontal { height: 13px; }
+                #settings_dialog QSlider::handle:horizontal {
+                    width: 34px;
+                    margin: -11px 0;
+                    border-radius: 17px;
+                }
+                QMessageBox { min-width: 660px; }
+                QMessageBox QLabel { min-width: 520px; font-size: 22px; }
+                QMessageBox QPushButton {
+                    min-width: 170px;
+                    min-height: 62px;
+                    font-size: 22px;
+                }
+            """
         self.setStyleSheet(scaled_style)
-        ornament_size = round(154 * scale)
+        ornament_size = 225 if profile == "10 Zoll" else round(154 * scale)
         self.islamic_ornament.setFixedSize(ornament_size, ornament_size)
 
     def _apply_brightness(self, value):
@@ -1064,7 +1129,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             self.clockPanel.style().polish(self.clockPanel)
             arabic, translation, reference = daily_verse(value.date())
             self.quran_arabic.setText(arabic)
-            self.quran_translation.setText(f"„{translation}“ · Qurʾān {reference}")
+            self.quran_translation.setText(f"„{translation}“ · {reference}")
             self.last_content_date = value.date()
         except (ImportError, ValueError):
             self.hijri_date.setText("Islamisches Datum derzeit nicht verfügbar")
