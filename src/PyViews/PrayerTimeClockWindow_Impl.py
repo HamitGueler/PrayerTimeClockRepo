@@ -351,7 +351,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
     # Diyanet order: Fajr/Imsak, sunrise, Dhuhr, Asr, Maghrib, Isha.
     ACTUAL_PRAYER_INDICES = (0, 2, 3, 4, 5)
     PRAYER_NAMES = ("FAJR", "SHURŪQ", "DHUHR", "ASR", "MAGHRIB", "ISHA")
-    DISPLAY_SCALES = {"7 Zoll": 1.0, "10 Zoll": 1.14, "14 Zoll": 1.28}
+    DISPLAY_SCALES = {"7 Zoll": 1.0, "10 Zoll": 1.25, "14 Zoll": 1.28}
     CRITICAL_STALE_AFTER = timedelta(days=7)
 
     def __init__(self):
