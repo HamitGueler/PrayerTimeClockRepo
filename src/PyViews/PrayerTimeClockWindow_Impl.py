@@ -598,12 +598,12 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                 dialog.update_status.setText(
                     "Update installiert · Neustart erforderlich"
                 )
-                QMessageBox.information(dialog, "Update erfolgreich", restart_message)
+                self._show_message(dialog, QMessageBox.Information, "Update erfolgreich", restart_message)
             else:
-                QMessageBox.warning(dialog, "Update nicht übernommen", message)
+                self._show_message(dialog, QMessageBox.Warning, "Update nicht übernommen", message)
         except (OSError, RuntimeError, subprocess.SubprocessError, ValueError) as error:
             dialog.update_status.setText(str(error))
-            QMessageBox.warning(dialog, "Update fehlgeschlagen", str(error))
+            self._show_message(dialog, QMessageBox.Warning, "Update fehlgeschlagen", str(error))
         finally:
             dialog.check_update_button.setDisabled(False)
 
@@ -619,6 +619,17 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             )
         except (OSError, RuntimeError, subprocess.SubprocessError, ValueError):
             dialog.update_status.setText("Update-Stand derzeit nicht verfügbar.")
+
+    @staticmethod
+    def _show_message(parent, icon, title, text):
+        box = QMessageBox(icon, title, text, parent=parent)
+        box.setTextFormat(Qt.PlainText)
+        for label in box.findChildren(QLabel):
+            label.setWordWrap(True)
+            label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            label.setMinimumWidth(0)
+            label.setMaximumWidth(720)
+        box.exec()
 
     @staticmethod
     def _ask_confirmation(parent, title, text):
@@ -697,7 +708,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                 #quran_arabic { font-size: 60px; padding-top: 8px; }
                 #quran_translation { font-size: 33px; }
                 #rest_time { font-size: 86px; }
-                #midnight_time { font-size: 52px; }
+                #midnight_time { font-size: 64px; }
                 #sectionTitle, #rest_time_description, #midnight_label,
                 #last_updated_descrition { font-size: 25px; }
                 #last_updated_time { font-size: 21px; }
@@ -744,7 +755,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             """
         self.setStyleSheet(scaled_style)
         is_ten_inch = profile == "10 Zoll"
-        ornament_size = 340 if is_ten_inch else round(154 * scale)
+        ornament_size = 370 if is_ten_inch else round(154 * scale)
         self.islamic_ornament.setFixedSize(ornament_size, ornament_size)
         self.clockPanel.set_particle_size(1.55 if is_ten_inch else 1.0)
         if is_ten_inch:
@@ -862,7 +873,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
 
     def _reconnect_wifi(self, dialog):
         if not shutil.which("nmcli"):
-            QMessageBox.warning(dialog, "WLAN", "NetworkManager ist nicht verfügbar.")
+            self._show_message(dialog, QMessageBox.Warning, "WLAN", "NetworkManager ist nicht verfügbar.")
             return
         subprocess.run(["nmcli", "radio", "wifi", "on"], check=False, timeout=5)
         subprocess.run(["nmcli", "device", "connect", "wlan0"], check=False, timeout=12)
@@ -878,8 +889,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             if shutil.which(command[0]):
                 subprocess.Popen(command, start_new_session=True)
                 return
-        QMessageBox.information(
-            dialog, "WLAN auswählen",
+        self._show_message(
+            dialog, QMessageBox.Information, "WLAN auswählen",
             "Öffne in Ubuntu die Systemeinstellungen und wähle dort „WLAN“.",
         )
 
@@ -1209,7 +1220,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             self.clockPanel.style().polish(self.clockPanel)
             arabic, translation, reference = daily_verse(value.date())
             self.quran_arabic.setText(arabic)
-            self.quran_translation.setText(f"„{translation}“ · {reference}")
+            # Keep the complete surah reference together on its own line.
+            self.quran_translation.setText(f"„{translation}“\n{reference}")
             self.last_content_date = value.date()
         except (ImportError, ValueError):
             self.hijri_date.setText("Islamisches Datum derzeit nicht verfügbar")
