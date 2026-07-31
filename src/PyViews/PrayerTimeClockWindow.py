@@ -346,6 +346,7 @@ class OrientalClockPanel(QFrame):
         self._speed_multiplier = 1.0
         self._reaction_strength = 1.0
         self._density_multiplier = 1.0
+        self._particle_size_multiplier = 1.0
         self._particle_clock = QElapsedTimer()
         self._particle_clock.start()
         self._particle_timer = QTimer(self)
@@ -373,6 +374,10 @@ class OrientalClockPanel(QFrame):
 
     def set_particle_density(self, multiplier):
         self._density_multiplier = max(0.4, min(2.0, float(multiplier)))
+        self.update()
+
+    def set_particle_size(self, multiplier):
+        self._particle_size_multiplier = max(0.75, min(2.25, float(multiplier)))
         self.update()
 
     def paintEvent(self, event):
@@ -405,6 +410,7 @@ class OrientalClockPanel(QFrame):
             breath = 0.5 + 0.5 * math.sin(seconds * 1.05 + index * 0.91)
             pulse_scale = 0.78 + 0.52 * breath
             radius = (1.45 + (index % 4) * 0.52) * (1.28 if self._celebration else 1.0)
+            radius *= self._particle_size_multiplier
             radius *= pulse_scale * (1.0 + level * (0.62 + 0.28 * max(0.0, audio_float)))
             color = QColor(palette[index % len(palette)])
             base_alpha = 214 if self._celebration else 184
@@ -617,6 +623,7 @@ class Ui_MainWindow:
         layout.addLayout(status_row)
 
         time_row = QHBoxLayout()
+        self.time_row = time_row
         time_row.setSpacing(8)
         self.current_time = QLabel()
         self.current_time.setObjectName("current_time")
@@ -624,6 +631,7 @@ class Ui_MainWindow:
         time_row.addWidget(self.current_time, 1)
 
         ornament_column = QVBoxLayout()
+        self.ornament_column = ornament_column
         ornament_column.setContentsMargins(0, 18, 0, 0)
         ornament_column.addStretch(1)
         self.islamic_ornament = IslamicGirihOrnament()
