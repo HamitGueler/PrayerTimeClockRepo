@@ -399,3 +399,30 @@ QGroupBox[sunrise="true"] {
     color: #ff626f;
     background-color: rgba(133, 47, 57, 0.28);
 }
+
+
+/* Touch-friendly system confirmations on the physical display. */
+QMessageBox {
+    background-color: #0b1f25;
+}
+QMessageBox QLabel {
+    color: #ffffff;
+    font-size: 18px;
+    min-width: 430px;
+    padding: 18px;
+}
+QMessageBox QPushButton {
+    color: #ffffff;
+    background-color: #19454b;
+    border: 2px solid #70dfca;
+    border-radius: 10px;
+    min-width: 132px;
+    min-height: 52px;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 8px 16px;
+}
+QMessageBox QPushButton:pressed {
+    color: #071217;
+    background-color: #f0c765;
+}
