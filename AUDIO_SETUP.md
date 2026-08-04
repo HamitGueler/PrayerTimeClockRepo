@@ -26,3 +26,17 @@ davon unabhängig.
 
 Der Adhān wird ausschließlich beim Eintritt einer Gebetszeit abgespielt.
 Schurūq löst kein Audio aus.
+
+## Lautstärkeverstärkung für leise Displays
+
+Der Regler in den Touch-Einstellungen reicht von 0 bis 150 %. Bis 100 % wird
+die normale Qt-Lautstärke verwendet. Zwischen 101 und 150 % bleibt Qt auf
+voller Lautstärke und der Standardausgang von PulseAudio beziehungsweise
+PipeWire wird zusätzlich über `pactl` verstärkt. Dadurch können besonders
+leise HDMI- oder Displaylautsprecher merklich lauter werden.
+
+Hohe Verstärkung kann abhängig vom Lautsprecher zu Verzerrungen führen.
+Empfohlen ist, zunächst 115–125 % mit „Adhān abspielen“ zu testen. Sobald der
+Klang kratzt oder scheppert, sollte der Wert wieder reduziert werden. Beim
+Zurückregeln auf höchstens 100 % normalisiert die Anwendung den Systemausgang
+wieder auf 100 %.

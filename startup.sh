@@ -46,4 +46,17 @@ if [ "$requirements_hash" != "$installed_hash" ]; then
     fi
 fi
 
-exec python src/PrayerTimeClock.py
+# Keep the launcher alive so an in-app restart can be handled after the Qt
+# process has shut down completely.  Exit code 75 is reserved for a requested
+# application restart; a normal exit still leaves the clock closed.
+export PRAYERCLOCK_SUPERVISED=1
+restart_exit_code=75
+while true; do
+    python src/PrayerTimeClock.py
+    app_exit_code=$?
+    if [ "$app_exit_code" -ne "$restart_exit_code" ]; then
+        exit "$app_exit_code"
+    fi
+    echo "PrayerTimeClock wird neu gestartet ..."
+    sleep 1
+done

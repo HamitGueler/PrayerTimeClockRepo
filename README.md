@@ -41,13 +41,14 @@ Diyanet-Ausfällen mit einem datumsscharfen 7-Tage-Fallback weiter.
 - Das Ornament reagiert synchron auf den tatsächlichen Lautstärkeverlauf der
   jeweiligen Adhān-Aufnahme: ruhige Passagen bewegen die Ringe sanft,
   kräftige Passagen vergrößern und erhellen sie stärker
-- Die Partikel folgen demselben geglätteten Profil: kräftige Passagen lassen
-  sie stärker auf und ab glühen und blenden behutsam zusätzliche Lichtpunkte
-  ein; in ruhigen Passagen kehren sie weich zum Standardzustand zurück
+- Die Partikelbahnen, ihre Größe und ihre Geschwindigkeit bleiben während des
+  Adhāns unverändert flüssig. Das Profil beeinflusst nur das Leuchten und
+  blendet zusätzliche Lichtpunkte weich ein oder aus.
 - Vorab geglättete 100-ms-Profile für normalen und Fajr-Adhān verhindern
   willkürliche oder hektische Ausschläge und entlasten den Raspberry Pi
 - Fehlt ein Analyseprofil, läuft sicher die normale Ornamentanimation weiter
-- Einstellbare Lautstärke mit sofort hörbarer Änderung
+- Einstellbare Lautstärke bis 150 % mit sofort hörbarer Änderung. Oberhalb von
+  100 % verstärkt PulseAudio beziehungsweise PipeWire den Displayausgang.
 - Testfunktion „Adhān abspielen“, die während der Wiedergabe zu
   „Adhān stoppen“ wechselt
 
@@ -58,7 +59,8 @@ Weitere Hinweise zu den Audiodateien stehen in [AUDIO_SETUP.md](AUDIO_SETUP.md).
 ![Vorschau der Touch-Einstellungen](prayerclock-settings-preview.svg)
 
 - Große Touch-Schaltflächen für die Displayprofile 7, 10 und 14 Zoll
-- Live-Regler für Adhān-Lautstärke und Bildschirmhelligkeit
+- Live-Regler für Adhān-Lautstärke einschließlich optionaler Verstärkung bis
+  150 % und für die Bildschirmhelligkeit
 - Kompaktes Zwei-Spalten-Layout ohne notwendiges Scrollen auf dem
   1024×600-Display
 - Mini-Live-Vorschau aus exakt demselben Ornament und derselben
@@ -74,6 +76,8 @@ Weitere Hinweise zu den Audiodateien stehen in [AUDIO_SETUP.md](AUDIO_SETUP.md).
 - WLAN-Status einschließlich Name des verbundenen Netzes
 - „Neu verbinden“ und „WLAN auswählen / anmelden“
 - Updateprüfung, Installation, App-Neustart und App-Beenden
+- Eigene umbruchfähige Hinweis- und Bestätigungsdialoge, deren Texte auch auf
+  dem Touchdisplay vollständig innerhalb des Fensters bleiben
 
 Die Helligkeitssteuerung verwendet zuerst `brightnessctl`, danach ein
 vorhandenes Linux-Backlight-Gerät. Unterstützt ein HDMI-Display keine
@@ -174,6 +178,12 @@ Updates werden innerhalb der Einstellungsseite installiert:
    `Update installiert · Neustart erforderlich`.
 7. Der Nutzer startet die App bewusst über „App neu starten“ neu.
 
+`startup.sh` bleibt nach dem Start als unsichtbarer Supervisor aktiv. Ein über
+die Einstellungen angeforderter Neustart beendet zuerst die bisherige
+Qt-Instanz vollständig und startet sie anschließend anhand des reservierten
+Rückgabecodes `75` neu. Ein sichtbares Terminal ist dafür nicht erforderlich;
+„App beenden“ bleibt dagegen ein echtes Beenden ohne automatischen Neustart.
+
 Auch nach einem manuellen `git pull` vergleicht `startup.sh` den Hash der
 `requirements.txt` und installiert geänderte Python-Abhängigkeiten vor dem
 Start einmalig.
@@ -215,7 +225,8 @@ stehen in [KIOSK_SETUP.md](KIOSK_SETUP.md).
 Die persönlichen Einstellungen werden über `QSettings` gespeichert und beim
 nächsten Start wieder geladen:
 
-- Lautstärke
+- Adhān-Lautstärke von 0–150 %; der Bereich oberhalb von 100 % ist eine
+  optionale Systemverstärkung für leise Displaylautsprecher
 - Helligkeit
 - Displayprofil
 - Hijri-Korrektur
@@ -234,18 +245,26 @@ Standardabstimmung.
 Für bessere Ablesbarkeit bei Tageslicht verwendet die Hauptansicht höhere
 Flächenkontraste sowie kräftigere Türkis-, Gold- und Weißtöne. Die Partikel
 atmen bereits im Normalbetrieb sichtbar über Kerngröße und zwei getrennte
-Leuchthöfe. Während des
-Adhāns steuert das Analyseprofil zusätzlich stufenlos Anzahl, Größe,
-Auf-/Abbewegung, Deckkraft und Glow der Partikel sowie Ausdehnung und Leuchten
-der drei Ornamentringe. Die normale Ornamentgröße bleibt dabei unverändert:
+Leuchthöfe. Während des Adhāns steuert das Analyseprofil nur Deckkraft und Glow
+der Partikel sowie das weiche Einblenden bereits vorhandener zusätzlicher
+Lichtpunkte. Bahn, Geschwindigkeit und Größe werden nicht vom Ton beeinflusst,
+damit die Animation nicht ruckelt. Am Ornament steuert das Profil Ausdehnung
+und Leuchten der drei Ringe. Die normale Ornamentgröße bleibt dabei unverändert:
 Der äußere Ring reagiert nur dezent, während der Impuls in Mittel- und Innenring
-deutlicher sichtbar wird. Die zusätzlichen Leuchtringe bleiben vollständig
-innerhalb der Zeichenfläche und werden auch in der Mini-Vorschau nicht
-abgeschnitten. Eine geometrische Maske begrenzt den Ornament-Halo vollständig
+deutlicher sichtbar wird. Der vergrößerte äußere Halo bleibt in der
+Zeichenfläche sichtbar und wird auch in der Mini-Vorschau nicht abgeschnitten.
+Eine geometrische Maske begrenzt den Ornament-Halo vollständig
 auf den Bereich außerhalb des unveränderten Außenrings. Dadurch kann trotz der
 leicht transparenten Ornamentbasis kein Licht in die inneren Ringe
 durchscheinen; Abstand und Größe bleiben unverändert. Der äußere Partikel-Halo
 ist gegenüber der kräftigeren Tageslichtabstimmung leicht reduziert.
+
+Bei mehr als 100 % Adhān-Lautstärke setzt die Anwendung den Standardausgang
+über `pactl` entsprechend höher. Beim Zurückregeln auf 100 % oder weniger wird
+der Systemausgang wieder auf 100 % normalisiert. Je nach Qualität der im
+Display eingebauten Lautsprecher kann hohe Verstärkung verzerren; deshalb
+sollte zunächst etwa 115–125 % getestet und nur bei sauberem Klang weiter
+erhöht werden.
 
 Die Diyanet-Quelle ist derzeit fest auf Berlin eingestellt:
 

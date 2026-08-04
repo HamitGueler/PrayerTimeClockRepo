@@ -222,14 +222,22 @@ class IslamicGirihOrnament(QWidget):
             outer_halo_area.setFillRule(Qt.OddEvenFill)
             painter.save()
             painter.setClipPath(outer_halo_area)
-            # Same three outward rings as the SVG reference (r=69/73/76,
-            # widths 5/4/2). Their alpha is deliberately a little stronger,
-            # while remaining transparent and fully excluded from the inside.
-            for offset, alpha, width in ((0.0, 126, 5.0), (4.0, 82, 4.0), (7.0, 50, 2.0)):
+            # Spread the light across the transparent margin around the
+            # ornament.  The previous 7 px reach was barely visible on the
+            # physical 10-inch display; these wider, softer rings make the
+            # outward halo obvious without washing light into the artwork.
+            halo_scale = min(self.width(), self.height()) / 370.0
+            for offset, alpha, width in (
+                (0.0, 138, 8.0),
+                (6.0, 104, 7.0),
+                (12.0, 72, 5.0),
+                (18.0, 38, 3.0),
+            ):
                 glow = QColor(255, 233, 170, min(255, round(alpha * level)))
-                painter.setPen(QPen(glow, width))
+                painter.setPen(QPen(glow, width * halo_scale))
                 painter.setBrush(Qt.NoBrush)
-                painter.drawEllipse(center, ornament_radius + offset, ornament_radius + offset)
+                radius = ornament_radius + offset * halo_scale
+                painter.drawEllipse(center, radius, radius)
             painter.restore()
         painter.drawPixmap(0, 0, self._layer_cache["base"])
         for layer, angle, response in rotations:
@@ -388,9 +396,10 @@ class OrientalClockPanel(QFrame):
         seconds = self._particle_clock.elapsed() / 1000.0
         level = min(1.8, (self._audio_level ** 0.72) * self._reaction_strength)
         base_count = round((31 if self._celebration else 25) * self._density_multiplier)
-        # Additional particles fade in progressively with the analysed Adhan
-        # envelope instead of appearing abruptly on every short peak.
-        extra_count = round(level * (14 if self._celebration else 12))
+        # Always iterate over the full Adhan particle set. Audio only fades the
+        # extra particles in; it must never add/remove objects between frames,
+        # which looked like stuttering on the Raspberry Pi.
+        extra_count = 14 if self._celebration else 12
         count = base_count + extra_count
         palette = (
             (QColor(255, 255, 245), QColor(255, 210, 102))
@@ -405,18 +414,17 @@ class OrientalClockPanel(QFrame):
             progress = (phase + seconds * speed * self._speed_multiplier) % 1.0
             x = 24.0 + ((index * 83) % max(1, self.width() - 48))
             x += math.sin(seconds * 0.22 + index * 1.7) * (3.0 + index % 4)
-            audio_float = math.sin(seconds * (0.75 + level * 0.9) + index * 0.91)
-            y = bottom - progress * height - audio_float * level * (2.5 + index % 4)
+            y = bottom - progress * height
             breath = 0.5 + 0.5 * math.sin(seconds * 1.05 + index * 0.91)
             pulse_scale = 0.78 + 0.52 * breath
             radius = (1.45 + (index % 4) * 0.52) * (1.28 if self._celebration else 1.0)
             radius *= self._particle_size_multiplier
-            radius *= pulse_scale * (1.0 + level * (0.62 + 0.28 * max(0.0, audio_float)))
+            radius *= pulse_scale
             color = QColor(palette[index % len(palette)])
             base_alpha = 214 if self._celebration else 184
             if index >= base_count:
                 base_alpha *= level
-            glow = 0.62 + 0.38 * breath + level * (0.52 + 0.32 * max(0.0, audio_float))
+            glow = 0.62 + 0.38 * breath + level * 0.52
             color.setAlpha(min(255, round(base_alpha * glow)))
             painter.setPen(Qt.NoPen)
             outer_halo = QColor(color)

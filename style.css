@@ -426,3 +426,36 @@ QMessageBox QPushButton:pressed {
     color: #071217;
     background-color: #f0c765;
 }
+
+/* App-owned dialogs avoid QMessageBox's icon column, which displaced long
+   German text beyond the visible area on the touch display. */
+#touch_message_dialog {
+    background-color: #0b1f25;
+    border: 2px solid rgba(112, 223, 202, 0.72);
+    border-radius: 14px;
+}
+#touch_dialog_title {
+    color: #f0c765;
+    font-size: 28px;
+    font-weight: 800;
+}
+#touch_dialog_text {
+    color: #ffffff;
+    font-size: 24px;
+    padding: 0;
+}
+#touch_message_dialog QPushButton {
+    color: #ffffff;
+    background-color: #19454b;
+    border: 2px solid #70dfca;
+    border-radius: 10px;
+    min-width: 160px;
+    min-height: 62px;
+    font-size: 22px;
+    font-weight: 700;
+    padding: 8px 18px;
+}
+#touch_message_dialog QPushButton:pressed {
+    color: #071217;
+    background-color: #f0c765;
+}

@@ -176,7 +176,7 @@ class SettingsDialog(QDialog):
         form.setRowWrapPolicy(QFormLayout.WrapLongRows)
 
         self.volume_slider = QSlider(Qt.Horizontal)
-        self.volume_slider.setRange(0, 100)
+        self.volume_slider.setRange(0, 150)
         self.volume_slider.setValue(volume)
         self.volume_value = QLabel()
         self.volume_slider.valueChanged.connect(
@@ -187,7 +187,7 @@ class SettingsDialog(QDialog):
         volume_row = QHBoxLayout()
         volume_row.addWidget(self.volume_slider, 1)
         volume_row.addWidget(self.volume_value)
-        form.addRow("Adhān-Lautstärke", volume_row)
+        form.addRow("Adhān-Lautstärke · Verstärkung ab 101 %", volume_row)
 
         self.brightness_slider = QSlider(Qt.Horizontal)
         self.brightness_slider.setRange(10, 100)
@@ -408,7 +408,12 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.ornament_reaction = self.settings.value("ornamentAdhanReaction", 100, int)
         self.particle_reaction = self.settings.value("particleAdhanReaction", 100, int)
         self.audio_output = QAudioOutput(self)
-        self.audio_output.setVolume(self.volume / 100.0)
+        self.audio_volume_timer = QTimer(self)
+        self.audio_volume_timer.setSingleShot(True)
+        self.audio_volume_timer.setInterval(100)
+        self.audio_volume_timer.timeout.connect(self._apply_system_audio_gain)
+        self.pending_system_audio_volume = self.volume
+        self._set_audio_volume(self.volume)
         self.audio_player = QMediaPlayer(self)
         self.audio_player.setAudioOutput(self.audio_output)
         self.audio_player.playbackStateChanged.connect(self._on_audio_state_changed)
@@ -514,7 +519,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         dialog.test_adhan_requested.connect(
             lambda: self._toggle_adhan_preview(dialog)
         )
-        dialog.volume_changed.connect(lambda value: self.audio_output.setVolume(value / 100.0))
+        dialog.volume_changed.connect(self._set_audio_volume)
         dialog.brightness_changed.connect(self._apply_brightness)
         dialog.reconnect_requested.connect(lambda: self._reconnect_wifi(dialog))
         dialog.wifi_settings_requested.connect(lambda: self._open_wifi_settings(dialog))
@@ -530,7 +535,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             self.audio_player.stop()
             self.previewing_adhan = False
         if result != QDialog.Accepted:
-            self.audio_output.setVolume(self.volume / 100.0)
+            self._set_audio_volume(self.volume)
             return
         self.volume = dialog.volume_slider.value()
         self.brightness = dialog.brightness_slider.value()
@@ -551,7 +556,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.settings.setValue("ornamentAdhanReaction", self.ornament_reaction)
         self.settings.setValue("particleAdhanReaction", self.particle_reaction)
         self.settings.sync()
-        self.audio_output.setVolume(self.volume / 100.0)
+        self._set_audio_volume(self.volume)
         self._apply_brightness(self.brightness)
         self._apply_display_profile(self.display_profile)
         self._apply_visual_effect_settings()
@@ -564,6 +569,28 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.clockPanel.set_particle_density(self.particle_density / 100.0)
         self.islamic_ornament.set_reaction_strength(self.ornament_reaction / 100.0)
         self.clockPanel.set_reaction_strength(self.particle_reaction / 100.0)
+
+    def _set_audio_volume(self, value):
+        """Apply Qt volume and debounce optional PulseAudio amplification."""
+        value = max(0, min(150, int(value)))
+        self.audio_output.setVolume(min(value, 100) / 100.0)
+        self.pending_system_audio_volume = value
+        self.audio_volume_timer.start()
+
+    def _apply_system_audio_gain(self):
+        # QAudioOutput caps its volume at 100 %. Above that point the default
+        # PulseAudio/PipeWire display output is amplified instead.
+        sink_volume = max(100, self.pending_system_audio_volume)
+        try:
+            subprocess.run(
+                ["pactl", "set-sink-volume", "@DEFAULT_SINK@", f"{sink_volume}%"],
+                check=False,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=2,
+            )
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            pass
 
     def _handle_update(self, dialog):
         dialog.check_update_button.setDisabled(True)
@@ -622,36 +649,58 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
 
     @staticmethod
     def _show_message(parent, icon, title, text):
-        box = QMessageBox(icon, title, text, parent=parent)
-        box.setTextFormat(Qt.PlainText)
-        for label in box.findChildren(QLabel):
-            label.setWordWrap(True)
-            label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
-            label.setMinimumWidth(0)
-            label.setMaximumWidth(720)
-        box.exec()
+        dialog, layout = PrayerTimeClockWindow._touch_dialog(parent, title, text)
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok)
+        buttons.button(QDialogButtonBox.Ok).setText("OK")
+        buttons.accepted.connect(dialog.accept)
+        layout.addWidget(buttons)
+        dialog.exec()
 
     @staticmethod
     def _ask_confirmation(parent, title, text):
-        box = QMessageBox(QMessageBox.Question, title, text, parent=parent)
-        box.setTextFormat(Qt.PlainText)
-        yes_button = box.addButton("Ja", QMessageBox.YesRole)
-        no_button = box.addButton("Nein", QMessageBox.NoRole)
-        box.setDefaultButton(yes_button)
-        # On the Raspberry Pi touch display the first tap otherwise only moves
-        # keyboard focus to a QMessageBox button.  These are touch actions, not
-        # keyboard controls, so activate them without an intermediate focus step.
-        for button in (yes_button, no_button):
+        dialog, layout = PrayerTimeClockWindow._touch_dialog(parent, title, text)
+        button_row = QHBoxLayout()
+        button_row.addStretch(1)
+        no_button = QPushButton("Nein")
+        yes_button = QPushButton("Ja")
+        for button in (no_button, yes_button):
+            button.setMinimumSize(180, 70)
             button.setAutoDefault(False)
             button.setDefault(False)
             button.setFocusPolicy(Qt.NoFocus)
-        for label in box.findChildren(QLabel):
-            label.setWordWrap(True)
-            label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
-            label.setMinimumWidth(0)
-            label.setMaximumWidth(720)
-        box.exec()
-        return box.clickedButton() is yes_button
+            button_row.addWidget(button)
+        no_button.clicked.connect(dialog.reject)
+        yes_button.clicked.connect(dialog.accept)
+        layout.addLayout(button_row)
+        return dialog.exec() == QDialog.Accepted
+
+    @staticmethod
+    def _touch_dialog(parent, title, text):
+        """Build a predictable touch dialog without QMessageBox's icon column."""
+        dialog = QDialog(parent)
+        dialog.setObjectName("touch_message_dialog")
+        dialog.setWindowTitle(title)
+        dialog.setModal(True)
+        dialog.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
+        screen = dialog.screen() or QApplication.primaryScreen()
+        available_width = screen.availableGeometry().width() if screen else 1280
+        dialog_width = min(980, round(available_width * 0.82))
+        dialog.setFixedWidth(max(620, dialog_width))
+        layout = QVBoxLayout(dialog)
+        layout.setContentsMargins(36, 30, 36, 30)
+        layout.setSpacing(24)
+        title_label = QLabel(title)
+        title_label.setObjectName("touch_dialog_title")
+        title_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        layout.addWidget(title_label)
+        text_label = QLabel(str(text))
+        text_label.setObjectName("touch_dialog_text")
+        text_label.setTextFormat(Qt.PlainText)
+        text_label.setWordWrap(True)
+        text_label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        text_label.setMinimumWidth(0)
+        layout.addWidget(text_label)
+        return dialog, layout
 
     @staticmethod
     def _close_application(dialog):
@@ -664,12 +713,18 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             if not self._ask_confirmation(dialog, "App neu starten", "Anwendung jetzt neu starten?"):
                 return
         dialog.accept()
-        QApplication.quit()
-        subprocess.Popen(
-            [sys.executable, os.path.join(self.src_dir, "PrayerTimeClock.py")],
-            cwd=self.project_root,
-            start_new_session=True,
-        )
+        if os.environ.get("PRAYERCLOCK_SUPERVISED") != "1":
+            # Compatibility for the first update from the former launcher,
+            # which replaced itself with Python and therefore cannot observe
+            # the restart exit code yet.  Further restarts use the supervisor.
+            subprocess.Popen(
+                ["bash", os.path.join(self.project_root, "startup.sh")],
+                cwd=self.project_root,
+                start_new_session=True,
+            )
+            QApplication.quit()
+            return
+        QApplication.exit(75)
 
     def _toggle_adhan_preview(self, dialog):
         if self.previewing_adhan:
@@ -680,7 +735,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         if not os.path.exists(self.adhan_path):
             dialog.set_adhan_playing(False)
             return
-        self.audio_output.setVolume(dialog.volume_slider.value() / 100.0)
+        self._set_audio_volume(dialog.volume_slider.value())
         self.audio_player.stop()
         self.audio_player.setSource(QUrl.fromLocalFile(self.adhan_path))
         self._select_adhan_profile(self.adhan_path)
