@@ -459,3 +459,13 @@ QMessageBox QPushButton:pressed {
     color: #071217;
     background-color: #f0c765;
 }
+
+/* Layout container must not cover the painted panel/particles. */
+#time_panel { background: transparent; border: none; }
+
+#quran_panel, #quran_scroll, #quran_content { background: transparent; border: none; }
+#quran_reference { color: #e7ce91; font-size: 15px; }
+#quran_source { color: #a5c0bf; font-size: 10px; }
+#quran_scroll QScrollBar:vertical { width: 8px; background: transparent; }
+
+#quran_arabic { font-family: "Amiri Quran"; font-weight: 400; }

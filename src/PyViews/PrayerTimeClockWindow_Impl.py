@@ -6,11 +6,12 @@ import subprocess
 import sys
 from datetime import datetime, timedelta
 
-from PySide6.QtCore import QSize, QSettings, QTimer, Qt, QUrl, Signal, Slot
+from PySide6.QtCore import QProcess, QProcessEnvironment, QSize, QSettings, QThreadPool, QTimer, Qt, QUrl, Signal, Slot
 from PySide6.QtGui import QColor, QCursor, QIcon, QPainter, QPen, QPixmap
 from PySide6.QtMultimedia import QAudioOutput, QMediaPlayer
 from PySide6.QtWidgets import (
     QButtonGroup,
+    QComboBox,
     QDialog,
     QDialogButtonBox,
     QFormLayout,
@@ -40,6 +41,10 @@ from PyViews.IslamicContent import (
     special_day_tomorrow_notices,
     uses_celebration_palette,
 )
+from HelperClasses.AsyncActions import AsyncActions, LatestValueAction
+from HelperClasses.DeviceControls import set_audio_gain, set_brightness
+from HelperClasses.BackgroundJob import BackgroundJob
+from HelperClasses.NetworkRecovery import NetworkRecovery, NetworkStatus
 from HelperClasses.WebScraperClass import WebScraperClass
 from HelperClasses.ApplicationUpdateService import ApplicationUpdateService
 from HelperClasses.AdhanAudioProfile import load_adhan_profiles
@@ -217,6 +222,11 @@ class SettingsDialog(QDialog):
             self.profile_buttons[profile] = button
             profile_row.addWidget(button)
         form.addRow("Displayprofil", profile_row)
+        from HelperClasses.QuranCorpus import SELECTED_REFERENCES
+        self.quran_collection = QComboBox()
+        self.quran_collection.addItem(f"Ausgewählte Verse ({len(SELECTED_REFERENCES)})", "selected")
+        self.quran_collection.addItem("Gesamter Koran (6.236 Verse)", "all")
+        form.addRow("Tägliches Koran-Zitat", self.quran_collection)
 
         self.hijri_adjustment = QSpinBox()
         self.hijri_adjustment.setRange(-2, 2)
@@ -252,18 +262,22 @@ class SettingsDialog(QDialog):
 
         self.network_status = QLabel("WLAN-Status wird geprüft …")
         self.network_status.setObjectName("network_status")
+        self.network_status.setWordWrap(True)
         left_column.addWidget(self.network_status)
         network_row = QHBoxLayout()
         reconnect_button = QPushButton("Neu verbinden")
+        self.reconnect_button = reconnect_button
         reconnect_button.clicked.connect(self.reconnect_requested)
         network_row.addWidget(reconnect_button)
         wifi_button = QPushButton("WLAN auswählen / anmelden")
+        self.wifi_button = wifi_button
         wifi_button.clicked.connect(self.wifi_settings_requested)
         network_row.addWidget(wifi_button)
         left_column.addLayout(network_row)
 
         self.update_status = QLabel("Update-Stand wird beim Prüfen ermittelt.")
         self.update_status.setObjectName("application_update_status")
+        self.update_status.setWordWrap(True)
         left_column.addWidget(self.update_status)
         system_row = QHBoxLayout()
         self.check_update_button = QPushButton("Updates installieren")
@@ -274,6 +288,10 @@ class SettingsDialog(QDialog):
         system_row.addWidget(restart_button)
         left_column.addLayout(system_row)
 
+        self.system_feedback = QLabel("")
+        self.system_feedback.setObjectName("settings_hint")
+        self.system_feedback.setWordWrap(True)
+        left_column.addWidget(self.system_feedback)
         self.effects_preview = VisualEffectsPreview(touch_mode=touch_mode)
         right_column.addWidget(self.effects_preview)
         effect_title = QLabel("BEWEGUNG & ADHĀN-REAKTION")
@@ -318,7 +336,11 @@ class SettingsDialog(QDialog):
         close_button = QPushButton("App schließen")
         close_button.clicked.connect(self.close_requested)
         buttons.addButton(close_button, QDialogButtonBox.ActionRole)
-        page.addWidget(buttons)
+        footer = QWidget()
+        footer_layout = QHBoxLayout(footer)
+        footer_layout.setContentsMargins(24, 10, 24, 14)
+        footer_layout.addWidget(buttons)
+        dialog_layout.addWidget(footer)
 
     def _effect_slider(self, form, label, value, value_suffix):
         slider = QSlider(Qt.Horizontal)
@@ -401,12 +423,21 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.volume = self.settings.value("volume", 100, int)
         self.brightness = self.settings.value("brightness", 100, int)
         self.display_profile = self.settings.value("displayProfile", "7 Zoll", str)
+        self.quran_collection = self.settings.value("quranCollection", "selected", str)
         self.hijri_adjustment = self.settings.value("hijriAdjustment", -1, int)
         self.ornament_speed = self.settings.value("ornamentSpeed", 100, int)
         self.particle_speed = self.settings.value("particleSpeed", 100, int)
         self.particle_density = self.settings.value("particleDensity", 100, int)
         self.ornament_reaction = self.settings.value("ornamentAdhanReaction", 100, int)
         self.particle_reaction = self.settings.value("particleAdhanReaction", 100, int)
+        self.actions = AsyncActions(self)
+        self.audio_gain_action = LatestValueAction(set_audio_gain, self)
+        self.audio_gain_action.completed.connect(self._audio_gain_finished)
+        self.brightness_action = LatestValueAction(set_brightness, self)
+        self.brightness_action.completed.connect(self._brightness_finished)
+        self.external_settings_process = None
+        self.update_installing = False
+        self.update_message = "Update-Stand wird geprüft …"
         self.audio_output = QAudioOutput(self)
         self.audio_volume_timer = QTimer(self)
         self.audio_volume_timer.setSingleShot(True)
@@ -445,6 +476,9 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.brightness_overlay.setAttribute(Qt.WA_TransparentForMouseEvents)
         self.brightness_overlay.setObjectName("brightness_overlay")
         self.brightness_overlay.hide()
+        self.network_recovery = NetworkRecovery()
+        self.network_status = NetworkStatus()
+        self.network_check_in_progress = False
         self.network_timer = QTimer(self)
         self.network_timer.setInterval(60000)
         self.network_timer.timeout.connect(self._refresh_network_status)
@@ -503,6 +537,10 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
 
     @Slot()
     def open_settings(self):
+        if self.settings_dialog is not None:
+            self.settings_dialog.show()
+            self.settings_dialog.raise_()
+            return
         dialog = SettingsDialog(
             self.volume,
             self.brightness,
@@ -515,6 +553,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             self.particle_reaction,
             self,
         )
+        dialog.quran_collection.setCurrentIndex(1 if self.quran_collection == "all" else 0)
         dialog.setStyleSheet(self.styleSheet())
         dialog.test_adhan_requested.connect(
             lambda: self._toggle_adhan_preview(dialog)
@@ -526,20 +565,35 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         dialog.update_requested.connect(lambda: self._handle_update(dialog))
         dialog.restart_requested.connect(lambda: self._restart_application(dialog, True))
         dialog.close_requested.connect(lambda: self._close_application(dialog))
-        QTimer.singleShot(0, lambda: self._check_update_status(dialog))
+
         self._update_dialog_network_status(dialog)
         self.settings_dialog = dialog
-        result = dialog.exec()
+        dialog.finished.connect(self._settings_finished)
+        dialog.check_update_button.setDisabled(self.actions.busy("update") or self.update_installing)
+        dialog.update_status.setText(self.update_message)
+        dialog.open()
+        self._check_update_status(dialog)
+
+    @Slot(int)
+    def _settings_finished(self, result):
+        dialog = self.settings_dialog
+        if dialog is None:
+            return
         self.settings_dialog = None
+        dialog.deleteLater()
+        self.setWindowFlag(Qt.WindowStaysOnTopHint, True)
+        self.showFullScreen()
         if self.previewing_adhan:
             self.audio_player.stop()
             self.previewing_adhan = False
         if result != QDialog.Accepted:
             self._set_audio_volume(self.volume)
+            self._apply_brightness(self.brightness)
             return
         self.volume = dialog.volume_slider.value()
         self.brightness = dialog.brightness_slider.value()
         self.display_profile = dialog.selected_display_profile()
+        self.quran_collection = dialog.quran_collection.currentData()
         self.hijri_adjustment = dialog.hijri_adjustment.value()
         self.ornament_speed = dialog.ornament_speed_slider.value()
         self.particle_speed = dialog.particle_speed_slider.value()
@@ -550,6 +604,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.settings.setValue("brightness", self.brightness)
         self.settings.setValue("displayProfile", self.display_profile)
         self.settings.setValue("hijriAdjustment", self.hijri_adjustment)
+        self.settings.setValue("quranCollection", self.quran_collection)
         self.settings.setValue("ornamentSpeed", self.ornament_speed)
         self.settings.setValue("particleSpeed", self.particle_speed)
         self.settings.setValue("particleDensity", self.particle_density)
@@ -578,74 +633,62 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.audio_volume_timer.start()
 
     def _apply_system_audio_gain(self):
-        # QAudioOutput caps its volume at 100 %. Above that point the default
-        # PulseAudio/PipeWire display output is amplified instead.
-        sink_volume = max(100, self.pending_system_audio_volume)
-        try:
-            subprocess.run(
-                ["pactl", "set-sink-volume", "@DEFAULT_SINK@", f"{sink_volume}%"],
-                check=False,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                timeout=2,
+        self.audio_gain_action.set_value(self.pending_system_audio_volume)
+
+    @Slot(int, object, object)
+    def _audio_gain_finished(self, value, success, error):
+        if self.settings_dialog is not None and value > 100 and (error or not success):
+            self.settings_dialog.system_feedback.setText(
+                "Audioverstärkung nicht verfügbar; normale App-Lautstärke bleibt aktiv."
             )
-        except (FileNotFoundError, subprocess.TimeoutExpired):
-            pass
+
+    def _set_update_message(self, text):
+        self.update_message = text
+        if self.settings_dialog is not None:
+            self.settings_dialog.update_status.setText(text)
 
     def _handle_update(self, dialog):
-        dialog.check_update_button.setDisabled(True)
-        dialog.update_status.setText("Suche nach Updates …")
-        QApplication.processEvents()
-        try:
-            count = self.update_service.available_commits()
-            if count == 0:
-                dialog.update_status.setText("Die Anwendung ist aktuell.")
-                return
-            dialog.update_status.setText(
-                f"{count} Update{'s' if count != 1 else ''} verfügbar."
-            )
-            confirmed = self._ask_confirmation(
-                dialog,
-                "Update installieren",
-                "Der neue Stand wird zuerst getestet. Erst bei Erfolg wird die "
-                "Anwendung aktualisiert. Danach kannst du sie über „App neu "
-                "starten“ anwenden.",
-            )
-            if not confirmed:
-                return
-            dialog.update_status.setText("Update wird geprüft und vorbereitet …")
-            QApplication.processEvents()
-            success, message = self.update_service.install_and_validate()
-            dialog.update_status.setText(message)
-            if success:
-                restart_message = (
-                    f"{message}\n\nDie laufende Anwendung bleibt geöffnet. "
-                    "Starte sie neu, um das Update zu sehen."
-                )
-                dialog.update_status.setText(
-                    "Update installiert · Neustart erforderlich"
-                )
-                self._show_message(dialog, QMessageBox.Information, "Update erfolgreich", restart_message)
-            else:
-                self._show_message(dialog, QMessageBox.Warning, "Update nicht übernommen", message)
-        except (OSError, RuntimeError, subprocess.SubprocessError, ValueError) as error:
-            dialog.update_status.setText(str(error))
-            self._show_message(dialog, QMessageBox.Warning, "Update fehlgeschlagen", str(error))
-        finally:
-            dialog.check_update_button.setDisabled(False)
+        self._check_update_status(dialog, install=True)
 
-    def _check_update_status(self, dialog):
-        dialog.update_status.setText("Update-Stand wird geprüft …")
-        QApplication.processEvents()
-        try:
-            count = self.update_service.available_commits()
-            dialog.update_status.setText(
-                "Die Anwendung ist aktuell."
-                if count == 0
-                else f"{count} Update{'s' if count != 1 else ''} verfügbar."
-            )
-        except (OSError, RuntimeError, subprocess.SubprocessError, ValueError):
-            dialog.update_status.setText("Update-Stand derzeit nicht verfügbar.")
+    def _check_update_status(self, dialog, install=False):
+        if self.actions.busy("update") or self.update_installing:
+            return
+        dialog.check_update_button.setDisabled(True)
+        self._set_update_message("Update-Stand wird geprüft …")
+        self.actions.start("update", self.update_service.available_commits,
+                           lambda count, error: self._update_checked(dialog, install, count, error))
+
+    def _update_checked(self, origin, install, count, error):
+        dialog = self.settings_dialog
+        if dialog is not None:
+            dialog.check_update_button.setEnabled(True)
+        if error:
+            self._set_update_message("Update-Stand derzeit nicht verfügbar. Bitte später erneut versuchen.")
+            return
+        self._set_update_message("Die Anwendung ist aktuell." if count == 0 else f"{count} Updates verfügbar.")
+        # Never act on a dismissed dialog or install because an old check completed.
+        if not install or count == 0 or dialog is not origin:
+            return
+        if not self._ask_confirmation(dialog, "Update installieren",
+                "Der neue Stand wird zuerst getestet und danach übernommen. "
+                "Die Uhr bleibt währenddessen bedienbar. Jetzt installieren?"):
+            return
+        if self.settings_dialog is not dialog:
+            return
+        self.update_installing = True
+        dialog.check_update_button.setDisabled(True)
+        self._set_update_message("Update wird geprüft und vorbereitet …")
+        self.actions.start("update", self.update_service.install_and_validate, self._update_installed)
+
+    def _update_installed(self, result, error):
+        self.update_installing = False
+        if self.settings_dialog is not None:
+            self.settings_dialog.check_update_button.setEnabled(True)
+        if error:
+            self._set_update_message("Update fehlgeschlagen. Die laufende Uhr bleibt geöffnet.")
+            return
+        success, message = result
+        self._set_update_message("Update installiert · Neustart erforderlich" if success else message)
 
     @staticmethod
     def _show_message(parent, icon, title, text):
@@ -702,29 +745,39 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         layout.addWidget(text_label)
         return dialog, layout
 
-    @staticmethod
-    def _close_application(dialog):
+    def _close_application(self, dialog):
+        if self.update_installing:
+            dialog.system_feedback.setText("Bitte das laufende Update vor dem Beenden abschließen lassen.")
+            return
         if PrayerTimeClockWindow._ask_confirmation(dialog, "App schließen", "Anwendung wirklich schließen?"):
             dialog.accept()
             QApplication.quit()
 
     def _restart_application(self, dialog, ask_for_confirmation):
+        if self.update_installing or self.actions.busy("restart"):
+            dialog.system_feedback.setText("Bitte den laufenden Vorgang abschließen lassen.")
+            return
         if ask_for_confirmation:
             if not self._ask_confirmation(dialog, "App neu starten", "Anwendung jetzt neu starten?"):
                 return
-        dialog.accept()
-        if os.environ.get("PRAYERCLOCK_SUPERVISED") != "1":
-            # Compatibility for the first update from the former launcher,
-            # which replaced itself with Python and therefore cannot observe
-            # the restart exit code yet.  Further restarts use the supervisor.
-            subprocess.Popen(
-                ["bash", os.path.join(self.project_root, "startup.sh")],
-                cwd=self.project_root,
-                start_new_session=True,
-            )
-            QApplication.quit()
+        if os.environ.get("PRAYERCLOCK_SUPERVISED") == "1":
+            dialog.reject()
+            QApplication.exit(75)
             return
-        QApplication.exit(75)
+        root = self.project_root
+        def launch():
+            return subprocess.Popen(
+                ["bash", os.path.join(root, "startup.sh")], cwd=root,
+                start_new_session=True, stdin=subprocess.DEVNULL,
+            ).pid
+        self.actions.start("restart", launch, self._restart_launched)
+
+    def _restart_launched(self, pid, error):
+        if error:
+            if self.settings_dialog is not None:
+                self.settings_dialog.system_feedback.setText("Neustart konnte nicht gestartet werden. Die Uhr bleibt geöffnet.")
+            return
+        QApplication.quit()
 
     def _toggle_adhan_preview(self, dialog):
         if self.previewing_adhan:
@@ -755,14 +808,14 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             scaled_style += """
                 #current_time { font-size: 198px; }
                 #current_location { font-size: 42px; }
-                #current_date { font-size: 50px; }
-                #hijri_date { font-size: 46px; padding-bottom: 8px; }
+                #current_date { font-size: 42px; }
+                #hijri_date { font-size: 38px; padding-bottom: 8px; }
                 #islamic_event #eventHeading,
                 #islamic_event #eventTag,
                 #tomorrow_islamic_notice #eventTag { font-size: 28px; padding: 8px 15px; }
-                #quran_arabic { font-size: 60px; padding-top: 8px; }
-                #quran_translation { font-size: 33px; }
-                #rest_time { font-size: 86px; }
+                #quran_arabic { font-size: 36px; padding-top: 0px; }
+                #quran_translation { font-size: 27px; }
+                #rest_time { font-size: 76px; }
                 #midnight_time { font-size: 64px; }
                 #sectionTitle, #rest_time_description, #midnight_label,
                 #last_updated_descrition { font-size: 25px; }
@@ -770,8 +823,9 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                 #fallback_horizon { font-size: 18px; }
                 #led_sign { font-size: 24px; }
                 #todayPanel QGroupBox QLabel { font-size: 46px; }
-                #current_day_fajr_time, #current_day_shroq_time, #current_day_zohr_time,
-                #current_day_asr_time, #current_day_magrb_time, #current_day_isha_time {
+                #todayPanel #current_day_fajr_time, #todayPanel #current_day_shroq_time,
+                #todayPanel #current_day_zohr_time, #todayPanel #current_day_asr_time,
+                #todayPanel #current_day_magrb_time, #todayPanel #current_day_isha_time {
                     font-size: 64px;
                 }
                 #next_day_description { font-size: 44px; }
@@ -808,15 +862,32 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
                     font-size: 27px;
                 }
             """
+        # Reserve identical space for success/cache/error text. Visibility,
+        # longer warning text and bold styling must not renegotiate the layout.
         self.setStyleSheet(scaled_style)
+        for label, lines in ((self.retry_time, 1 if profile == "10 Zoll" else 2), (self.fallback_horizon, 1)):
+            label.ensurePolished()
+            label.setFixedHeight(label.fontMetrics().lineSpacing() * lines + 6)
+        self.last_updated_descrition.ensurePolished()
+        metrics = self.last_updated_descrition.fontMetrics()
+        self.last_updated_descrition.setFixedWidth(
+            max(metrics.horizontalAdvance(text) for text in ("AKTUELL", "GESPEICHERT", "VERALTET")) + 8
+        )
         is_ten_inch = profile == "10 Zoll"
         ornament_size = 370 if is_ten_inch else round(154 * scale)
         self.islamic_ornament.setFixedSize(ornament_size, ornament_size)
+        self.time_panel.setMinimumHeight(ornament_size + (0 if is_ten_inch else 18))
+        self.quran_panel.setFixedHeight(132 if is_ten_inch else round(110 * scale))
         self.clockPanel.set_particle_size(1.55 if is_ten_inch else 1.0)
+        self.clockPanel.layout().setContentsMargins(24, 15, 24, 8 if is_ten_inch else 16)
         if is_ten_inch:
             self.time_row.setStretch(0, 12)
             self.time_row.setStretch(1, 9)
-            self.ornament_column.setContentsMargins(0, 6, 0, 0)
+            self.ornament_column.setContentsMargins(0, 0, 0, 0)
+        else:
+            self.time_row.setStretch(0, 1)
+            self.time_row.setStretch(1, 0)
+            self.ornament_column.setContentsMargins(0, 18, 0, 0)
 
         control_size = 60 if is_ten_inch else 34
         self.refresh_button.setFixedSize(control_size, control_size)
@@ -829,8 +900,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         # Qt keeps the tomorrow panel and prayer cards at their compact size
         # hints. Give the 10-inch profile a real large-screen geometry while
         # keeping the 7- and 14-inch layouts unchanged.
-        self.next_day_prayers_box.setMinimumHeight(270 if is_ten_inch else 0)
-        self.next_day_prayers_box.setMaximumHeight(290 if is_ten_inch else 16777215)
+        self.next_day_prayers_box.setMinimumHeight(220 if is_ten_inch else 0)
+        self.next_day_prayers_box.setMaximumHeight(220 if is_ten_inch else 16777215)
         for box in self.prayer_boxes:
             box.setMinimumHeight(136 if is_ten_inch else 0)
         for box in (
@@ -840,30 +911,13 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             box.setMinimumHeight(148 if is_ten_inch else 0)
 
     def _apply_brightness(self, value):
-        if shutil.which("brightnessctl"):
-            result = subprocess.run(
-                ["brightnessctl", "set", f"{value}%"],
-                check=False,
-                capture_output=True,
-                timeout=3,
-            )
-            if result.returncode == 0:
-                self.brightness_overlay.hide()
-                return True
-        backlight_root = "/sys/class/backlight"
-        if os.path.isdir(backlight_root):
-            for device in os.listdir(backlight_root):
-                device_path = os.path.join(backlight_root, device)
-                try:
-                    with open(os.path.join(device_path, "max_brightness"), encoding="utf-8") as file:
-                        maximum = int(file.read().strip())
-                    brightness_path = os.path.join(device_path, "brightness")
-                    with open(brightness_path, "w", encoding="utf-8") as file:
-                        file.write(str(max(1, round(maximum * value / 100))))
-                    self.brightness_overlay.hide()
-                    return True
-                except (OSError, ValueError):
-                    continue
+        self.brightness_action.set_value(max(10, min(100, value)))
+
+    @Slot(int, object, object)
+    def _brightness_finished(self, value, success, error):
+        if success and error is None:
+            self.brightness_overlay.hide()
+            return
         opacity = max(0, min(0.82, (100 - value) / 100))
         self.brightness_overlay.setStyleSheet(
             f"background-color: rgba(0, 0, 0, {round(opacity * 255)});"
@@ -873,35 +927,48 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.brightness_overlay.raise_()
         return False
 
+    def closeEvent(self, event):
+        if self.update_installing:
+            self._set_update_message("Update läuft – bitte vor dem Beenden abschließen lassen.")
+            event.ignore()
+            return
+        super().closeEvent(event)
+
     def resizeEvent(self, event):
         super().resizeEvent(event)
         if hasattr(self, "brightness_overlay"):
             self.brightness_overlay.setGeometry(self.centralwidget.rect())
 
-    @staticmethod
-    def _network_info():
-        if shutil.which("nmcli"):
-            result = subprocess.run(
-                ["nmcli", "-t", "-f", "TYPE,STATE,CONNECTION", "device"],
-                check=False, capture_output=True, text=True, timeout=4,
-            )
-            for line in result.stdout.splitlines():
-                parts = line.split(":", 2)
-                if len(parts) == 3 and parts[0] == "wifi" and parts[1] == "connected":
-                    return True, parts[2].replace("\\:", ":")
-        return False, ""
+    def _refresh_network_status(self, manual=False):
+        if self.network_check_in_progress:
+            return
+        self.network_check_in_progress = True
+        if self.settings_dialog is not None:
+            self.settings_dialog.reconnect_button.setEnabled(False)
+        self.network_job = BackgroundJob(lambda: self.network_recovery.check(manual))
+        self.network_job.signals.completed.connect(self._network_check_finished)
+        QThreadPool.globalInstance().start(self.network_job)
 
-    def _refresh_network_status(self):
-        connected, name = self._network_info()
+    @Slot(object, object)
+    def _network_check_finished(self, status, error):
+        self.network_check_in_progress = False
+        if self.settings_dialog is not None:
+            self.settings_dialog.reconnect_button.setEnabled(True)
+        previous = self.network_status
+        self.network_status = status if error is None else NetworkStatus(message="WLAN-Prüfung fehlgeschlagen")
+        connected = self.network_status.connected
         self.wifi_status_button.setIcon(self._wifi_icon(connected))
-        self.wifi_status_button.setIconSize(QSize(20, 20))
-        self.wifi_status_button.setToolTip(
-            f"WLAN verbunden · {name}" if connected and name else
-            "WLAN verbunden" if connected else "WLAN nicht verbunden"
-        )
+        size = 40 if self.display_profile == "10 Zoll" else 20
+        self.wifi_status_button.setIconSize(QSize(size, size))
+        self.wifi_status_button.setToolTip(self.network_status.message)
         self.wifi_status_button.setProperty("connected", connected)
         self.wifi_status_button.style().unpolish(self.wifi_status_button)
         self.wifi_status_button.style().polish(self.wifi_status_button)
+        if self.settings_dialog is not None:
+            self._update_dialog_network_status(self.settings_dialog)
+        if connected and (not previous.connected or
+                          (previous.connectivity != "full" and self.network_status.connectivity == "full")):
+            self.refresh_data()
 
     @staticmethod
     def _wifi_icon(connected):
@@ -923,31 +990,69 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         return QIcon(pixmap)
 
     def _update_dialog_network_status(self, dialog):
-        connected, name = self._network_info()
-        dialog.set_network_status(connected, name)
+        status = self.network_status
+        dialog.set_network_status(status.connected, status.name)
+        dialog.network_status.setText(status.message + (f" · {status.name}" if status.name else ""))
 
     def _reconnect_wifi(self, dialog):
-        if not shutil.which("nmcli"):
-            self._show_message(dialog, QMessageBox.Warning, "WLAN", "NetworkManager ist nicht verfügbar.")
-            return
-        subprocess.run(["nmcli", "radio", "wifi", "on"], check=False, timeout=5)
-        subprocess.run(["nmcli", "device", "connect", "wlan0"], check=False, timeout=12)
-        self._refresh_network_status()
-        self._update_dialog_network_status(dialog)
+        dialog.network_status.setText("WLAN-Verbindung wird geprüft …")
+        self._refresh_network_status(manual=True)
 
     def _open_wifi_settings(self, dialog):
-        commands = (
-            ["gnome-control-center", "wifi"],
-            ["nm-connection-editor"],
-        )
-        for command in commands:
-            if shutil.which(command[0]):
-                subprocess.Popen(command, start_new_session=True)
-                return
-        self._show_message(
-            dialog, QMessageBox.Information, "WLAN auswählen",
-            "Öffne in Ubuntu die Systemeinstellungen und wähle dort „WLAN“.",
-        )
+        if self.external_settings_process is not None:
+            dialog.system_feedback.setText("WLAN-Einstellungen sind bereits geöffnet.")
+            return
+        command = next((command for command in (
+            ["nm-connection-editor"], ["gnome-control-center", "wifi"],
+        ) if shutil.which(command[0])), None)
+        if command is None:
+            dialog.system_feedback.setText("Kein WLAN-Einstellungsprogramm gefunden. Bitte die Systemeinstellungen öffnen.")
+            return
+        process = QProcess(self)
+        self.external_settings_process = process
+        environment = QProcessEnvironment.systemEnvironment()
+        for name in ("QT_PLUGIN_PATH", "QT_QPA_PLATFORM_PLUGIN_PATH", "PYTHONPATH"):
+            environment.remove(name)
+        process.setProcessEnvironment(environment)
+        process.setStandardOutputFile(QProcess.nullDevice())
+        process.setStandardErrorFile(QProcess.nullDevice())
+        process.errorOccurred.connect(self._external_settings_error)
+        process.finished.connect(self._external_settings_finished)
+        dialog.wifi_button.setEnabled(False)
+        dialog.system_feedback.setText("System-WLAN-Einstellungen werden geöffnet. Danach kannst du zur Uhr zurückkehren.")
+        # Allow the external window to receive touch/focus instead of keeping
+        # the frameless kiosk or its modal dialog in front of it.
+        dialog.setWindowModality(Qt.NonModal)
+        self.setWindowFlag(Qt.WindowStaysOnTopHint, False)
+        self.showFullScreen()
+        dialog.show()
+        process.start(command[0], command[1:])
+
+    def _external_settings_error(self, error):
+        if self.sender() is not self.external_settings_process:
+            return
+        if self.settings_dialog is not None:
+            self.settings_dialog.system_feedback.setText("WLAN-Einstellungen konnten nicht gestartet werden oder wurden beendet. Die Uhr läuft weiter.")
+        self._release_external_settings()
+
+    def _external_settings_finished(self, exit_code, exit_status):
+        if self.sender() is not self.external_settings_process:
+            return
+        if self.settings_dialog is not None:
+            self.settings_dialog.system_feedback.setText(
+                "WLAN-Programm beendet oder an die Systemeinstellungen übergeben."
+                if exit_code == 0 else "WLAN-Programm hat einen Fehler gemeldet. Die Uhr läuft weiter."
+            )
+        self._release_external_settings()
+        self._refresh_network_status()
+
+    def _release_external_settings(self):
+        process = self.external_settings_process
+        if process is not None:
+            self.external_settings_process = None
+            process.deleteLater()
+        if self.settings_dialog is not None:
+            self.settings_dialog.wifi_button.setEnabled(True)
 
     @Slot()
     def refresh_data(self):
@@ -956,8 +1061,14 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
         self.last_daily_refresh_attempt_date = datetime.now().date()
         self.fetch_in_progress = True
         self.refresh_button.setDisabled(True)
+        self.fetch_job = BackgroundJob(self.scraper.get_prayer_times)
+        self.fetch_job.signals.completed.connect(self._fetch_finished)
+        QThreadPool.globalInstance().start(self.fetch_job)
+
+    @Slot(object, object)
+    def _fetch_finished(self, data, error):
         try:
-            self._apply_prayer_times(self.scraper.get_prayer_times())
+            self._apply_prayer_times(data if error is None else {})
         finally:
             self.fetch_in_progress = False
             self.refresh_button.setDisabled(False)
@@ -994,7 +1105,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             data_date = self.scraper.prayer_data_date(self.prayer_times)
             if self.prayer_times and self.prayer_times_are_current:
                 self._set_update_status("cached")
-                self.retry_time.setText("Offline · gespeicherte Daten · neuer Versuch in 5 Minuten")
+                self.retry_time.setText("Gespeicherte Daten · neuer Abruf in 5 Minuten")
             elif self.prayer_times and data_date is not None:
                 self._set_update_status("stale")
                 self.retry_time.setText(self._stale_warning(data_date, now.date()))
@@ -1071,7 +1182,7 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
     def _stale_warning(data_date, today):
         age = (today - data_date).days
         day_label = "1 Tag" if age == 1 else f"{age} Tage"
-        return f"Warnung · Gebetszeiten {day_label} alt · neuer Versuch in 5 Minuten"
+        return f"Warnung · Zeiten {day_label} alt · neuer Versuch in 5 Min."
 
     def _update_critical_stale_state(self, now):
         critical = is_critical_stale(
@@ -1273,10 +1384,8 @@ class PrayerTimeClockWindow(QMainWindow, Ui_MainWindow):
             self.islamic_ornament.set_celebration(celebration)
             self.clockPanel.style().unpolish(self.clockPanel)
             self.clockPanel.style().polish(self.clockPanel)
-            arabic, translation, reference = daily_verse(value.date())
-            self.quran_arabic.setText(arabic)
-            # Keep the complete surah reference together on its own line.
-            self.quran_translation.setText(f"„{translation}“\n{reference}")
+            arabic, translation, reference = daily_verse(value.date(), self.quran_collection)
+            self.quran_panel.set_verse(arabic, translation, reference)
             self.last_content_date = value.date()
         except (ImportError, ValueError):
             self.hijri_date.setText("Islamisches Datum derzeit nicht verfügbar")

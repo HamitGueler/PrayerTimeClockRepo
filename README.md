@@ -149,6 +149,9 @@ gültige heutige Zeiten wechselt das Ornament auf eine eigene rote Farbpalette.
 Es handelt sich nicht um einen transparenten Rotfilter: Konturen, Flächen,
 Gürtel und Mittelpunkt werden im Warnzustand neu gerendert. Die
 Fallback-Reichweite bleibt kompakt in der oberen Aktualisierungsleiste.
+Statusbezeichnung, Fallback-Zeile und Warnbereich reservieren
+in jedem Zustand denselben Platz. Der Wechsel von Türkis/Gold zu Rot ändert
+nur die Ornamentfarben, nicht die Positionen oder Größen der Oberfläche.
 
 ![Aktuelle Hauptansicht ohne verfügbaren Fallback](prayerclock-fallback-warning-preview.svg)
 
@@ -158,11 +161,50 @@ Fallback-Reichweite bleibt kompakt in der oberen Aktualisierungsleiste.
 - Beim Start wartet `startup.sh` höchstens 60 Sekunden auf Internet.
 - Nach einem fehlgeschlagenen Abruf erfolgt alle fünf Minuten ein neuer
   Datenversuch.
-- Der WLAN-Status wird beim Start, beim Öffnen der Einstellungen, nach einer
-  Neuverbindung und danach alle 60 Sekunden über NetworkManager (`nmcli`)
-  geprüft. Es wird dafür kein externer Server angepingt.
+- WLAN-Status und Verbindungswiederherstellung laufen beim Start und alle
+  60 Sekunden im Hintergrund. Die Einstellungen zeigen den letzten Prüfstand.
+- Bei getrennter WLAN-Verbindung erkennt die App den tatsächlichen Adapter
+  (kein festes `wlan0`) und aktiviert über NetworkManager ein vorhandenes
+  Verbindungsprofil. Fehlversuche werden nach 60, 120, 240, 480 und danach
+  jeweils 600 Sekunden wiederholt; die 60-Sekunden-Prüfung kann den Termin
+  auf den nächsten Tick verschieben. Es gibt keine endgültige Versuchsgrenze.
+- Ausgeschaltetes WLAN, laufende Verbindungsversuche und eine aktive
+  LAN-Verbindung werden automatisch respektiert. „Neu verbinden“ kann WLAN
+  ausdrücklich einschalten und die Wartezeit überspringen.
+- Ein verbundenes WLAN wird wegen einer Internet-/Diyanet-Störung nicht
+  getrennt. Der von NetworkManager gemeldete Internetstatus (erreichbar,
+  eingeschränkt, Anmeldung nötig oder unbekannt) erscheint in den Einstellungen
+  und im Tooltip. `unknown` ist kein Nachweis für eine funktionierende Verbindung.
+- Nach wiederhergestellter Verbindung wird der Datenabruf sofort angestoßen.
+  Auch der HTTP-Abruf läuft außerhalb des GUI-Threads: Uhr, Touchbedienung und
+  Animationen bleiben während Netzwerktimeouts bedienbar.
+- Befehle besitzen Zeitlimits; fehlender NetworkManager, Timeouts und
+  Berechtigungsfehler beenden den Monitor nicht. Die App verwendet kein `sudo`
+  und erzeugt keine neuen WLAN-Profile. Für das gespeicherte WLAN müssen die
+  nötigen Zugangsdaten und die üblichen NetworkManager-Rechte vorhanden sein.
 - Ein Wechsel zu einem anderen, in Raspberry Pi OS gespeicherten WLAN erfordert
   keine Änderung an `startup.sh`.
+
+### WLAN bricht erst nach mehreren Tagen ab
+
+Die App kann eine getrennte Verbindung erneut aufbauen. Ob der ursprüngliche
+Abbruch durch Router, Funkempfang, Treiber, Stromversorgung oder Energiesparen
+entsteht, lässt sich ohne die Raspberry-Pi-Protokolle nicht bestimmen.
+Bei einem erneuten Ausfall vor einem Neustart lokal prüfen:
+
+```bash
+nmcli device status
+nmcli networking connectivity check
+journalctl -u NetworkManager --since "2 hours ago" --no-pager
+journalctl -k --since "2 hours ago" --no-pager
+```
+
+Vor dem Teilen Netzwerknamen, MAC-/IP-Adressen und andere private Angaben
+entfernen. Keine Passwörter oder Ausgabe von `--show-secrets` teilen.
+Die Änderung wurde mit simulierten Ausfällen geprüft; ein mehrtägiger Test
+auf dem tatsächlichen Raspberry Pi steht noch aus.
+
+Referenz: [NetworkManager / nmcli](https://networkmanager.dev/docs/api/latest/nmcli.html).
 
 ## Sichere Anwendungsupdates
 
@@ -318,3 +360,98 @@ Das folgende Bild zeigt eine frühere Version und dient nur als historischer
 Vergleich:
 
 <img src="Preview.jpeg" alt="Frühere Version der PrayerTimeClock" width="600">
+
+### Sichere Einstellungsaktionen
+
+Die Einstellungsseite öffnet ohne blockierende Git-/Systembefehle im GUI-Thread.
+Updateprüfung und Installation laufen als einzelne Hintergrundaufträge. Qt-
+Widgets, Dialoge, Audioausgabe und Displayprofilwechsel bleiben im GUI-Thread.
+Die Ergebniszustellung erfolgt über Qt-Signale an GUI-eigene Empfänger.
+
+- Erneutes Antippen startet keinen zweiten Updateauftrag. Nach einem Fehler
+  wird der Button wieder freigegeben. Während der eigentlichen Installation
+  sind App-Neustart und App-Beenden gesperrt; die Einstellungen können weiter
+  bedient oder geschlossen werden. Der Auftrag läuft dann weiter.
+- Speichern, Abbrechen und App schließen bleiben in einer festen Fußzeile
+  sichtbar, auch wenn der Einstellungsinhalt gescrollt wird.
+- Geschlossene Dialoge werden nicht mehr von späten Ergebnissen angesprochen.
+  Ein erneut geöffneter Dialog übernimmt den aktuellen Auftragsstatus.
+- Helligkeit und System-Audioverstärkung werden mit kurzer Verzögerung und
+  höchstens einem Hardwareauftrag gleichzeitig geschrieben. Von schnellen
+  Reglerbewegungen wird nur der neueste noch ausstehende Wert übernommen.
+  „Abbrechen“ stellt Helligkeit und Lautstärke wieder her.
+- Die externe WLAN-Auswahl startet über `QProcess`; fehlendes Programm,
+  Startfehler und Prozessende werden behandelt. Der Kiosk-Vordergrundmodus und
+  die Dialogmodalität werden während der externen Auswahl aufgehoben, damit
+  das Systemfenster Touch-Eingaben erhalten kann. Mit dem Schließen/Speichern
+  der Einstellungen wird der Vordergrundmodus der Uhr wiederhergestellt.
+- Displayprofile werden vollständig zurückgesetzt, wenn zwischen 10, 7 und
+  14 Zoll gewechselt wird. Für reine Layoutänderungen wird kein Thread benutzt.
+- Updatebefehle erhalten kein interaktives Terminal. Ein Update wird auf die
+  konkret vorbereitete Git-Version festgelegt und bei lokalen Änderungen
+  abgebrochen. Netzwerk-, Installations- und Hardwarebefehle haben Zeitlimits.
+
+Der Bildschirm-/Treiberzustand und die Desktop-Fokusregeln auf dem konkreten
+Raspberry Pi müssen nach Veröffentlichung zusätzlich dort geprüft werden.
+
+### Koran-Zitate: vollständiger Offline-Bestand
+
+Bisher gab es fünf Einträge, die nach dem Tagesdatum in einem Fünf-Tage-Zyklus
+wechselten. Nun enthält die App den vollständigen arabischen Koran mit
+Bubenheim/Elyas-Bedeutungsübersetzung: **114 Suren, 6.236 Verse**.
+
+In den Einstellungen unter „Tägliches Koran-Zitat“ stehen zwei Sammlungen:
+
+- **Ausgewählte Verse (406)**: eine redaktionelle Referenzliste mit vielen
+  bekannten Stellen zu Gebet, Dankbarkeit, Geduld, Barmherzigkeit und Verhalten.
+- **Gesamter Koran (6.236 Verse)**: alle Verse des Offline-Bestands.
+
+Ein stabil gemischter Tageszyklus wechselt zwischen Suren. Am selben Tag bleibt
+es derselbe Vers, auch nach einem Neustart. Erst nach dem vollständigen
+Durchlauf der gewählten Sammlung wiederholt sich ein Eintrag. Dies ist keine
+Bewertung der religiösen Bedeutung einzelner Verse.
+
+Die Originaltexte bleiben vollständig. Lange arabische Texte und Übersetzungen
+stehen innerhalb eines festen Bereichs: nach zwölf Sekunden beginnt sanftes
+Scrollen; am Anfang und Ende wird pausiert. Berührung/Scrollen pausiert die
+Automatik für 30 Sekunden. Surenname, Versnummer und Übersetzungsquelle bleiben
+sichtbar; die übrige Oberfläche wird durch lange Verse nicht verschoben.
+Die mitgelieferte Schrift **Amiri Quran** unterstützt die koranischen
+Schriftzeichen, ohne separate Schriftinstallation auf dem Raspberry Pi.
+
+Die Daten stammen aus dokumentierten Quran-JSON-/Quran-API-Datensätzen:
+Arabischer Text aus QuranEnc über `risan/quran-json`; deutsche Übersetzung aus
+Tanzil über `fawazahmed0/quran-api`. Es wird kein täglicher API-Aufruf und keine
+zusätzliche Python-Bibliothek benötigt. Der direkte QuranEnc-Export war in der
+Entwicklungsumgebung nicht abrufbar; die gebündelte deutsche Ausgabe ist die
+Tanzil-Ausgabe, nicht die Behauptung einer aktuelleren QuranEnc-Revision.
+
+Quellen, Nutzungsbedingungen und Prüfsummen:
+[QURAN-SOURCES.md](src/Data/QURAN-SOURCES.md),
+[quran-sources.json](src/Data/quran-sources.json),
+[Schriftlizenz](src/Fonts/AMIRI-OFL.txt).
+Die deutsche Übersetzung ist für nichtkommerzielle Nutzung vorgesehen;
+kommerzielle Nutzung erfordert die Erlaubnis des Rechteinhabers.
+`scripts/import_quran.py` ermöglicht einen ausdrücklich gestarteten Datenimport;
+neue Quellenstände sollten vor einer Veröffentlichung geprüft werden.
+
+### Reproduzierbare Qt-Vorschau
+
+`scripts/render_qt_preview.py` rendert die tatsächlichen Qt-Widgets bei
+1920×1200 mit isolierten Einstellungen und festen **Beispielzeiten**.
+Es führt keine Netzwerk-, Audio- oder Cache-Schreibaktionen aus. Die PNGs
+sind keine Gebetszeitenquelle. Das Skript vergleicht Normal-/Warnzustand
+auf identische Geometrie und prüft Ornamentabstand und 64-px-Zeiten.
+
+```bash
+PYTHONPATH=src QT_QPA_PLATFORM=offscreen python scripts/render_qt_preview.py --output /tmp/prayerclock-preview
+# Zusätzlicher Layout-Stresstest mit beispielhaften Tags:
+PYTHONPATH=src QT_QPA_PLATFORM=offscreen python scripts/render_qt_preview.py --tags --output /tmp/prayerclock-tags
+PYTHONPATH=src python -m pytest -q
+```
+
+Das 10-Zoll-Profil behält die 198-px-Hauptuhr und das 370-px-Ornament.
+Sekundärtexte und der Morgenbereich sind kompakter, damit auch mit Tags
+und Warnzeile ausreichend Platz bleibt. Heutige und morgige Zeiten haben
+64 px; ein zuvor stärkerer CSS-Selektor hatte die heutigen Zeiten verkleinert.
+Das WLAN-Symbol nutzt 40 px innerhalb seines 58-px-Buttons.

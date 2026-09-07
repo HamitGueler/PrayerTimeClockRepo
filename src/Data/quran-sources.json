@@ -1,0 +1,13 @@
+{
+  "retrieved_at": "2026-09-07",
+  "files": {
+    "quran-arabic.json": {
+      "url": "https://github.com/risan/quran-json/blob/master/dist/quran.json",
+      "sha256": "a68f22abb0237906adc1bd39f517c032fad98bc571c9ceef98924cda812c5667"
+    },
+    "quran-de-bubenheim.json": {
+      "url": "https://github.com/fawazahmed0/quran-api/blob/1/editions/deu-asfbubenheimand.json",
+      "sha256": "e982799be8ce36b3b912c3b1a5ffc44a8a8d7aa8ada25f87179198c558da045e"
+    }
+  }
+}

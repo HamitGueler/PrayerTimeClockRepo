@@ -15,6 +15,8 @@ class ApplicationUpdateService:
             command,
             cwd=cwd or self.project_root,
             check=False,
+            stdin=subprocess.DEVNULL,
+            env={**os.environ, "GIT_TERMINAL_PROMPT": "0"},
             capture_output=True,
             text=True,
             timeout=timeout,
@@ -36,8 +38,15 @@ class ApplicationUpdateService:
         if count == 0:
             return False, "Die Anwendung ist bereits aktuell."
 
+        revision = self._run(["git", "rev-parse", f"origin/{self.branch}"])
+        if revision.returncode:
+            return False, "Update-Version konnte nicht eindeutig bestimmt werden."
+        target = revision.stdout.strip()
+        dirty = self._run(["git", "status", "--porcelain"])
+        if dirty.returncode or dirty.stdout.strip():
+            return False, "Lokale Änderungen verhindern ein sicheres Update."
         ancestor = self._run(
-            ["git", "merge-base", "--is-ancestor", "HEAD", f"origin/{self.branch}"]
+            ["git", "merge-base", "--is-ancestor", "HEAD", target]
         )
         if ancestor.returncode:
             return False, "Lokale Änderungen verhindern ein sicheres Update."
@@ -45,7 +54,7 @@ class ApplicationUpdateService:
         with tempfile.TemporaryDirectory(prefix="prayerclock-update-") as temp_dir:
             archive_path = os.path.join(temp_dir, "update.tar")
             archive = self._run(
-                ["git", "archive", f"origin/{self.branch}", "-o", archive_path]
+                ["git", "archive", target, "-o", archive_path]
             )
             if archive.returncode:
                 return False, "Der neue Stand konnte nicht vorbereitet werden."
@@ -74,7 +83,7 @@ class ApplicationUpdateService:
             if health.returncode:
                 return False, "Der Starttest der neuen Version ist fehlgeschlagen."
 
-        update = self._run(["git", "merge", "--ff-only", f"origin/{self.branch}"])
+        update = self._run(["git", "merge", "--ff-only", target])
         if update.returncode:
             return False, "Das Update konnte nicht sicher übernommen werden."
         return True, f"{count} Update{'s' if count != 1 else ''} installiert."

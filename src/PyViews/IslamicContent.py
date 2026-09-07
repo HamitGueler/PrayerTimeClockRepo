@@ -10,8 +10,7 @@ HIJRI_MONTHS = (
 
 SACRED_MONTHS = {1, 7, 11, 12}
 
-# A small, reviewed offline selection. One verse is selected deterministically
-# per day, so no network outage can leave the kiosk with an empty panel.
+# Emergency fallback only. Normal operation uses the full offline QuranCorpus.
 DAILY_VERSES = (
     (
         "إِنَّ مَعَ الْعُسْرِ يُسْرًا",
@@ -71,8 +70,13 @@ def get_hijri_info(value, adjustment=None):
     }
 
 
-def daily_verse(value):
-    return DAILY_VERSES[value.toordinal() % len(DAILY_VERSES)]
+def daily_verse(value, collection="selected"):
+    from HelperClasses.QuranCorpus import verse_for_day
+    try:
+        return verse_for_day(value, collection)
+    except (OSError, ValueError, KeyError, TypeError):
+        # A damaged/missing data asset must not prevent the clock from starting.
+        return DAILY_VERSES[value.toordinal() % len(DAILY_VERSES)]
 
 
 def _deduplicate_fasting_recommendation(tags):

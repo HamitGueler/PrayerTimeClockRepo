@@ -1,4 +1,5 @@
 import math
+from PyViews.QuranQuotePanel import QuranQuotePanel
 
 from PySide6.QtCore import QElapsedTimer, QPointF, QRectF, Qt, QTimer
 from PySide6.QtGui import QColor, QPainter, QPainterPath, QPen, QPixmap, QPolygonF
@@ -615,6 +616,9 @@ class Ui_MainWindow:
         self.fallback_horizon.setObjectName("fallback_horizon")
         self.fallback_horizon.setAlignment(Qt.AlignCenter)
         self.fallback_horizon.hide()
+        policy = self.fallback_horizon.sizePolicy()
+        policy.setRetainSizeWhenHidden(True)
+        self.fallback_horizon.setSizePolicy(policy)
         update_status_layout.addWidget(self.fallback_horizon)
         status_row.addWidget(self.update_status_panel)
 
@@ -630,7 +634,10 @@ class Ui_MainWindow:
         status_row.setSpacing(7)
         layout.addLayout(status_row)
 
-        time_row = QHBoxLayout()
+        self.time_panel = QWidget()
+        self.time_panel.setObjectName("time_panel")
+        time_row = QHBoxLayout(self.time_panel)
+        time_row.setContentsMargins(0, 0, 0, 0)
         self.time_row = time_row
         time_row.setSpacing(8)
         self.current_time = QLabel()
@@ -645,7 +652,7 @@ class Ui_MainWindow:
         self.islamic_ornament = IslamicGirihOrnament()
         ornament_column.addWidget(self.islamic_ornament, 0, Qt.AlignHCenter | Qt.AlignBottom)
         time_row.addLayout(ornament_column)
-        layout.addLayout(time_row, 1)
+        layout.addWidget(self.time_panel, 1)
 
         self.current_date = QLabel()
         self.current_date.setObjectName("current_date")
@@ -692,17 +699,17 @@ class Ui_MainWindow:
 
         self.retry_time = QLabel()
         self.retry_time.setObjectName("retry_time")
+        self.retry_time.setWordWrap(True)
+        self.retry_time.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        policy = QSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
+        policy.setRetainSizeWhenHidden(True)
+        self.retry_time.setSizePolicy(policy)
         layout.addWidget(self.retry_time)
 
-        self.quran_arabic = QLabel()
-        self.quran_arabic.setObjectName("quran_arabic")
-        self.quran_arabic.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.quran_arabic)
-        self.quran_translation = QLabel()
-        self.quran_translation.setObjectName("quran_translation")
-        self.quran_translation.setAlignment(Qt.AlignCenter)
-        self.quran_translation.setWordWrap(True)
-        layout.addWidget(self.quran_translation)
+        self.quran_panel = QuranQuotePanel()
+        self.quran_arabic = self.quran_panel.arabic
+        self.quran_translation = self.quran_panel.translation
+        layout.addWidget(self.quran_panel)
         return self.clockPanel
 
     def _build_today_panel(self):
